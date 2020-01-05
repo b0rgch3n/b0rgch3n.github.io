@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>http://localhost:4000</id>
-    <title>BorgChen</title>
-    <updated>2020-01-04T08:28:37.221Z</updated>
+    <id>https://b0rgch3n.github.io</id>
+    <title>b0rgch3n</title>
+    <updated>2020-01-05T04:08:48.546Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="http://localhost:4000"/>
-    <link rel="self" href="http://localhost:4000/atom.xml"/>
-    <subtitle>温故而知新</subtitle>
-    <logo>http://localhost:4000/images/avatar.png</logo>
-    <icon>http://localhost:4000/favicon.ico</icon>
-    <rights>All rights reserved 2020, BorgChen</rights>
+    <link rel="alternate" href="https://b0rgch3n.github.io"/>
+    <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
+    <subtitle>记录生活的细枝末节</subtitle>
+    <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
+    <icon>https://b0rgch3n.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2020, b0rgch3n</rights>
     <entry>
-        <title type="html"><![CDATA[Hello Gridea]]></title>
-        <id>http://localhost:4000/post/hello-gridea</id>
-        <link href="http://localhost:4000/post/hello-gridea">
+        <title type="html"><![CDATA[第一篇博客：纪念我的个人博客开张啦]]></title>
+        <id>https://b0rgch3n.github.io/post/5b3f5d70fb65bf17a68536f5e647a890</id>
+        <link href="https://b0rgch3n.github.io/post/5b3f5d70fb65bf17a68536f5e647a890">
         </link>
-        <updated>2018-12-11T16:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+        <updated>2020-01-05T03:30:50.000Z</updated>
+        <summary type="html"><![CDATA[<p>心心念念的博客终于搭建起来了~<br>
+虽然这段时间的心路历程真是艰难。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+        <content type="html"><![CDATA[<p>心心念念的博客终于搭建起来了~<br>
+虽然这段时间的心路历程真是艰难。</p>
 ]]></content>
     </entry>
 </feed>
