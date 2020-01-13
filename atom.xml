@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2020-01-13T15:11:23.610Z</updated>
+    <updated>2020-01-13T15:12:41.569Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
@@ -11,6 +11,17 @@
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, b0rgch3n</rights>
+    <entry>
+        <title type="html"><![CDATA[Android 开发学习小记（持续更新中）]]></title>
+        <id>https://b0rgch3n.github.io/post/027ca7a644dc239065b79b54c80e796e</id>
+        <link href="https://b0rgch3n.github.io/post/027ca7a644dc239065b79b54c80e796e">
+        </link>
+        <updated>2020-01-13T14:33:27.000Z</updated>
+        <summary type="html"><![CDATA[<p>近来出于兴趣开始了 Android 逆向分析的学习，但由于对 Android 开发一片空白，于是也打算初略的过一下开发基础，于是便有了这篇小记。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>近来出于兴趣开始了 Android 逆向分析的学习，但由于对 Android 开发一片空白，于是也打算初略的过一下开发基础，于是便有了这篇小记。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[第一篇博客：纪念我的个人博客开张啦]]></title>
         <id>https://b0rgch3n.github.io/post/5b3f5d70fb65bf17a68536f5e647a890</id>
