@@ -774,9 +774,7 @@ a {
         background: #f1f3f5;
       }
     
-      img[src*="/post-images/"],
-div[style*="/post-images/"]
-{
+      img[src*="/post-images/"] {
     border-radius: 12px;  
     box-shadow:0px 0px 10px;
 }
