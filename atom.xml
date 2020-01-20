@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2020-01-18T15:27:29.958Z</updated>
+    <updated>2020-01-20T14:08:18.892Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
@@ -16,14 +16,14 @@
         <id>https://b0rgch3n.github.io/post/4886ac573d89c0588d739a00e9fb8269</id>
         <link href="https://b0rgch3n.github.io/post/4886ac573d89c0588d739a00e9fb8269">
         </link>
-        <updated>2020-01-18T15:09:52.000Z</updated>
+        <updated>2020-01-20T14:05:26.000Z</updated>
         <summary type="html"><![CDATA[<p>记录 Android 逆向分析的学习之路，梳理总结。💪<br>
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。<br>
-（最后更新日期 2020-01-18）</p>
+（最后更新日期 2020-01-20）</p>
 ]]></summary>
         <content type="html"><![CDATA[<p>记录 Android 逆向分析的学习之路，梳理总结。💪<br>
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。<br>
-（最后更新日期 2020-01-18）</p>
+（最后更新日期 2020-01-20）</p>
 ]]></content>
     </entry>
     <entry>
