@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1579529293242">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1580739049944">
 <link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
 
 
@@ -28,10 +28,11 @@
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。
 （最后更新日期 2020-01-20）
 
+
 Android 逆向工具
 
 apktool
-010 Editor..." />
+010 Edito..." />
     <meta name="keywords" content="Android,Reverse" />
   </head>
   <body>
@@ -41,7 +42,7 @@ apktool
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://b0rgch3n.github.io">
-        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1579529293242" class="site-logo">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1580739049944" class="site-logo">
         <h1 class="site-title">b0rgch3n</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -119,16 +120,25 @@ apktool
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。<br>
 （最后更新日期 2020-01-20）</p>
 <!-- more -->
-<p><strong>Android 逆向工具</strong></p>
+<br>
+<h3 id="android-逆向工具"><strong>Android 逆向工具</strong></h3>
 <ul>
 <li>apktool</li>
 <li>010 Editor（十六进制编辑器）</li>
-<li>AndroidKiller (解压Apk，查壳，Samil 反编译为 Java)</li>
+<li>AndroidKiller (解压Apk，查壳，Samil 反编译为 Java)<br>
+<br></li>
 </ul>
-<p><strong>安卓虚拟机</strong><br>
-目前有 2 种，Dalvik 和 Art。<br>
-Android 4.4 新增 Art，而 Android 5.0 后全面启用 Davlik。</p>
-<p><strong>Dalvik 虚拟机执行程序的流程</strong></p>
+<h3 id="安卓虚拟机"><strong>安卓虚拟机</strong></h3>
+<p>虽然 Android 平台使用 Java 语言进行开发，但 Android 程序不是运行在标准的 Java 虚拟机，而是运行在 Dalvik 虚拟机。<br>
+Android 4.4 新增 Art 虚拟机，而 Android 5.0 后全面启用 Art。</p>
+<p><strong>与 Java 虚拟机的区别：</strong></p>
+<ul>
+<li>运行内容不同：Java 虚拟机运行 Java 字节码（.class 文件），Dalvik 虚拟机运行 Dalvik 字节码（.dex 文件），Dalvik 字节码是由 Java 字节码转换而来的，并打包到 .dex 文件中。</li>
+<li>文件体积更小：Android SDK 的 dx 工具将 Java 字节码转换为 Dalvik 字节码，并消除 .class 文件中所有的冗余信息，减少文件体积。</li>
+<li>架构不同：Java 虚拟机基于栈架构，Dalvik 虚拟机基于寄存器架构。<br>
+<br></li>
+</ul>
+<h3 id="dalvik-虚拟机执行程序的流程"><strong>Dalvik 虚拟机执行程序的流程</strong></h3>
 <ol>
 <li>Android 系统启动先加载内核，内核加载后执行 init 进程，进行设备初始化，然后读取 inic.rc 并启动 Zygote 进程</li>
 <li>Zygote 进程初始化 Dalvik 虚拟机</li>
@@ -137,9 +147,19 @@ Android 4.4 新增 Art，而 Android 5.0 后全面启用 Davlik。</p>
 <li>Zygote 进程收到命令后执行 forkAndSpecialize() 方法 fork 自身创建一个 Dalvik VM 执行应用程序的入口函数</li>
 </ol>
 <p><img src="https://b0rgch3n.github.io/post-images/1579359268813.png" alt="" loading="lazy"><br>
-（流程图整理参考自《Android 软件安全与逆向分析》图3-5）</p>
-<p><strong>Smail</strong><br>
-smail 数据类型：<br>
+（流程图整理参考自《Android 软件安全与逆向分析》图3-5）<br>
+<br></p>
+<h3 id="dalvik-虚拟机的-jit"><strong>Dalvik 虚拟机的 JIT</strong></h3>
+<p>Android 2.2 版本 Dalvik 虚拟机引入了 JIT 技术。<br>
+JIT 包含 2 种字节码编码方式：</p>
+<ul>
+<li>method：以函数或者方法为单位进行编译。</li>
+<li>trace：获取执行较为频繁的代码路径进行编译。</li>
+</ul>
+<p>（Dalvik 默认使用 trace 方式进行代码编译）<br>
+<br></p>
+<h3 id="smail-语法"><strong>Smail 语法</strong></h3>
+<p>smail 数据类型：<br>
 B -&gt; byte<br>
 C -&gt; char<br>
 D -&gt; double<br>
