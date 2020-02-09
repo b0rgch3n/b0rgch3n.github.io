@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1580739190159">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1581262118386">
 <link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
 
 
@@ -26,7 +26,7 @@
 
     <meta name="description" content="记录 Android 逆向分析的学习之路，梳理总结。💪
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。
-（最后更新日期 2020-02-03）
+（最后更新日期 2020-02-09）
 
 
 Android 逆向工具
@@ -42,7 +42,7 @@ apktool
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://b0rgch3n.github.io">
-        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1580739190159" class="site-logo">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1581262118386" class="site-logo">
         <h1 class="site-title">b0rgch3n</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -118,21 +118,39 @@ apktool
             <div class="post-content" v-pre>
               <p>记录 Android 逆向分析的学习之路，梳理总结。💪<br>
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。<br>
-（最后更新日期 2020-02-03）</p>
+（最后更新日期 2020-02-09）</p>
 <!-- more -->
 <br>
 <h3 id="android-逆向工具"><strong>Android 逆向工具</strong></h3>
 <ul>
 <li>apktool</li>
 <li>010 Editor（十六进制编辑器）</li>
-<li>AndroidKiller (解压Apk，查壳，Samil 反编译为 Java)<br>
+<li>AndroidKiller (解压Apk，查壳，Samil 反编译为 Java)</li>
+<li>BakSmail (反汇编)</li>
+<li>Dedexer (反汇编)<br>
 <br></li>
 </ul>
 <h3 id="安卓虚拟机"><strong>安卓虚拟机</strong></h3>
 <p>虽然 Android 平台使用 Java 语言进行开发，但 Android 程序不是运行在标准的 Java 虚拟机，而是运行在 Dalvik 虚拟机。<br>
 Android 4.4 新增 Art 虚拟机，而 Android 5.0 后全面启用 Art。<br>
-<strong>与 Java 虚拟机的区别：</strong><br>
 <br></p>
+<p><strong>Dalvik 虚拟机特点：</strong></p>
+<ul>
+<li>占用内存小</li>
+<li>专有 DEX 可执行文件格式，体积小执行速度快</li>
+<li>常量池 32 位索引，寻址更快</li>
+<li>基于寄存器架构，有一套完整的指令系统</li>
+<li>提供了对象生命周期管理、堆栈管理、线程管理、安全和异常管理、垃圾回收等重要功能</li>
+<li>每个 Android 程序的进程都对应一个 Dalvik 虚拟机实例<br>
+<br></li>
+</ul>
+<p><strong>与 Java 虚拟机的区别：</strong></p>
+<ul>
+<li>运行内容不同：Java 虚拟机运行 Java 字节码；Dalvik 虚拟机运行 Dalvik 字节码</li>
+<li>可执行文件体积更小：Android SDK 的 dx 工具将 Java 字节码转换为 Dalvik 字节码，并消除所有冗余信息</li>
+<li>结构不同：Java 虚拟机基于栈架构，频繁出入栈，需要更多指令分派与内存访问；Dalvik 虚拟机基于寄存器架构，数据访问通过寄存器直接传递，数据访问速度更快<br>
+<br></li>
+</ul>
 <h3 id="dalvik-虚拟机执行程序的流程"><strong>Dalvik 虚拟机执行程序的流程</strong></h3>
 <ol>
 <li>Android 系统启动先加载内核，内核加载后执行 init 进程，进行设备初始化，然后读取 inic.rc 并启动 Zygote 进程</li>
@@ -153,15 +171,60 @@ JIT 包含 2 种字节码编码方式：</p>
 </ul>
 <p>（Dalvik 默认使用 trace 方式进行代码编译）<br>
 <br></p>
-<h3 id="smail-语法"><strong>Smail 语法</strong></h3>
-<p>smail 数据类型：<br>
-B -&gt; byte<br>
-C -&gt; char<br>
-D -&gt; double<br>
-F -&gt; float<br>
-I -&gt; int<br>
-J -&gt; long<br>
-S -&gt; short</p>
+<h3 id="dalvik-汇编基础"><strong>Dalvik 汇编基础</strong></h3>
+<p><strong>Dalvik 寄存器</strong><br>
+Dalvik 虚拟机基于寄存器架构，在 ARM 架构的 CPU 上运行。<br>
+Dalvik 将部分寄存器映射到 ARM 寄存器上，还有一部分通过调用栈进行模拟。<br>
+Dalvik 中用到的所有寄存器都是 32 位，支持任何类型，64 位则用 2 个相邻寄存器表示。<br>
+Dalvik 虚拟机支持 65536 个寄存器，寄存器采用 v0 作起始值，取值范围是 v0~v65535。<br>
+<br></p>
+<blockquote>
+<p>寄存器有 2 种不同的表示方法 —— v 命名法与 p 命名法<br>
+v 命名法所有函数中的局部变量和参数均以 v 开头的寄存器命名表示，从 v0 开始，依次递增。<br>
+p 命名法对函数局部变量命名不影响，只变化函数传参部分，函数中参数从 p0 开始，依次递增。<br>
+例如有一个 Hello 对象的 foo() 方法使用到 5 个寄存器，但该方法只有 2 个显式参数：<br>
+使用 v 命名法时寄存器分配 v0、v1 表示局部变量，v2 表示被隐式传入的 Hello 对象引用，v3、v4 表示方法的显式参数。<br>
+使用 p 命名法时寄存器分配 v0、v1 表示局部变量，p0 表示被隐式传入的 Hello 对象引用，p1、p2 表示方法的显式参数。</p>
+</blockquote>
+<p><strong>Smail 数据类型比较</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Java 数据类型</th>
+<th style="text-align:center">smail 数据类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">byte</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">char</td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">double</td>
+</tr>
+<tr>
+<td style="text-align:center">F</td>
+<td style="text-align:center">float</td>
+</tr>
+<tr>
+<td style="text-align:center">I</td>
+<td style="text-align:center">int</td>
+</tr>
+<tr>
+<td style="text-align:center">J</td>
+<td style="text-align:center">long</td>
+</tr>
+<tr>
+<td style="text-align:center">S</td>
+<td style="text-align:center">short</td>
+</tr>
+</tbody>
+</table>
 
             </div>
             
