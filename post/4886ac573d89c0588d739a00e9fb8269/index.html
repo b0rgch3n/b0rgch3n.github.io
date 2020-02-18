@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1581262368147">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1582001048691">
 <link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
 
 
@@ -26,7 +26,7 @@
 
     <meta name="description" content="记录 Android 逆向分析的学习之路，梳理总结。💪
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。
-（最后更新日期 2020-02-09）
+（最后更新日期 2020-02-18）
 
 
 Android 逆向工具
@@ -42,7 +42,7 @@ apktool
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://b0rgch3n.github.io">
-        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1581262368147" class="site-logo">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1582001048691" class="site-logo">
         <h1 class="site-title">b0rgch3n</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -118,7 +118,7 @@ apktool
             <div class="post-content" v-pre>
               <p>记录 Android 逆向分析的学习之路，梳理总结。💪<br>
 包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。<br>
-（最后更新日期 2020-02-09）</p>
+（最后更新日期 2020-02-18）</p>
 <!-- more -->
 <br>
 <h3 id="android-逆向工具"><strong>Android 逆向工具</strong></h3>
@@ -171,7 +171,7 @@ JIT 包含 2 种字节码编码方式：</p>
 </ul>
 <p>（Dalvik 默认使用 trace 方式进行代码编译）<br>
 <br></p>
-<h3 id="dalvik-汇编基础"><strong>Dalvik 汇编基础</strong></h3>
+<h3 id="dalvik-指令集smali-汇编基础"><strong>Dalvik 指令集（Smali 汇编）基础</strong></h3>
 <p><strong>Dalvik 寄存器</strong><br>
 Dalvik 虚拟机基于寄存器架构，在 ARM 架构的 CPU 上运行。<br>
 Dalvik 将部分寄存器映射到 ARM 寄存器上，还有一部分通过调用栈进行模拟。<br>
@@ -186,11 +186,11 @@ p 命名法对函数局部变量命名不影响，只变化函数传参部分，
 使用 v 命名法时寄存器分配 v0、v1 表示局部变量，v2 表示被隐式传入的 Hello 对象引用，v3、v4 表示方法的显式参数。<br>
 使用 p 命名法时寄存器分配 v0、v1 表示局部变量，p0 表示被隐式传入的 Hello 对象引用，p1、p2 表示方法的显式参数。</p>
 </blockquote>
-<p><strong>Dalvik 数据类型比较</strong></p>
+<p><strong>Smali 数据类型比较</strong></p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">Dalvik 字节码类型描述符</th>
+<th style="text-align:center">Smali 字节码类型描述符</th>
 <th style="text-align:center">Java 数据类型</th>
 </tr>
 </thead>
@@ -241,6 +241,14 @@ p 命名法对函数局部变量命名不影响，只变化函数传参部分，
 </tr>
 </tbody>
 </table>
+<p><strong>Smali 函数定义</strong><br>
+函数定义一般为：<br>
+FuncName(ParaType1ParaType2ParaType3...)ReturnType<br>
+<img src="https://b0rgch3n.github.io/post-images/1582000599571.png" alt="" loading="lazy"></p>
+<p>几个例子：<br>
+foo()V 等同于 Java 代码 void foo()<br>
+foo(III)Z 等同于 Java 代码 boolean foo(int, int, int)<br>
+foo([I[ILjava/lang/String;J)Ljava/lang/String 等同于 Java 代码 String foo(int[], int[], String, long)</p>
 
             </div>
             
