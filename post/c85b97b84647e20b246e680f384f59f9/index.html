@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Android | b0rgch3n</title>
+<title>吴恩达深度学习课程 知识要点略记 | b0rgch3n</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -12,14 +12,26 @@
 <link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
 
 
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
 
 <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
 
 
-    <meta name="description" content="记录生活的细枝末节
-&lt;/div&gt;&lt;script type=&#34;text/javascript&#34;&gt;console.log(&#34;Hello!&#34;)&lt;/script&gt;&lt;div&gt;">
+    <meta name="description" content="随堂知识点略记 ✍️
+
+3.7 为何需要非线性激活函数
+
+简单的讲，激活函数向神经网络中引入非线性因素，使神经网络可以拟合各种曲线。
+[!] 非线性激活函数必须使用再隐藏层才能为网络引入非线性分类的功能
+[!] 只有当机器学习的是回归问题时..." />
+    <meta name="keywords" content="Deep Learning" />
   </head>
   <body>
     <div id="app" class="main">
@@ -94,57 +106,55 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <h2 class="current-tag">标签: Android</h2>
-          
-            <article class="post-item">
-              <div class="left">
+          <div class="post-detail">
+            <h2 class="post-title">吴恩达深度学习课程 知识要点略记</h2>
+            <div class="post-date">2020-03-18</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/c85b97b84647e20b246e680f384f59f9.png')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>随堂知识点略记 ✍️</p>
+<!-- more -->
+<h3 id="37-为何需要非线性激活函数">3.7 为何需要非线性激活函数</h3>
+<ul>
+<li>简单的讲，激活函数向神经网络中引入非线性因素，使神经网络可以拟合各种曲线。</li>
+<li>[!] 非线性激活函数必须使用再隐藏层才能为网络引入非线性分类的功能</li>
+<li>[!] 只有当机器学习的是回归问题时，才使用线性激活函数<br>
+参考文章：<a href="https://zhuanlan.zhihu.com/p/44398148">激活函数，你真的懂了吗？</a></li>
+</ul>
+<p>（最后更新日期 2020-03-18）</p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/6a68b6412b3d8a605c374d3c59e02694" class="tag">
+                    Deep Learning
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
                 <a href="https://b0rgch3n.github.io/post/4886ac573d89c0588d739a00e9fb8269">
-                  <h2 class="post-title">Android 逆向学习小结（持续更新中...）</h2>
+                  <h3 class="post-title">
+                    Android 逆向学习小结（持续更新中...）
+                  </h3>
                 </a>
-                <div class="post-date">
-                  2020-01-20
-                </div>
-                <div class="post-abstract">
-                  <p>记录 Android 逆向分析的学习之路，梳理总结。💪<br>
-包含各类基础知识，目前学习至 Dalvik 虚拟机以及 Smail 语法。<br>
-（最后更新日期 2020-02-18）</p>
-
-                </div>
               </div>
-              
-                <a class="right" href="https://b0rgch3n.github.io/post/4886ac573d89c0588d739a00e9fb8269">
-                  <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/4886ac573d89c0588d739a00e9fb8269.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://b0rgch3n.github.io/post/027ca7a644dc239065b79b54c80e796e">
-                  <h2 class="post-title">Android 开发学习小记（持续更新中...）</h2>
-                </a>
-                <div class="post-date">
-                  2020-01-13
-                </div>
-                <div class="post-abstract">
-                  <p>近来出于兴趣开始了 Android 逆向分析的学习，但由于对 Android 开发一片空白，于是也打算初略的过一下开发基础，于是便有了这篇小记。</p>
+            
 
-                </div>
-              </div>
+            
               
-                <a class="right" href="https://b0rgch3n.github.io/post/027ca7a644dc239065b79b54c80e796e">
-                  <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/027ca7a644dc239065b79b54c80e796e.png')">
-                  </div>
-                </a>
+                <div id="gitalk-container" data-aos="fade-in"></div>
               
-            </article>
-          
 
-          <div class="pagination-container">
-  
-  
-</div>
+              
+            
+
+          </div>
 
         </div>
       </div>
@@ -170,6 +180,29 @@ var app = new Vue({
     hljs.initHighlightingOnLoad()
   </script>
 
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: '22760fd6e6450c826979',
+        clientSecret: 'e77875e86114019242a149c761d167a0981a0da1',
+        repo: 'b0rgch3n.github.io',
+        owner: 'b0rgch3n',
+        admin: ['b0rgch3n'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
 
 
 
