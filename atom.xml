@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2020-06-01T13:54:11.683Z</updated>
+    <updated>2020-06-01T23:12:58.230Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
@@ -10,6 +10,31 @@
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, b0rgch3n</rights>
+    <entry>
+        <title type="html"><![CDATA[Babel —— 初探 JavaScript 巴别塔]]></title>
+        <id>https://b0rgch3n.github.io/post/24693e6b2370a6dd8ebaad7a2d17b7f7</id>
+        <link href="https://b0rgch3n.github.io/post/24693e6b2370a6dd8ebaad7a2d17b7f7">
+        </link>
+        <updated>2020-06-01T16:15:56.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="babel-是什么">Babel 是什么？</h2>
+<br>
+<p>先看看官方怎么说。<br>
+这是官方文档的部分说明：</p>
+<br>
+<blockquote>
+<p>Babel 是一个工具链，主要用于将 ECMAScript 2015+ 版本的代码转换为向后兼容的 JavaScript 语法，以便能够运行在当前和旧版本的浏览器或其他环境中。</p>
+</blockquote>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="babel-是什么">Babel 是什么？</h2>
+<br>
+<p>先看看官方怎么说。<br>
+这是官方文档的部分说明：</p>
+<br>
+<blockquote>
+<p>Babel 是一个工具链，主要用于将 ECMAScript 2015+ 版本的代码转换为向后兼容的 JavaScript 语法，以便能够运行在当前和旧版本的浏览器或其他环境中。</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[第一篇博客：纪念我的个人博客开张啦]]></title>
         <id>https://b0rgch3n.github.io/post/5b3f5d70fb65bf17a68536f5e647a890</id>

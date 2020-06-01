@@ -760,10 +760,10 @@ a {
 }
 
       .sidebar {
-        width: 16.5%;
+        width: 21.7%;
       }
       .main-container {
-        margin-left: 16.5%;
+        margin-left: 21.7%;
       }
     
       .post-item .right .feature-container {
@@ -791,5 +791,18 @@ a {
     font-size: 13px;
     padding: 24px 0;
     color: #adb5bd;
+}
+
+.sidebar {
+    overflow-y: unset;
+}
+
+.site-title {
+    interval: 1s;
+    display: block;
+    text-shadow: 0 0 10px var(--color1), 0 0 20px var(--color2), 0 0 40px var(--color3), 0 0 80px var(--color4);
+    will-change: filter, color;
+    filter: saturate(60%);
+    animation: flicker steps(100) var(--interval) 1s infinite;
 }
     

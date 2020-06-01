@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>Babel —— 初探 JavaScript 巴别塔 | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1591053013687">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="Babel 是什么？
+
+先看看官方怎么说。
+这是官方文档的部分说明：
+
+
+Babel 是一个工具链，主要用于将 ECMAScript 2015+ 版本的代码转换为向后兼容的 JavaScript 语法，以便能够运行在当前和旧版本的浏览器或其..." />
+    <meta name="keywords" content="Javascript,Babel" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1591053013687" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      记录生活的细枝末节
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present b0rgch3n<br>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">Babel —— 初探 JavaScript 巴别塔</h2>
+            <div class="post-date">2020-06-02</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/24693e6b2370a6dd8ebaad7a2d17b7f7.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <h2 id="babel-是什么">Babel 是什么？</h2>
+<br>
+<p>先看看官方怎么说。<br>
+这是官方文档的部分说明：</p>
+<br>
+<blockquote>
+<p>Babel 是一个工具链，主要用于将 ECMAScript 2015+ 版本的代码转换为向后兼容的 JavaScript 语法，以便能够运行在当前和旧版本的浏览器或其他环境中。</p>
+</blockquote>
+<!-- more -->
+<blockquote>
+<p>Babel 是一个编译器（输入源码 =&gt; 输出编译后的代码）。<br>
+就像其他编译器一样，编译过程分为三个阶段：解析、转换和打印输出。</p>
+</blockquote>
+<blockquote>
+<p>Babel 虽然开箱即用，但是什么动作都不做。<br>
+它基本上类似于 const babel = code =&gt; code; ，将代码解析之后再输出同样的代码。<br>
+如果想要 Babel 做一些实际的工作，就需要为其添加插件。<br>
+除了一个一个的添加插件，你还可以以 preset 的形式启用一组插件。</p>
+</blockquote>
+<br>
+<p>由官方文档可知：</p>
+<ul>
+<li>Babel 是可进行语法转换的编译器</li>
+<li>转换的行为由插件控制</li>
+<li>preset 是一系列预设的插件组合<br>
+<br><br></li>
+</ul>
+<h2 id="环境准备">环境准备</h2>
+<br>
+<p>使用 npm 安装：核心库、Cli 工具</p>
+<pre><code class="language-shell">npm install --save-dev @babel/core @babel/cli
+</code></pre>
+<br>
+<p>安装成功后，可以在当前目录下 ./node_modules/.bin/babel 找到 Cli 工具。<br>
+为了方便往后命令行中操作，我个人进行了全局安装，顺便为 Cil 工具创建了软连接。</p>
+<br>
+<h2 id="初探-es6-转换-es5">初探 ES6 转换 ES5</h2>
+<br>
+刚才安装好的 Cli 工具，在命令行可以直接对 Babel 进行调用。
+先看一下 Cli 工具说明大致有哪些参数。
+<figure data-type="image" tabindex="1"><img src="https://uploader.shimo.im/f/VduJ3LMve8tsYHRh.png!thumbnail" alt="图片" loading="lazy"></figure>
+<p>已知语法装换需要指定 plugins 或者 presets。<br>
+所以稍后将会使用 --presets 或者 --plugins 参数，<br>
+除了命令行参数指定外，也可通过修改 .babelrc 配置文件进行指定。<br>
+<br></p>
+<p>安装插件用于转换某些不兼容的特性，这里选择 ES6 箭头函数做示范。</p>
+<pre><code class="language-shell">npm install --save-dev @babel/plugin-transform-arrow-functions
+</code></pre>
+<blockquote>
+<p>插件有很多种类型，更多信息参考 <a href="https://www.babeljs.cn/docs/plugins">https://www.babeljs.cn/docs/plugins</a></p>
+</blockquote>
+<br>
+<p>新建 JS 文件内容包含 ES6 箭头函数。<br>
+<img src="https://uploader.shimo.im/f/5T8L0nfp82uXvy8T.png!thumbnail" alt="图片" loading="lazy"></p>
+<br>
+<p>使用 Cli 工具，<br>
+--plugins 指定上面安装的插件，<br>
+--out-dir 指定输出文件到当前目录的 lib 文件夹。</p>
+<pre><code class="language-shell">babel hello.js --plugins @babel/plugin-transform-arrow-functions --out-dir lib
+</code></pre>
+<br>
+<p>装换后的 JS 代码，已经完全是兼容 ES5 了。</p>
+<figure data-type="image" tabindex="2"><img src="https://uploader.shimo.im/f/hk7x5SX7k00sL4Uk.png!thumbnail" alt="图片" loading="lazy"></figure>
+<br>
+<h2 id="es6-转换-es5">ES6 转换 ES5</h2>
+<br>
+<p>当然，若需要对所有 ES6 特性进行转换，只需要使用插件覆盖所有特性即可，<br>
+开头官方文档就说明了 preset 是一系列插件的组合，<br>
+官方为我们提供的 @babel/preset-env，正是包含了覆盖所有 ES6 以上特性的插件。</p>
+<br>
+<p>安装 @babel/preset-env。</p>
+<pre><code class="language-shell">npm install --save-dev @babel/preset-env
+</code></pre>
+<br>
+<p>新建 JS 文件带有 ES6+ 特性的代码。</p>
+<figure data-type="image" tabindex="3"><img src="https://uploader.shimo.im/f/8VexYrgqMqqPjJzV.png!thumbnail" alt="图片" loading="lazy"></figure>
+<p>--presets 指定使用 @babel/preset-env 进行转换。</p>
+<pre><code class="language-plain">babel new_features.js --presets @babel/preset-env --out-dir lib
+</code></pre>
+<p><img src="https://uploader.shimo.im/f/VYrXqREDlCJzYHlo.png!thumbnail" alt="图片" loading="lazy"><img src="https://uploader.shimo.im/f/wLPbOsKKvdLquus4.png!thumbnail" alt="图片" loading="lazy"></p>
+<br>
+<h2 id="思考"><strong>思考</strong></h2>
+<p><strong>如此简洁强大的 Babel 其背后工作的原理是什么？</strong><br>
+<strong>除了对 Javascript 代码进行向后兼容处理外，还有其他应用吗？</strong></p>
+<br>
+<p><strong>参考文章：</strong></p>
+<p><a href="https://juejin.im/post/5e477139f265da574c566dda#heading-3">【建议改成】读完这篇你还不懂Babel我给你寄口罩 - 掘金</a><br>
+<a href="https://babel.docschina.org/docs/en/">什么是 Babel ? · Babel 中文文档 - 印记中文</a><br>
+<a href="http://www.ruanyifeng.com/blog/2016/01/babel.html?20170213113809">Babel 入门教程 - 阮一峰的网络日志</a><br>
+<a href="https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/plugin-handbook.md">Babel 插件手册</a></p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/9e13b69d1d2da927102acaaaf7154a37" class="tag">
+                    Javascript
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/53718118d84d26983528d262b37ea0be" class="tag">
+                    Babel
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/5b3f5d70fb65bf17a68536f5e647a890">
+                  <h3 class="post-title">
+                    第一篇博客：纪念我的个人博客开张啦
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: '22760fd6e6450c826979',
+        clientSecret: 'e77875e86114019242a149c761d167a0981a0da1',
+        repo: 'b0rgch3n.github.io',
+        owner: 'b0rgch3n',
+        admin: ['b0rgch3n'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
