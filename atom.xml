@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2020-06-21T15:14:18.556Z</updated>
+    <updated>2020-06-21T15:32:31.314Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
@@ -10,6 +10,25 @@
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, b0rgch3n</rights>
+    <entry>
+        <title type="html"><![CDATA[巧解 JS 签名：Websocket 调用浏览器环境中 JS 函数]]></title>
+        <id>https://b0rgch3n.github.io/post/8a80a20e32e993bd370f89801cf0fac8</id>
+        <link href="https://b0rgch3n.github.io/post/8a80a20e32e993bd370f89801cf0fac8">
+        </link>
+        <updated>2020-06-21T15:26:32.000Z</updated>
+        <summary type="html"><![CDATA[<p>Web 端签名算法一般涉及多种浏览器环境的校验，<br>
+非正常浏览器环境（如无头 Chrome、自动化测试工具控制下，Node.js 等）下执行签名算法将生成异常的签名字符串。</p>
+<p>在解混淆难度很大，不知道还原浏览器那些特征的的情况下，似乎根本就无从下手。</p>
+<p>直到上个月在某群里看到大佬讨论遇到 Web 端签名的解决方法，让我印象颇深。<br>
+<br></p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Web 端签名算法一般涉及多种浏览器环境的校验，<br>
+非正常浏览器环境（如无头 Chrome、自动化测试工具控制下，Node.js 等）下执行签名算法将生成异常的签名字符串。</p>
+<p>在解混淆难度很大，不知道还原浏览器那些特征的的情况下，似乎根本就无从下手。</p>
+<p>直到上个月在某群里看到大佬讨论遇到 Web 端签名的解决方法，让我印象颇深。<br>
+<br></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Babel —— 初探 JavaScript 巴别塔]]></title>
         <id>https://b0rgch3n.github.io/post/24693e6b2370a6dd8ebaad7a2d17b7f7</id>

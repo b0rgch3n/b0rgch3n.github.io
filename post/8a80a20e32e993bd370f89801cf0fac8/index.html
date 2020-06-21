@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>巧解 JS 签名：Websocket 调用浏览器环境中 JS 函数 | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1592753526543">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="Web 端签名算法一般涉及多种浏览器环境的校验，
+非正常浏览器环境（如无头 Chrome、自动化测试工具控制下，Node.js 等）下执行签名算法将生成异常的签名字符串。
+在解混淆难度很大，不知道还原浏览器那些特征的的情况下，似乎根本就无从..." />
+    <meta name="keywords" content="Javascript,Reverse" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1592753526543" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      记录生活的细枝末节
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present b0rgch3n<br>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">巧解 JS 签名：Websocket 调用浏览器环境中 JS 函数</h2>
+            <div class="post-date">2020-06-21</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/8a80a20e32e993bd370f89801cf0fac8.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>Web 端签名算法一般涉及多种浏览器环境的校验，<br>
+非正常浏览器环境（如无头 Chrome、自动化测试工具控制下，Node.js 等）下执行签名算法将生成异常的签名字符串。</p>
+<p>在解混淆难度很大，不知道还原浏览器那些特征的的情况下，似乎根本就无从下手。</p>
+<p>直到上个月在某群里看到大佬讨论遇到 Web 端签名的解决方法，让我印象颇深。<br>
+<br></p>
+<!-- more -->
+<blockquote>
+<p>原理很简单，类似聊天系统。</p>
+<p>弄个服务器用 Python 的 websockets 这个库搭建个服务端，<br>
+用于分发接收到的客户端消息（把一个客户端发来的消息转发给其他所有的客户端）。</p>
+<p>浏览器是一个客户端，你自己的爬虫是另一个客户端。<br>
+浏览器调试相应位置打断点，new 一个 websocket ，绑定 onmessage 函数，用于接收另外一个客户端的指令，执行js中生成加密的函数，生成加密字符串，再send给服务端。</p>
+<p>这样你的爬虫程序就能收到服务端转发过来的加密字符串了。<br>
+要让浏览器的 websocket 客户端运行加密的函数，你需要在爬虫程序里给服务端发送相应的指令。<br>
+<br></p>
+</blockquote>
+<p>跟着大佬的思路，于是找了个带签名算法的国内较知名的网站进行测试。</p>
+<p>以下内容仅研究谈论技术，不指明具体网站，避免对站点造成影响。</p>
+<p>该站点的签名算法为高度混淆的，使用了浏览器环境特征值参与计算。<br>
+<br></p>
+<h2 id="定位签名参数"><strong>定位签名参数</strong></h2>
+<p>先浏览器走一遍正常访问流程，在查询栏进行查询时会生成一个签名并且设置在 Cookies 中。</p>
+<p>（下文将此签名简称为 “zt”）</p>
+<figure data-type="image" tabindex="1"><img src="https://b0rgch3n.github.io/post-images/1592752882343.png" alt="" loading="lazy"></figure>
+<p>不携带 zt 进行使用搜索功能时会有重定向，重定向的页面中的 JS 代码就存在设置 zt 的部分。</p>
+<p>结合搜索、抓包观察、断点调试等各种手段找到生成 zt 并设置到 Cookies 中的关键代码。</p>
+<figure data-type="image" tabindex="2"><img src="https://b0rgch3n.github.io/post-images/1592752899195.png" alt="" loading="lazy"></figure>
+<p>红框设置 Cookie，蓝框生成 zt，橙框参与计算 zt 的参数。</p>
+<p>签名函数在哪调用，也知道了参数是什么，关键的位置在哪里，接下来就是在注入代码。<br>
+<br></p>
+<h2 id="mitm-注入-websocket-代码"><strong>MITM 注入 Websocket 代码</strong></h2>
+<p>为了避免手动操作带来的麻烦，利用中间人攻击将 WebSocket 代码进行注入。</p>
+<p>在签名函数调用前拦截，保留实时浏览器环境，并使用 WebSocket 由远程调用签名函数。</p>
+<p>通讯代码如下：</p>
+<figure data-type="image" tabindex="3"><img src="https://b0rgch3n.github.io/post-images/1592752942579.png" alt="" loading="lazy"></figure>
+<p>这里的 eval() 是为了能过执行任意 JS 代码，但这样做可能会涉及一些安全问题。</p>
+<p>这里只是为了演示方便，正常的开发过程中应避免使用。</p>
+<p>最后的 return 是为了抛出异常，使下面的 JS 代码无法正常运行，</p>
+<p>若正常执行将会跳转到另外的页面，离开签名执行环境。</p>
+<p>接着借助 mitmproxy 将通讯代码注入到签名函数调用前的位置（源码分析黑色箭头位置）。</p>
+<p>mitmproxy 代码如下：</p>
+<p><img src="https://b0rgch3n.github.io/post-images/1592752947813.png" alt="" loading="lazy"><br>
+<br></p>
+<h2 id="服务端提供消息转发"><strong>服务端提供消息转发</strong></h2>
+<p>注入的 JS 代码相当于提供执行签名函数的接口，服务端需要对 WS 消息进行管理，提供消息转发。</p>
+<p>服务端代码：</p>
+<figure data-type="image" tabindex="4"><img src="https://b0rgch3n.github.io/post-images/1592752952671.png" alt="" loading="lazy"></figure>
+<p>服务端有两处路由，/ws 于浏览器通讯，/api 与爬虫节点（签名函数调用方）通讯。<br>
+<br></p>
+<h2 id="测试调用"><strong>测试调用</strong></h2>
+<p>运行 MITM 与服务端代码。</p>
+<p>浏览器挂上 mitmproxy 代理，清除 cookies 后进行访问。</p>
+<p>进入加载页面时发现卡住，且打开控制台有日志，则说明注入成功。</p>
+<figure data-type="image" tabindex="5"><img src="https://b0rgch3n.github.io/post-images/1592752974822.png" alt="" loading="lazy"></figure>
+<p>新建另一个浏览器窗口，撤下代理 mitmproxy 代理、打开控制台网络面板并访问该站点。</p>
+<p>走一遍正常请求流程，过滤所有 Documents 类型请求。</p>
+<p>找到签名需要的参数。</p>
+<figure data-type="image" tabindex="6"><img src="https://b0rgch3n.github.io/post-images/1592752981993.png" alt="" loading="lazy"></figure>
+<p>找到对应生成签名的值。</p>
+<figure data-type="image" tabindex="7"><img src="https://b0rgch3n.github.io/post-images/1592752989106.png" alt="" loading="lazy"></figure>
+<p>接着使用相同的参数构造函数调用。</p>
+<figure data-type="image" tabindex="8"><img src="https://b0rgch3n.github.io/post-images/1592752997619.png" alt="" loading="lazy"></figure>
+<p>通过连接服务端 /api，传入已构造的函数调用，生成签名。</p>
+<p>使用任意支持 WebSocket 的接口测试工具进行测试。</p>
+<figure data-type="image" tabindex="9"><img src="https://b0rgch3n.github.io/post-images/1592753113837.png" alt="" loading="lazy"></figure>
+<p>刚刚卡住的那个用于生成的签名的页面，控制台也打印了传入内容和执行结果。</p>
+<figure data-type="image" tabindex="10"><img src="https://b0rgch3n.github.io/post-images/1592753119060.png" alt="" loading="lazy"></figure>
+<p>这样每次请求需要 zt 直接远程调用签名函数就完事啦。<br>
+<br></p>
+<h2 id="签名更新行为"><strong>签名更新行为</strong></h2>
+<p>首次生成 zt 是依赖重定向页面中的 JS 代码，</p>
+<p>但当 zt 存在的情况下，下一个请求使用的 zt 是依赖上一个响应 Set-Cookie 值参与计算，</p>
+<p>虽然签名还是调用位置不同（在 main.js 中调用），但算法一样，只需改变对应传参即可。<br>
+<br></p>
+<h2 id="总结"><strong>总结</strong></h2>
+<p>这种思路算是有点骚了，</p>
+<p>在真实爬虫工作中确实提供了不少便利，</p>
+<p>基本能够通解大部分 Web 端签名函数。</p>
+<p>既最大化的发挥浏览器真实环境的作用，</p>
+<p>同时又区别于 Selenium 一类的操作，基本不受浏览器性能损耗的影响。<br>
+<br></p>
+<p><strong>参考文章：</strong></p>
+<p><a href="https://blog.csdn.net/weixin_47202458/article/details/106393421">JS逆向：【硬干货】手把手实战某条_signature参数破解（下）——WebSocket与JS函数</a></p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/9e13b69d1d2da927102acaaaf7154a37" class="tag">
+                    Javascript
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/67f115c1fddc4ce1aeb1c754001585bc" class="tag">
+                    Reverse
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/24693e6b2370a6dd8ebaad7a2d17b7f7">
+                  <h3 class="post-title">
+                    Babel —— 初探 JavaScript 巴别塔
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: '22760fd6e6450c826979',
+        clientSecret: 'e77875e86114019242a149c761d167a0981a0da1',
+        repo: 'b0rgch3n.github.io',
+        owner: 'b0rgch3n',
+        admin: ['b0rgch3n'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
