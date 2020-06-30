@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1592753526543">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1593560648459">
 <link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
 
 
@@ -51,7 +51,7 @@
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://b0rgch3n.github.io">
-        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1592753526543" class="site-logo">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1593560648459" class="site-logo">
         <h1 class="site-title">b0rgch3n</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -126,84 +126,90 @@
             <div class="post-content" v-pre>
               <p>Web 端签名算法一般涉及多种浏览器环境的校验，<br>
 非正常浏览器环境（如无头 Chrome、自动化测试工具控制下，Node.js 等）下执行签名算法将生成异常的签名字符串。</p>
-<p>在解混淆难度很大，不知道还原浏览器那些特征的的情况下，似乎根本就无从下手。</p>
-<p>直到上个月在某群里看到大佬讨论遇到 Web 端签名的解决方法，让我印象颇深。<br>
+<p>在解混淆难度很大，不知道还原浏览器那些特征的的情况下，似乎根本就无从下手。<br>
+直到上个月在某群里看到大佬讨论遇到 Web 端签名的解决方法，让我印象颇深。<br>
 <br></p>
 <!-- more -->
 <blockquote>
-<p>原理很简单，类似聊天系统。</p>
-<p>弄个服务器用 Python 的 websockets 这个库搭建个服务端，<br>
-用于分发接收到的客户端消息（把一个客户端发来的消息转发给其他所有的客户端）。</p>
-<p>浏览器是一个客户端，你自己的爬虫是另一个客户端。<br>
-浏览器调试相应位置打断点，new 一个 websocket ，绑定 onmessage 函数，用于接收另外一个客户端的指令，执行js中生成加密的函数，生成加密字符串，再send给服务端。</p>
-<p>这样你的爬虫程序就能收到服务端转发过来的加密字符串了。<br>
-要让浏览器的 websocket 客户端运行加密的函数，你需要在爬虫程序里给服务端发送相应的指令。<br>
-<br></p>
+<p>原理很简单，类似聊天系统。<br><br>
+弄个服务器用 Python 的 websockets 这个库搭建个服务端，<br>
+用于分发接收到的客户端消息（把一个客户端发来的消息转发给其他所有的客户端）。<br><br>
+浏览器是一个客户端，你自己的爬虫是另一个客户端。<br>
+浏览器调试相应位置打断点，new 一个 websocket ，绑定 onmessage 函数，用于接收另外一个客户端的指令，执行js中生成加密的函数，生成加密字符串，再send给服务端。<br><br>
+这样你的爬虫程序就能收到服务端转发过来的加密字符串了。<br>
+要让浏览器的 websocket 客户端运行加密的函数，你需要在爬虫程序里给服务端发送相应的指令。</p>
 </blockquote>
-<p>跟着大佬的思路，于是找了个带签名算法的国内较知名的网站进行测试。</p>
-<p>以下内容仅研究谈论技术，不指明具体网站，避免对站点造成影响。</p>
-<p>该站点的签名算法为高度混淆的，使用了浏览器环境特征值参与计算。<br>
+<br>
+<p>跟着大佬的思路，于是找了个带签名算法的国内较知名的网站进行测试。<br>
+以下内容仅研究谈论技术，不指明具体网站，避免对站点造成影响。<br>
+该站点的签名算法为高度混淆的，使用了浏览器环境特征值参与计算。<br>
 <br></p>
 <h2 id="定位签名参数"><strong>定位签名参数</strong></h2>
-<p>先浏览器走一遍正常访问流程，在查询栏进行查询时会生成一个签名并且设置在 Cookies 中。</p>
-<p>（下文将此签名简称为 “zt”）</p>
+<br>
+<p>先浏览器走一遍正常访问流程，在查询栏进行查询时会生成一个签名并且设置在 Cookies 中。<br>
+（下文将此签名简称为 “zt”）</p>
 <figure data-type="image" tabindex="1"><img src="https://b0rgch3n.github.io/post-images/1592752882343.png" alt="" loading="lazy"></figure>
-<p>不携带 zt 进行使用搜索功能时会有重定向，重定向的页面中的 JS 代码就存在设置 zt 的部分。</p>
-<p>结合搜索、抓包观察、断点调试等各种手段找到生成 zt 并设置到 Cookies 中的关键代码。</p>
+<p>不携带 zt 进行使用搜索功能时会有重定向，重定向的页面中的 JS 代码就存在设置 zt 的部分。<br>
+结合搜索、抓包观察、断点调试等各种手段找到生成 zt 并设置到 Cookies 中的关键代码。</p>
 <figure data-type="image" tabindex="2"><img src="https://b0rgch3n.github.io/post-images/1592752899195.png" alt="" loading="lazy"></figure>
 <p>红框设置 Cookie，蓝框生成 zt，橙框参与计算 zt 的参数。</p>
 <p>签名函数在哪调用，也知道了参数是什么，关键的位置在哪里，接下来就是在注入代码。<br>
 <br></p>
 <h2 id="mitm-注入-websocket-代码"><strong>MITM 注入 Websocket 代码</strong></h2>
-<p>为了避免手动操作带来的麻烦，利用中间人攻击将 WebSocket 代码进行注入。</p>
-<p>在签名函数调用前拦截，保留实时浏览器环境，并使用 WebSocket 由远程调用签名函数。</p>
+<br>
+<p>为了避免手动操作带来的麻烦，利用中间人攻击将 WebSocket 代码进行注入。<br>
+在签名函数调用前拦截，保留实时浏览器环境，并使用 WebSocket 由远程调用签名函数。</p>
 <p>通讯代码如下：</p>
 <figure data-type="image" tabindex="3"><img src="https://b0rgch3n.github.io/post-images/1592752942579.png" alt="" loading="lazy"></figure>
-<p>这里的 eval() 是为了能过执行任意 JS 代码，但这样做可能会涉及一些安全问题。</p>
-<p>这里只是为了演示方便，正常的开发过程中应避免使用。</p>
-<p>最后的 return 是为了抛出异常，使下面的 JS 代码无法正常运行，</p>
-<p>若正常执行将会跳转到另外的页面，离开签名执行环境。</p>
+<p>这里的 eval() 是为了能过执行任意 JS 代码，但这样做可能会涉及一些安全问题。<br>
+这里只是为了演示方便，正常的开发过程中应避免使用。</p>
+<p>最后的 return 是为了抛出异常，使下面的 JS 代码无法正常运行，<br>
+若正常执行将会跳转到另外的页面，离开签名执行环境。</p>
 <p>接着借助 mitmproxy 将通讯代码注入到签名函数调用前的位置（源码分析黑色箭头位置）。</p>
 <p>mitmproxy 代码如下：</p>
 <p><img src="https://b0rgch3n.github.io/post-images/1592752947813.png" alt="" loading="lazy"><br>
 <br></p>
 <h2 id="服务端提供消息转发"><strong>服务端提供消息转发</strong></h2>
+<br>
 <p>注入的 JS 代码相当于提供执行签名函数的接口，服务端需要对 WS 消息进行管理，提供消息转发。</p>
 <p>服务端代码：</p>
 <figure data-type="image" tabindex="4"><img src="https://b0rgch3n.github.io/post-images/1592752952671.png" alt="" loading="lazy"></figure>
 <p>服务端有两处路由，/ws 于浏览器通讯，/api 与爬虫节点（签名函数调用方）通讯。<br>
 <br></p>
 <h2 id="测试调用"><strong>测试调用</strong></h2>
-<p>运行 MITM 与服务端代码。</p>
-<p>浏览器挂上 mitmproxy 代理，清除 cookies 后进行访问。</p>
-<p>进入加载页面时发现卡住，且打开控制台有日志，则说明注入成功。</p>
+<br>
+<p>运行 MITM 与服务端代码。<br>
+浏览器挂上 mitmproxy 代理，清除 cookies 后进行访问。<br>
+进入加载页面时发现卡住，且打开控制台有日志，则说明注入成功。</p>
 <figure data-type="image" tabindex="5"><img src="https://b0rgch3n.github.io/post-images/1592752974822.png" alt="" loading="lazy"></figure>
-<p>新建另一个浏览器窗口，撤下代理 mitmproxy 代理、打开控制台网络面板并访问该站点。</p>
-<p>走一遍正常请求流程，过滤所有 Documents 类型请求。</p>
+<p>新建另一个浏览器窗口，撤下代理 mitmproxy 代理、打开控制台网络面板并访问该站点。<br>
+走一遍正常请求流程，过滤所有 Documents 类型请求。</p>
 <p>找到签名需要的参数。</p>
 <figure data-type="image" tabindex="6"><img src="https://b0rgch3n.github.io/post-images/1592752981993.png" alt="" loading="lazy"></figure>
 <p>找到对应生成签名的值。</p>
 <figure data-type="image" tabindex="7"><img src="https://b0rgch3n.github.io/post-images/1592752989106.png" alt="" loading="lazy"></figure>
 <p>接着使用相同的参数构造函数调用。</p>
 <figure data-type="image" tabindex="8"><img src="https://b0rgch3n.github.io/post-images/1592752997619.png" alt="" loading="lazy"></figure>
-<p>通过连接服务端 /api，传入已构造的函数调用，生成签名。</p>
-<p>使用任意支持 WebSocket 的接口测试工具进行测试。</p>
+<p>通过连接服务端 /api，传入已构造的函数调用，生成签名。<br>
+使用任意支持 WebSocket 的接口测试工具进行测试。</p>
 <figure data-type="image" tabindex="9"><img src="https://b0rgch3n.github.io/post-images/1592753113837.png" alt="" loading="lazy"></figure>
 <p>刚刚卡住的那个用于生成的签名的页面，控制台也打印了传入内容和执行结果。</p>
 <figure data-type="image" tabindex="10"><img src="https://b0rgch3n.github.io/post-images/1592753119060.png" alt="" loading="lazy"></figure>
 <p>这样每次请求需要 zt 直接远程调用签名函数就完事啦。<br>
 <br></p>
 <h2 id="签名更新行为"><strong>签名更新行为</strong></h2>
-<p>首次生成 zt 是依赖重定向页面中的 JS 代码，</p>
-<p>但当 zt 存在的情况下，下一个请求使用的 zt 是依赖上一个响应 Set-Cookie 值参与计算，</p>
-<p>虽然签名还是调用位置不同（在 main.js 中调用），但算法一样，只需改变对应传参即可。<br>
+<br>
+<p>首次生成 zt 是依赖重定向页面中的 JS 代码，<br>
+但当 zt 存在的情况下，下一个请求使用的 zt 是依赖上一个响应 Set-Cookie 值参与计算，<br>
+虽然签名还是调用位置不同（在 main.js 中调用），但算法一样，只需改变对应传参即可。<br>
 <br></p>
 <h2 id="总结"><strong>总结</strong></h2>
-<p>这种思路算是有点骚了，</p>
-<p>在真实爬虫工作中确实提供了不少便利，</p>
-<p>基本能够通解大部分 Web 端签名函数。</p>
-<p>既最大化的发挥浏览器真实环境的作用，</p>
-<p>同时又区别于 Selenium 一类的操作，基本不受浏览器性能损耗的影响。<br>
+<br>
+<p>这种思路算是有点骚了，<br>
+在真实爬虫工作中确实提供了不少便利，<br>
+基本能够通解大部分 Web 端签名函数。<br>
+既最大化的发挥浏览器真实环境的作用，<br>
+同时又区别于 Selenium 一类的操作，基本不受浏览器性能损耗的影响。<br>
 <br></p>
 <p><strong>参考文章：</strong></p>
 <p><a href="https://blog.csdn.net/weixin_47202458/article/details/106393421">JS逆向：【硬干货】手把手实战某条_signature参数破解（下）——WebSocket与JS函数</a></p>
