@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>巧解 JS 签名（续）：利用服务暴露框架 Sekiro 进行 JSRPC | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1599921724663">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="之前试过了利用 Websocket 调用真实浏览器环境中的 JS 签名，
+虽然技巧很骚，省去了很多扣代码该掉的头发，
+但也体验了到了手写 RPC 服务的苦逼，简单的 dome 可能有很多坑还没踩到。
+那有没有安安心心白嫖的可能呢？
+
+直觉告..." />
+    <meta name="keywords" content="Python,Javascript,Reverse" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1599921724663" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      记录生活的细枝末节
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present b0rgch3n<br>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">巧解 JS 签名（续）：利用服务暴露框架 Sekiro 进行 JSRPC</h2>
+            <div class="post-date">2020-07-22</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/d108e4c1b86c0a6a9fe84736cd5438bd.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>之前试过了利用 Websocket 调用真实浏览器环境中的 JS 签名，<br>
+虽然技巧很骚，省去了很多扣代码该掉的头发，<br>
+但也体验了到了手写 RPC 服务的苦逼，简单的 dome 可能有很多坑还没踩到。</p>
+<p>那有没有安安心心白嫖的可能呢？</p>
+<!-- more -->
+<p>直觉告诉我，一般你能想到的东西，应该早就有前辈想过了。<br>
+没错，就是 Sekiro。</p>
+<br>
+<h2 id="重新认识">重新认识</h2>
+<p>Sekiro 这个库在学习 Android 逆向入门时略有耳闻，<br>
+可惜当时的认知还停留在这东西大概只能用来结合诸如 xposed 之类的 Hook 工具，<br>
+RPC 黑箱操作 Android 代码中一下加密函数吧。</p>
+<p>还是在作者本人加入了技术群中，大家谈论起来了，才知道原理也可以用来搞 Web 端。</p>
+<p>作者的项目介绍，有那么一段话。</p>
+<blockquote>
+<p>在 Sekiro 的设计中，只提供了 RPC 功能了。</p>
+</blockquote>
+<p>我认为这个框架是轻量级的，它只专注于做好 RPC 调用的转发。<br>
+至于 PRC 调用的是什么，谁调用了，都由使用者自行决定。</p>
+<figure data-type="image" tabindex="1"><img src="https://b0rgch3n.github.io/post-images/1599920290398.png" alt="" loading="lazy"></figure>
+<p>理论上完全可以实现和上一篇文章同样的效果。</p>
+<p>抽空仔细了一下项目文档，Web 注入相关的部分有一些没说明白，可能要翻翻源码。</p>
+<p>比如浏览器发起 Websocket 应该连接到哪一个端口，只能边搜边看了。</p>
+<br>
+<h2 id="服务端部署">服务端部署</h2>
+<p>最简单的方法是直接使用 Docker 部署，</p>
+<p>作者贴心地为墙内朋友们提供了 Sekiro 在阿里云的上 Docker 镜像。</p>
+<pre><code class="language-shell">docker run --restart=always --name sekiro-server -p 5600:5600 -p 5601:5601 -p 5602:5602 -p 5603:5603 -d registry.cn-beijing.aliyuncs.com/virjar/sekiro-server:latest
+</code></pre>
+<p>命令执行后查看 docker 镜像是否启动成功。</p>
+<pre><code class="language-plain">docker ps -a | grep sekiro-server
+</code></pre>
+<p>注意部署命令有四个端口映射。</p>
+<figure data-type="image" tabindex="2"><img src="https://b0rgch3n.github.io/post-images/1599920308254.png" alt="" loading="lazy"></figure>
+<p>但如图所见，文档里作者示例全部都用了自建服务，但服务指向的域名也没有指明具体端口，可能是部署的时候多做了一层端口转发，如果你也想自建服务的话需要注意端口对应关系。</p>
+<p>这里的四个端口具体对应什么，去项目文件里面找找。<br>
+由于是服务端相关，只关注在 sekiro-server 部分出现的即可。</p>
+<p>先查找端口值。<br>
+sekiro-server/src/main/resources/application.properties<br>
+有每个端口以及对应的变量，注释基本也说清除了。</p>
+<figure data-type="image" tabindex="3"><img src="https://b0rgch3n.github.io/post-images/1599920325035.png" alt="" loading="lazy"></figure>
+<p>部分端口也在文档中提过。</p>
+<figure data-type="image" tabindex="4"><img src="https://b0rgch3n.github.io/post-images/1599920336912.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://b0rgch3n.github.io/post-images/1599920342684.png" alt="" loading="lazy"></figure>
+<p>总结一下：<br>
+5601 和 5602 都是开启 HTTP 服务作为 RPC 传入端口，但 5601 是 NIO 而 5602 为 BIO。<br>
+5600 用于 Sekiro 二进制协议（通常是移动端）与服务端直接的通信通信。<br>
+5603 用于 Websocket （通常是浏览器）与服务端直接的通信。</p>
+<p>对于 5601 和 5602 端口，除了 NIO 和 BIO 的区别，请求 URI 路径有略有不同，<br>
+5601 对应 &quot;/asyncInvoke&quot; 而 5602 对应 &quot;/invoke&quot;。</p>
+<br>
+<h2 id="测试示例">测试示例</h2>
+<p>项目有 Websocket 通讯的实例代码，直接改改端口之类的信息就能用了。</p>
+<p>jsclient/sekiro_demo.html<br>
+jsclient/sekiro_web_client.js</p>
+<p>既然原理是 Hook，那核心过程肯定是钩子代码的注入。</p>
+<figure data-type="image" tabindex="6"><img src="https://b0rgch3n.github.io/post-images/1599920364482.png" alt="" loading="lazy"></figure>
+<p>核心的 JavaScript 代码如上，Websocket 连接到服务端的路径为 &quot;/websocket&quot;。<br>
+代码除了 URL、端口或者请求参数等的常见注意项以外，注册函数怎么写参考示例代码。</p>
+<p>通过浏览器打开任何包含钩子代码的 html 页面，控制台日志无异常就说明 RPC 注册成功了。</p>
+<figure data-type="image" tabindex="7"><img src="https://b0rgch3n.github.io/post-images/1599920377081.png" alt="" loading="lazy"></figure>
+<p>接着参照项目文档<a href="https://github.com/virjar/sekiro#web-%E6%B3%A8%E5%85%A5">Web 注入</a>以及实例代码实现 RPC 调用代码。</p>
+<figure data-type="image" tabindex="8"><img src="https://b0rgch3n.github.io/post-images/1599920391592.png" alt="" loading="lazy"></figure>
+<p>运行正常时 RPC 的调用结果应在 JSON 中的 &quot;data&quot; 字段回返。</p>
+<figure data-type="image" tabindex="9"><img src="https://b0rgch3n.github.io/post-images/1599920408368.png" alt="" loading="lazy"></figure>
+<p>浏览器端也有对应的收发日志。</p>
+<figure data-type="image" tabindex="10"><img src="https://b0rgch3n.github.io/post-images/1599920415696.png" alt="" loading="lazy"></figure>
+<p>除了核心的 RPC 接口外，还有一些管理相关的接口。</p>
+<br>
+<h2 id="实战调用">实战调用</h2>
+<p>测试用站点和 Hook 的签名和上一篇文章一样。<br>
+但这次不用中间人攻击注入，用了油猴脚本进行 JavaScript 代码注入，但效果是一样的。</p>
+<p>先将 sekiro_web_client.js 文件下载到本地，然后用 Python 一句话开启 HTTP 服务，<br>
+使 sekiro_web_client.js 文件能够通过 http 协议进行访问。</p>
+<figure data-type="image" tabindex="11"><img src="https://b0rgch3n.github.io/post-images/1599920430665.png" alt="" loading="lazy"></figure>
+<p>编写油猴脚本，<br>
+使浏览器每次打开新页面都能自动加载 sekiro_web_client.js 文件。</p>
+<figure data-type="image" tabindex="12"><img src="https://b0rgch3n.github.io/post-images/1599920440800.png" alt="" loading="lazy"></figure>
+<p>启用油猴脚本，访问网站进行岗位查询。<br>
+打开控制台可见注入标签已经成功加载。</p>
+<figure data-type="image" tabindex="13"><img src="https://b0rgch3n.github.io/post-images/1599920452286.png" alt="" loading="lazy"></figure>
+<p>借着修改测试示例中的钩子代码，<br>
+注册 RPC 函数修改为根据传入参数调用生成“zt”的代码。</p>
+<p>测试网站是 HTTPS 的，所以 Websocket 的 URI 也要从 &quot;ws&quot; 换为 &quot;wss&quot;。</p>
+<p>但因为涉及对 HTTPS 的网站进行 Hook 时，<br>
+自建服务需要有也支持 HTTPS，也就是要申请证书。<br>
+这里偷个懒直接用作者提供的服务，服务端地址也对应修改。</p>
+<p>group 也要做对应的修改，避免与他人冲突。</p>
+<figure data-type="image" tabindex="14"><img src="https://b0rgch3n.github.io/post-images/1599920465376.png" alt="" loading="lazy"></figure>
+<p>控制台运行钩子代码，日志与测试示例类似。<br>
+最后同样修改 RPC 调用代码</p>
+<figure data-type="image" tabindex="15"><img src="https://b0rgch3n.github.io/post-images/1599920476130.png" alt="" loading="lazy"></figure>
+<p>RPC 调用结果如下。</p>
+<figure data-type="image" tabindex="16"><img src="https://b0rgch3n.github.io/post-images/1599920483668.png" alt="" loading="lazy"></figure>
+<br>
+<h2 id="总结">总结</h2>
+<p>Sekiro 的总体体验还是很好的，轻巧方便灵活。<br>
+学习如何去用好一个没接触过的框架可能比较花时间的点。</p>
+<p>但相比自己造轮子来说省了很多头发，<br>
+算是一个爬虫仔们白嫖的不错选择啦 😃</p>
+<br>
+<h2 id="参考文章">参考文章</h2>
+<p><a href="https://github.com/virjar/sekiro#web-%E6%B3%A8%E5%85%A5">virjar/sekiro: 基于长链接和代码注入的And</a><a href="https://github.com/virjar/sekiro">roid private API暴露框架</a><br>
+<a href="https://github.com/langgithub/sekiro-lang">langgithub/sekiro-lang: sekiro 原理学习</a></p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/a7f5f35426b927411fc9231b56382173" class="tag">
+                    Python
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/9e13b69d1d2da927102acaaaf7154a37" class="tag">
+                    Javascript
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/67f115c1fddc4ce1aeb1c754001585bc" class="tag">
+                    Reverse
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/8a80a20e32e993bd370f89801cf0fac8">
+                  <h3 class="post-title">
+                    巧解 JS 签名：Websocket 调用浏览器环境中 JS 函数
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+
+  </body>
+</html>

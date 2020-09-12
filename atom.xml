@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2020-06-30T23:44:58.770Z</updated>
+    <updated>2020-09-12T14:44:04.590Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
@@ -10,6 +10,23 @@
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, b0rgch3n</rights>
+    <entry>
+        <title type="html"><![CDATA[巧解 JS 签名（续）：利用服务暴露框架 Sekiro 进行 JSRPC]]></title>
+        <id>https://b0rgch3n.github.io/post/d108e4c1b86c0a6a9fe84736cd5438bd</id>
+        <link href="https://b0rgch3n.github.io/post/d108e4c1b86c0a6a9fe84736cd5438bd">
+        </link>
+        <updated>2020-07-22T14:58:44.000Z</updated>
+        <summary type="html"><![CDATA[<p>之前试过了利用 Websocket 调用真实浏览器环境中的 JS 签名，<br>
+虽然技巧很骚，省去了很多扣代码该掉的头发，<br>
+但也体验了到了手写 RPC 服务的苦逼，简单的 dome 可能有很多坑还没踩到。</p>
+<p>那有没有安安心心白嫖的可能呢？</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>之前试过了利用 Websocket 调用真实浏览器环境中的 JS 签名，<br>
+虽然技巧很骚，省去了很多扣代码该掉的头发，<br>
+但也体验了到了手写 RPC 服务的苦逼，简单的 dome 可能有很多坑还没踩到。</p>
+<p>那有没有安安心心白嫖的可能呢？</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[巧解 JS 签名：Websocket 调用浏览器环境中 JS 函数]]></title>
         <id>https://b0rgch3n.github.io/post/8a80a20e32e993bd370f89801cf0fac8</id>
