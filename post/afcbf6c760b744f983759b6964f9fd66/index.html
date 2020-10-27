@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>WriteUp：XCTF 新手练习区 mobile app3 | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1603842137894">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="这题似乎是仿 WeChat 数据库原型取证过程考察安卓逆向分析能力。
+近来学习了一点安卓逆向皮毛，拿出来试试手。
+
+
+[0x00] 分析准备
+
+分析样本来源
+XCTF 新手练习区 mobile app3
+
+Mumu 模拟器
+大佬推荐的逍遥模..." />
+    <meta name="keywords" content="Android,Reverse" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1603842137894" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      记录生活的细枝末节
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present b0rgch3n<br>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">WriteUp：XCTF 新手练习区 mobile app3</h2>
+            <div class="post-date">2020-10-28</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/afcbf6c760b744f983759b6964f9fd66.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>这题似乎是仿 WeChat 数据库原型取证过程考察安卓逆向分析能力。<br>
+近来学习了一点安卓逆向皮毛，拿出来试试手。</p>
+<!-- more -->
+<br>
+<h2 id="0x00-分析准备"><strong>[0x00] 分析准备</strong></h2>
+<br>
+<p><strong>分析样本来源</strong></p>
+<p><a href="https://adworld.xctf.org.cn/task/answer?type=mobile&amp;number=6&amp;grade=0&amp;id=5087&amp;page=1">XCTF 新手练习区 mobile app3</a></p>
+<br>
+<p><strong>Mumu 模拟器</strong></p>
+<p>大佬推荐的逍遥模拟器最终还是蹦了，意外发现 Mumu 反而能用。</p>
+<p>Mumu 模拟器 ADB 固定监听 127.0.0.1:7555，</p>
+<p>做个端口转发方便非本地主机对其进行远程调试。</p>
+<p>adb shell 进入模拟器终端，查询系统信息可见架构为 x86，而非真机的 arm64。</p>
+<figure data-type="image" tabindex="1"><img src="https://b0rgch3n.github.io/post-images/1603809532653.png" alt="" loading="lazy"></figure>
+<p>故 frida-server 也应该重新选择对应的架构。<br>
+<br></p>
+<p><strong>安卓备份文件提取工具</strong></p>
+<p><a href="https://github.com/nelenkov/android-backup-extractor/releases/download/20181012025725-d750899/abe-all.jar">android-backup-extractor</a> 用于还原 ab 格式文件为 APK 等。<br>
+<br></p>
+<p><strong>sqlcipher 加密数据库操作工具</strong></p>
+<p>sqlcipher 加密过的 sqlite 数据库不能直接操作，需借用其他工具。</p>
+<p>Windows 系统下可使用 <a href="https://sqlitebrowser.org/dl/">sqlitebrowser</a>；Linux 系统下可直接使用 sqlcipher 命令。<br>
+<br></p>
+<h2 id="0x01-静态分析"><strong>[0x01] 静态分析</strong></h2>
+<br>
+<p>从 ab 备份文件入手，unpack 还原出 APK 以及相关数据库等文件。</p>
+<figure data-type="image" tabindex="2"><img src="https://b0rgch3n.github.io/post-images/1603841555072.png" alt="" loading="lazy"></figure>
+<p>unpack 之后的 APP 项目结构如下。</p>
+<figure data-type="image" tabindex="3"><img src="https://b0rgch3n.github.io/post-images/1603841562121.png" alt="" loading="lazy"></figure>
+<p>两个 db 文件均经过加密，只能从 apk 入手分析。</p>
+<p>先在模拟器上安装运行 base.apk。</p>
+<figure data-type="image" tabindex="4"><img src="https://b0rgch3n.github.io/post-images/1603841568396.png" alt="" loading="lazy"></figure>
+<p>随便输入账号密码登录，发现跳转。</p>
+<p>根据提示字符在反编译的代码中进行定位。</p>
+<figure data-type="image" tabindex="5"><img src="https://b0rgch3n.github.io/post-images/1603841578932.png" alt="" loading="lazy"></figure>
+<p>apk 拉进去 jadx 看看，搜索提示字符串位置。</p>
+<figure data-type="image" tabindex="6"><img src="https://b0rgch3n.github.io/post-images/1603841590482.png" alt="" loading="lazy"></figure>
+<p>AnotherActivity 没什么关键的东西，搜索使用这个类的地方。</p>
+<p>找到在MainActivity 被调用的位置。</p>
+<figure data-type="image" tabindex="7"><img src="https://b0rgch3n.github.io/post-images/1603841595603.png" alt="" loading="lazy"></figure>
+<p>MainActivity 中有个很可疑的 a 方法，涉及加密 Sqlite 数据库的操作。</p>
+<figure data-type="image" tabindex="8"><img src="https://b0rgch3n.github.io/post-images/1603841601175.png" alt="" loading="lazy"></figure>
+<p>到这里就基本定位 Hook 关键位置就是 getWritableDatabase 方法的参数了。<br>
+<br></p>
+<h2 id="0x02-动态分析"><strong>[0x02] 动态分析</strong></h2>
+<br>
+<p>启动 APP，frida-ps 找到相关进程。</p>
+<figure data-type="image" tabindex="9"><img src="https://b0rgch3n.github.io/post-images/1603841607210.png" alt="" loading="lazy"></figure>
+<p>接下来有个问题：如何做到 hook APP 启动时的关键函数？<br>
+以当前分析的这个 APP 为例子。</p>
+<blockquote>
+<p>objection -d -g com.example.yaphetshan.tencentwelcome explore</p>
+</blockquote>
+<p>进入 objection 的同时也启动的 APP，等待命令行可输入以及错过了 APP 启动的阶段。</p>
+<p>此时不管时机错过，先把函数 Hook 上。</p>
+<blockquote>
+<p>android hooking watch class_method net.sqlcipher.database.SQLiteOpenHelper.getWritableDatabase --dump-args --dump-backtrace --dump-return</p>
+</blockquote>
+<figure data-type="image" tabindex="10"><img src="https://b0rgch3n.github.io/post-images/1603841613845.png" alt="" loading="lazy"></figure>
+<p>如何不关闭 APP 而退回桌面，点击 APP 图标再次启动 APP。</p>
+<p>此时进程不变，但 APP 似乎重新启动了一次，Hook 上了。</p>
+<p><strong>具体原因猜测是 Activity 重新加载了。</strong></p>
+<figure data-type="image" tabindex="11"><img src="https://b0rgch3n.github.io/post-images/1603841621701.png" alt="" loading="lazy"></figure>
+<p>Hook 到的 getWritableDatabase 实参值就是需要的密码。<br>
+<br></p>
+<p><strong>另一种动态分析的做法是主动调用。</strong></p>
+<p>通过 Hook 目标函数 getWritableDatabase 的参数，并通过定位其上一级方法 a，</p>
+<p>在内存堆里搜索方法 a 对应的 MainActivity 类实例，并主动调用 a 使参数暴露。</p>
+<blockquote>
+<p>android heap search instances com.example.yaphetshan.tencentwelcome.MainActivity</p>
+</blockquote>
+<figure data-type="image" tabindex="12"><img src="https://b0rgch3n.github.io/post-images/1603841634136.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>android heap execute &lt;hashcode&gt; a</p>
+</blockquote>
+<figure data-type="image" tabindex="13"><img src="https://b0rgch3n.github.io/post-images/1603841639347.png" alt="" loading="lazy"></figure>
+<p>不管使用以上哪一种方法都能拿到数据库的访问密码。</p>
+<p>查看加密的数据库内容，获取 FLAG。</p>
+<figure data-type="image" tabindex="14"><img src="https://b0rgch3n.github.io/post-images/1603841644433.png" alt="" loading="lazy"></figure>
+<p>FLAG 看起来是 Base64，解密一下。</p>
+<figure data-type="image" tabindex="15"><img src="https://b0rgch3n.github.io/post-images/1603841649408.png" alt="" loading="lazy"></figure>
+<p>完事 😃</p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/e84e30b9390cdb64db6db2c9ab87846d" class="tag">
+                    Android
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/67f115c1fddc4ce1aeb1c754001585bc" class="tag">
+                    Reverse
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/d108e4c1b86c0a6a9fe84736cd5438bd">
+                  <h3 class="post-title">
+                    巧解 JS 签名（续）：利用服务暴露框架 Sekiro 进行 JSRPC
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+
+  </body>
+</html>
