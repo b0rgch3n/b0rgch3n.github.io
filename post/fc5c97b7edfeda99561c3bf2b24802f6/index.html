@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>深度学习实践：识别滑块验证码 | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1606230880849">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="验证码是门很有意思的学问，
+本质是用于区分人类和计算机的图灵测试。
+
+开源项目：darknet
+标注工具：labelImg
+
+上次实验验证码识别似乎还是在年前，用了 CNN 识别最常见的图片文字验证码。
+这次换个难度大一点的，试试滑块验证码..." />
+    <meta name="keywords" content="Captcha,Deep Learning" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1606230880849" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      记录生活的细枝末节
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present b0rgch3n<br>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">深度学习实践：识别滑块验证码</h2>
+            <div class="post-date">2020-11-24</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/fc5c97b7edfeda99561c3bf2b24802f6.jpeg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>验证码是门很有意思的学问，<br>
+本质是用于区分人类和计算机的图灵测试。</p>
+<!-- more -->
+<pre><code>开源项目：darknet
+标注工具：labelImg
+</code></pre>
+<p>上次实验验证码识别似乎还是在年前，用了 CNN 识别最常见的图片文字验证码。<br>
+这次换个难度大一点的，试试滑块验证码。</p>
+<p>方案其实还是很简单的，直接上 Yolov4。<br>
+只是编译环境的搭建和标记数据集比较枯燥漫长。</p>
+<p>直接上实践的最终结果，有空再补充过程。<br>
+<br><br>
+<br></p>
+<p><img src="https://b0rgch3n.github.io/post-images/1606229636155.gif" alt="" loading="lazy"><br>
+<br></p>
+<p>PS：下半年要学的东西实在太多，忙得真像条狗。🐶<br>
+<br></p>
+<p>参考文章<br>
+<a href="https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects">AlexeyAB/darknet - How to train (to detect your custom objects)</a></p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/vMA_yBHX-" class="tag">
+                    Captcha
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/6a68b6412b3d8a605c374d3c59e02694" class="tag">
+                    Deep Learning
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/afcbf6c760b744f983759b6964f9fd66">
+                  <h3 class="post-title">
+                    WriteUp：XCTF 新手练习区 mobile app3
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+
+  </body>
+</html>
