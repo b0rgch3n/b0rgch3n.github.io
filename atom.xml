@@ -2,25 +2,25 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2020-11-24T15:29:03.809Z</updated>
+    <updated>2021-01-10T13:28:18.527Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
     <subtitle>记录生活的细枝末节</subtitle>
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2020, b0rgch3n</rights>
+    <rights>All rights reserved 2021, b0rgch3n</rights>
     <entry>
-        <title type="html"><![CDATA[深度学习实践：识别滑块验证码]]></title>
-        <id>https://b0rgch3n.github.io/post/fc5c97b7edfeda99561c3bf2b24802f6</id>
-        <link href="https://b0rgch3n.github.io/post/fc5c97b7edfeda99561c3bf2b24802f6">
+        <title type="html"><![CDATA[YOLOv4：目标检测入门 从 0 到 0.01]]></title>
+        <id>https://b0rgch3n.github.io/post/87e7923ba7107872018dee934145be30</id>
+        <link href="https://b0rgch3n.github.io/post/87e7923ba7107872018dee934145be30">
         </link>
-        <updated>2020-11-24T14:42:05.000Z</updated>
-        <summary type="html"><![CDATA[<p>验证码是门很有意思的学问，<br>
-本质是用于区分人类和计算机的图灵测试。</p>
+        <updated>2021-01-10T13:09:31.000Z</updated>
+        <summary type="html"><![CDATA[<p>上次认真的将深度学习应用起来似乎还是前年事情，用 CNN 做了图片文字识别。<br>
+这次拿目标识别练练手，换个难度稍微大一点的目标，让神经网络找出图片中的某个东西。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>验证码是门很有意思的学问，<br>
-本质是用于区分人类和计算机的图灵测试。</p>
+        <content type="html"><![CDATA[<p>上次认真的将深度学习应用起来似乎还是前年事情，用 CNN 做了图片文字识别。<br>
+这次拿目标识别练练手，换个难度稍微大一点的目标，让神经网络找出图片中的某个东西。</p>
 ]]></content>
     </entry>
     <entry>

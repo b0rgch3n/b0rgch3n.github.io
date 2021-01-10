@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>YOLOv4：目标检测入门 从 0 到 0.01 | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1610285294271">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="上次认真的将深度学习应用起来似乎还是前年事情，用 CNN 做了图片文字识别。
+这次拿目标识别练练手，换个难度稍微大一点的目标，让神经网络找出图片中的某个东西。
+
+目标识别方案其实还是很简单的，直接上 Yolov4，
+至于为什么选 Yolov..." />
+    <meta name="keywords" content="Deep Learning" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1610285294271" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      记录生活的细枝末节
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present b0rgch3n<br>Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">YOLOv4：目标检测入门 从 0 到 0.01</h2>
+            <div class="post-date">2021-01-10</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/87e7923ba7107872018dee934145be30.jpeg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>上次认真的将深度学习应用起来似乎还是前年事情，用 CNN 做了图片文字识别。<br>
+这次拿目标识别练练手，换个难度稍微大一点的目标，让神经网络找出图片中的某个东西。</p>
+<!-- more -->
+<p>目标识别方案其实还是很简单的，直接上 Yolov4，<br>
+至于为什么选 Yolov4，可能只是因为能查到的看得懂的资料还算比较多吧... 😂</p>
+<br>
+<h2 id="环境前提"><strong>环境前提</strong></h2>
+<blockquote>
+<p>开源项目：<a href="https://github.com/AlexeyAB/darknet">darknet - yolo v4</a><br>
+标注工具：<a href="https://github.com/tzutalin/labelImg">labelImg</a><br>
+流程参考：<a href="https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects">How to train (to detect your custom objects)</a><br>
+本文实验仅是实现单分类目标检测。</p>
+</blockquote>
+<br>
+<h2 id="样本准备"><strong>样本准备</strong></h2>
+<p>实验选择使用滑块验证码进行演示，因为滑块作为识别目标来说很简单，<br>
+但对于传统的图像处理（比如 Pillow）而言，定位的效果又可能不是很好。</p>
+<p>任意选择某种滑块验证码，批量下载其背景图。<br>
+当前实验所选择的样本有多种情况，但最终目的都是为了找出图片中所有滑块位置。</p>
+<figure data-type="image" tabindex="1"><img src="https://b0rgch3n.github.io/post-images/1610283062367.png" alt="" loading="lazy"></figure>
+<p>标注图片情况大致如下。</p>
+<figure data-type="image" tabindex="2"><img src="https://b0rgch3n.github.io/post-images/1610283047134.png" alt="" loading="lazy"></figure>
+<p>标注后的信息将以 PASCAL VOC 格式存放于 XML 文件中。</p>
+<figure data-type="image" tabindex="3"><img src="https://b0rgch3n.github.io/post-images/1610283069049.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>后来发现 labelImg 也可以将标注后的信息以 YOLO 需要的文本格式保存在 TXT 文件中...<br>
+只需要点击 PascalVOC 按钮切换位 YOLO 即可。</p>
+</blockquote>
+<figure data-type="image" tabindex="4"><img src="https://b0rgch3n.github.io/post-images/1610283083300.png" alt="" loading="lazy"></figure>
+<br>
+<h2 id="数据预处理"><strong>数据预处理</strong></h2>
+<p>先了解一下数据相关的文件，可分为 6 类，均存放于 darknet\data 目录下。</p>
+<ul>
+<li>包含对象的图片样本（.\obj\xxx.jpg）</li>
+<li>图片样本对应的对象标注数据（.\obj\xxx.txt ）
+<ul>
+<li>与图片样本同一文件夹，相同文件名的 txt 文本文件</li>
+</ul>
+</li>
+<li>训练数据路径集合（train.txt）</li>
+<li>预测数据路径集合（test.txt）</li>
+<li>对象分类（obj.names）</li>
+<li>输入数据配置（obj.data）</li>
+</ul>
+<br>
+<h4 id="对象分类objnames"><strong>对象分类（obj.names）</strong></h4>
+<p>对象分类为文本文件，每一行对应一种分类的名称，行数即索引。</p>
+<pre><code class="language-plain">target
+</code></pre>
+<br>
+<h4 id="图片样本与标注数据objxxxjpgtxt"><strong>图片样本与标注数据（.\obj\xxx.&lt;jpg|txt&gt; ）</strong></h4>
+<p>每张 .jpg 图片样本可包含多个检查对象，<br>
+图片对应的标注数据文件 .txt 也会包含相同数量的检查对象。</p>
+<p>每个  .jpg 图片样本对应一个标注数据 .txt 文件，存放在同一目录下。</p>
+<p>标注数据格式为每行对应一个检测对象，<br>
+其中包含分类索引、对象框在 x 轴 y 轴的中点、对象框的宽和高。</p>
+<figure data-type="image" tabindex="5"><img src="https://b0rgch3n.github.io/post-images/1610283175209.png" alt="" loading="lazy"></figure>
+<pre><code class="language-plain">1 0.716797 0.395833 0.216406 0.147222
+1 0.420312 0.395833 0.140625 0.166667
+</code></pre>
+<p>labelImg 标记后产生的 PASCAL VOC 格式样本数据必须转换为以上格式，<br>
+如果一开始就选择 YOLO，则不需要进行格式转换。</p>
+<p>预处理方式具体处理流程参考 “<a href="https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects">How to train (to detect your custom objects)</a>” 第 5 点。</p>
+<figure data-type="image" tabindex="6"><img src="https://b0rgch3n.github.io/post-images/1610283181997.png" alt="" loading="lazy"></figure>
+<p>可通过修改官方提供的示例脚本 “<a href="https://github.com/AlexeyAB/darknet/blob/master/scripts/voc_label.py">/scripts/voc_label.py</a>” 来实现批量转换。</p>
+<p>最终 .\obj 目录下的文件应该大致如下：</p>
+<figure data-type="image" tabindex="7"><img src="https://b0rgch3n.github.io/post-images/1610283274426.png" alt="" loading="lazy"></figure>
+<br>
+<h4 id="训练测试集路径集合traintxt-testtxt">训练/测试集路径集合（train.txt &amp; test.txt）</h4>
+<p>按官方指导将数据集按一定比例分为训练和测试两个集合，<br>
+并将图片的相对路径存放于 train.txt 和 test.txt 文件中。</p>
+<figure data-type="image" tabindex="8"><img src="https://b0rgch3n.github.io/post-images/1610283280601.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="9"><img src="https://b0rgch3n.github.io/post-images/1610283288053.png" alt="" loading="lazy"></figure>
+<br>
+<h4 id="输入数据配置objdata">输入数据配置（obj.data）</h4>
+<p>指明模型数据集合相关信息</p>
+<ul>
+<li>检查对象的分类数量</li>
+<li>训练/测试集路径文件位置</li>
+<li>检查对象分类文件位置</li>
+<li>输出路径位置</li>
+</ul>
+<figure data-type="image" tabindex="10"><img src="https://b0rgch3n.github.io/post-images/1610283293512.png" alt="" loading="lazy"></figure>
+<br>
+<h2 id="修改超参配置"><strong>修改超参配置</strong></h2>
+<p>配置相关的文件，均存放于 darknet\cfg 目录</p>
+<ul>
+<li>网络结构定义文件（yolov4-obj.cfg）</li>
+</ul>
+<p>修改超参配置具体参考 “<a href="https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects">How to train (to detect your custom objects)</a>” 第 1 点。</p>
+<figure data-type="image" tabindex="11"><img src="https://b0rgch3n.github.io/post-images/1610283302335.png" alt="" loading="lazy"></figure>
+<p>在配置目录下，将 “<a href="https://github.com/AlexeyAB/darknet/blob/master/cfg/yolov4-custom.cfg">yolov4-custom.cfg</a>” 复制为 “yolov4-obj.cfg”，并修改配置部分内容：</p>
+<ul>
+<li>batch 小批量的数目（可根据显存自行调节）</li>
+<li>subdivisions 每个小批量再细分</li>
+<li>max_batches 训练的最大小批量数目，超过则结束学习
+<ul>
+<li>一般取值 classes*2000，且不能小于图片样本数量</li>
+</ul>
+</li>
+<li>steps 和 scales 都是关于学习率调整
+<ul>
+<li>steps 通过步数阈值规定学习率调整的时机
+<ul>
+<li>一般取值在 max_batches 的 80% 和 90%</li>
+</ul>
+</li>
+<li>scales 与 steps 一一对应，通过浮点数设在学习率调整的倍数
+<ul>
+<li>一般不需要调整</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>width 和 height 设置网络输入的大小
+<ul>
+<li>一般设置为图片样本一致，或者任何 32 的倍数</li>
+</ul>
+</li>
+<li>classes 设置分类数
+<ul>
+<li>必须所有 [yolo] 层一致修改</li>
+<li>必须与样本目标检测数一致</li>
+</ul>
+</li>
+<li>filters 设置特定位置卷积核的个数
+<ul>
+<li>必须是在与 [yolo] 层相连接的 [convolutional] 层</li>
+<li>必须设置为 (classes + 5) * 3 对应的数值</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>batch=64<br>
+subdivisions=16<br>
+max_batches=2000<br>
+steps=1600, 1800<br>
+scales=.1,.1<br>
+... ...</p>
+</blockquote>
+<br>
+<h2 id="下载预训练权重文件">下载预训练权重文件</h2>
+<p>预训练相关的文件，均存放于 darknet\weight目录</p>
+<ul>
+<li>预训练权重文件（yolov4.conv.137）</li>
+</ul>
+<p>每个网络都有对应的卷积层预训练权重文件。<br>
+具体下载哪个参考 “<a href="https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects">How to train (to detect your custom objects)</a>” 第 7 点。</p>
+<figure data-type="image" tabindex="12"><img src="https://b0rgch3n.github.io/post-images/1610283343717.png" alt="" loading="lazy"></figure>
+<p>本实验使用  yolo v4 网络，所以下载对应的预训练权重文件为<a href="https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137">yolov4.conv.137</a>。</p>
+<br>
+<h2 id="训练模型">训练模型</h2>
+<p>模型训练参考 “<a href="https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects">How to train (to detect your custom objects)</a>” 第 8、9 点。<br>
+多 GPU 训练参考 “<a href="https://github.com/AlexeyAB/darknet#how-to-train-with-multi-gpu">How to train with multi-GPU</a>”。</p>
+<blockquote>
+<p>darknet.exe detector train data/obj.data yolo-obj.cfg yolov4.conv.137</p>
+</blockquote>
+<br>
+<h2 id="训练结果">训练结果</h2>
+<p>训练完成后输出的所有 .weights 权重文件均存储在 backup 目录下。<br>
+因为训练过程没一个阶段性的时间点都为那一刻的权重文件进行存档，<br>
+故目录下有多个权重文件，一般 1K 次迭代存档一次。</p>
+<p style="color: rgb(238, 121, 118);">
+这里有很重要的一个注意点：<br>
+生产环境应用模型时只需要选出最佳的权重文件即可，<br>
+但权重文件的选择并非训练的迭代次数越多越好，<br>
+而是需要选择 mAP (mean average precision) 或者 IoU (intersect over union) 数值最高的。
+</p>
+<p>具体原因参见“<a href="https://github.com/AlexeyAB/darknet#when-should-i-stop-training">When should I stop training</a>”第 2.2 点。</p>
+<p>比如对 1K ~ 5K 次迭代之间，每一次存档的权重文件进行比较。</p>
+<blockquote>
+<p>.\darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_1000.weights</p>
+</blockquote>
+<figure data-type="image" tabindex="13"><img src="https://b0rgch3n.github.io/post-images/1610283460137.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>.\darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_2000.weights</p>
+</blockquote>
+<figure data-type="image" tabindex="14"><img src="https://b0rgch3n.github.io/post-images/1610283464726.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>.\darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_3000.weights</p>
+</blockquote>
+<figure data-type="image" tabindex="15"><img src="https://b0rgch3n.github.io/post-images/1610283469639.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>.\darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_4000.weights</p>
+</blockquote>
+<figure data-type="image" tabindex="16"><img src="https://b0rgch3n.github.io/post-images/1610283474221.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>.\darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_5000.weights</p>
+</blockquote>
+<figure data-type="image" tabindex="17"><img src="https://b0rgch3n.github.io/post-images/1610283479673.png" alt="" loading="lazy"></figure>
+<p>可见 mAP 与 IoU 数值最大的是 4K 次迭代时的权重文件，而非 5K 次迭代时的。</p>
+<br>
+<h2 id="测试模型">测试模型</h2>
+<p>模型测试参考“<a href="https://github.com/AlexeyAB/darknet#how-to-use-on-the-command-line">How to use on the command line</a>”，命令格式大致如下。</p>
+<blockquote>
+<p>.\darknet.exedetector &lt;train/test/valid/demo/map&gt; <data> <cfg> &lt;weights(optional)&gt; [-ext_output <ext>]</p>
+</blockquote>
+<p>验证在测试集上的表现结果，结果存储在 result 文件夹下。</p>
+<blockquote>
+<p>.\darknet.exe detector valid data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_last.weights</p>
+</blockquote>
+<p>演示模型在图片上的目标检测效果。</p>
+<blockquote>
+<p>.\darknet.exe detector test data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_last.weights -ext_output data\0967f9db79f4462197bed6565a17ed63.jpg</p>
+</blockquote>
+<figure data-type="image" tabindex="18"><img src="https://b0rgch3n.github.io/post-images/1610283512536.png" alt="" loading="lazy"></figure>
+<p>演示模型在视频上的检查目标效果。</p>
+<blockquote>
+<p>.\darknet.exe detector demo data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_last.weights -ext_output data\test.mp4</p>
+</blockquote>
+<figure data-type="image" tabindex="19"><img src="https://b0rgch3n.github.io/post-images/1610282766519.gif" alt="" loading="lazy"></figure>
+<br>
+<h2 id="总结">总结</h2>
+<p>环境的搭建和标记数据集总是比较枯燥漫长的，利用下班的时间前前后后折腾了一周。<br>
+虽然前期准备实在让人感到烦躁，但最后的识别效果还不错~<br>
+行吧，YOLOv4 🐮🍺~</p>
+<br>
+<br>
+<p><strong>参考文章：</strong></p>
+<ul>
+<li><a href="https://github.com/AlexeyAB/darknet">AlexeyAB/darknet: YOLOv4 - Neural Networks for Object Detection</a></li>
+<li><a href="https://brucedone.com/archives/1411">[深度学习] 使用 Darknet YOLO 模型破解中文验证码点击识别</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/33405410">PASCAL VOC数据集的标注格式 - 知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/142699973">YOLOv4 实用训练实践 - 知乎</a></li>
+<li><a href="https://blog.csdn.net/phinoo/article/details/83022101">YOLOv3 实战4：Darknet 中 cfg 文件说明和理解 - CSDN博客</a></li>
+<li><a href="https://blog.csdn.net/u011984148/article/details/107572526">YOLOv4 中的数据增强</a></li>
+</ul>
+<p><strong>相关扩展文章：</strong></p>
+<ul>
+<li><a href="https://www.jiqizhixin.com/articles/2019-07-29-10">SlimYOLOv3：更窄、更快、更好的无人机目标检测算法</a></li>
+</ul>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/6a68b6412b3d8a605c374d3c59e02694" class="tag">
+                    Deep Learning
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/afcbf6c760b744f983759b6964f9fd66">
+                  <h3 class="post-title">
+                    WriteUp：XCTF 新手练习区 mobile app3
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+
+  </body>
+</html>
