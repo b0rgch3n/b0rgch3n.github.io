@@ -2,11 +2,13 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2021-01-10T13:28:18.527Z</updated>
+    <updated>2021-01-10T13:47:04.957Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
-    <subtitle>记录生活的细枝末节</subtitle>
+    <subtitle>写下思想的火花，&lt;br&gt;
+记录技术的成长历程，&lt;br&gt;
+当然还有美好生活的细枝末节。&lt;br&gt;</subtitle>
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, b0rgch3n</rights>
