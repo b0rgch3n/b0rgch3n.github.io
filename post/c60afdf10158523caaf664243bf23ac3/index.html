@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>Web 指纹追踪对抗：Canvas 指纹对抗 | b0rgch3n</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://b0rgch3n.github.io/favicon.ico?v=1615621800046">
+<link rel="stylesheet" href="https://b0rgch3n.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164772188-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-164772188-1');
+</script>
+
+
+<!-- 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/waifu.css">
+<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
+-->
+
+<script src="https://b0rgch3n.github.io/media/js/custom.js" id="custom-js"></script>
+    <meta name="description" content="最近在逆向分析某个站点 JS 加密参数，用于跟踪识别浏览器，
+中规中矩的 JS 混淆 + 设备指纹获取，最后通过 RSA 加密传回服务端。
+加密参数取涉及太多 Web 指纹跟踪技术，今天拎其中一个“Canvas 指纹”出来聊聊。
+
+Canv..." />
+    <meta name="keywords" content="Javascript,Reverse" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://b0rgch3n.github.io">
+        <img src="https://b0rgch3n.github.io/images/avatar.png?v=1615621800046" class="site-logo">
+        <h1 class="site-title">b0rgch3n</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://github.com/b0rgch3n" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      写下思想的火花，<br>
+记录技术的成长历程，<br>
+当然还有美好生活的细枝末节。<br>
+    </div>
+    <div class="site-footer">
+      Copyright © 2019-present <a href="https://github.com/b0rgch3n" target="_blank">b0rgch3n</a><br>
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://b0rgch3n.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">Web 指纹追踪对抗：Canvas 指纹对抗</h2>
+            <div class="post-date">2021-03-13</div>
+            
+              <div class="feature-container" style="background-image: url('https://b0rgch3n.github.io/post-images/c60afdf10158523caaf664243bf23ac3.png')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>最近在逆向分析某个站点 JS 加密参数，用于跟踪识别浏览器，<br>
+中规中矩的 JS 混淆 + 设备指纹获取，最后通过 RSA 加密传回服务端。<br>
+加密参数取涉及太多 Web 指纹跟踪技术，今天拎其中一个“Canvas 指纹”出来聊聊。</p>
+<!-- more -->
+<h1 id="canvas-指纹认识">Canvas 指纹认识</h1>
+<p><strong>常见的 Canvas 指纹计算流程</strong></p>
+<p>创建 canvas 画布进行某些固定图案或者动画的绘制，</p>
+<p>因为 Web 浏览器、操作系统、硬件设备等的不同，渲染的结果有很大程度的差异，</p>
+<p>反之相同环境组合下总能渲染出相同的图像。</p>
+<p>将渲染出的图像取出 IDAT 部分的 CRC ，</p>
+<p>或者通过 HASH 等散列函数计算结果作为计算机的指纹值。</p>
+<p>也就说，同一图像的渲染有两个前提：</p>
+<ul>
+<li>固定的图像内容（线条、纹理、字体、图案、颜色与透明度等）</li>
+<li>固定的渲染环境（浏览器、操作系统、硬件）</li>
+</ul>
+<p>对抗的核心是改变图像渲染的结果，</p>
+<p>既然渲染环境很难有太大变化，那就改变渲染的图像内容，</p>
+<p>给图像的绘制加入随机干扰，使同一台机器每次绘制的图像不同。</p>
+<h1 id="对抗实例browserleak">对抗实例：browserleak</h1>
+<p>以 browserleak 为例子，分析指纹样本的区别。</p>
+<p>Chrome 浏览器：</p>
+<figure data-type="image" tabindex="1"><img src="https://b0rgch3n.github.io/post-images/1615618547899.png" alt="" loading="lazy"></figure>
+<p>同一机器上的 FireFox 浏览器：</p>
+<figure data-type="image" tabindex="2"><img src="https://b0rgch3n.github.io/post-images/1615618552119.png" alt="" loading="lazy"></figure>
+<p>再分析其相关的 JS 代码。</p>
+<blockquote>
+<p>[https://browserleaks.com/js/canvas.js]</p>
+</blockquote>
+<p>canvas 指纹值生成的具体流程：</p>
+<ol>
+<li>获取或创建画布</li>
+</ol>
+<figure data-type="image" tabindex="3"><img src="https://b0rgch3n.github.io/post-images/1615618624361.png" alt="" loading="lazy"></figure>
+<ol start="2">
+<li>图像绘制</li>
+</ol>
+<figure data-type="image" tabindex="4"><img src="https://b0rgch3n.github.io/post-images/1615618629080.png" alt="" loading="lazy"></figure>
+<ol start="3">
+<li>图像编码字符串化</li>
+</ol>
+<figure data-type="image" tabindex="5"><img src="https://b0rgch3n.github.io/post-images/1615618633576.png" alt="" loading="lazy"></figure>
+<p>只要在图像绘制完成后，编码字符串化之前，给图像添加随机噪声即可。</p>
+<figure data-type="image" tabindex="6"><img src="https://b0rgch3n.github.io/post-images/1615618641876.png" alt="" loading="lazy"></figure>
+<p>在相同的环境下，以 Chrome 测试的对抗结果如下。</p>
+<figure data-type="image" tabindex="7"><img src="https://b0rgch3n.github.io/post-images/1615618652095.gif" alt="" loading="lazy"></figure>
+<h1 id="对抗实例canvasblocker">对抗实例：canvasblocker</h1>
+<p>canvasblocker 与 browserleak 类似，原理不变，只是生成指纹的位置和方式更加多样化。</p>
+<p>canvasblocker 指纹样本如下。</p>
+<p>Chrome 浏览器指纹样本：</p>
+<figure data-type="image" tabindex="8"><img src="https://b0rgch3n.github.io/post-images/1615618665923.png" alt="" loading="lazy"></figure>
+<p>同上，分析其相关的 JS 代码。</p>
+<blockquote>
+<p>https://canvasblocker.kkapsner.de/test/canvasAPI.js</p>
+</blockquote>
+<p>处理方式完全一致，找到图像绘制完成后的位置，添加噪声。</p>
+<figure data-type="image" tabindex="9"><img src="https://b0rgch3n.github.io/post-images/1615618672429.png" alt="" loading="lazy"></figure>
+<p>在相同的环境下，以 Chrome 测试的对抗结果如下。</p>
+<figure data-type="image" tabindex="10"><img src="https://b0rgch3n.github.io/post-images/1615618690157.png" alt="" loading="lazy"></figure>
+<p>参考文章：</p>
+<p><a href="https://en.wikipedia.org/wiki/Canvas_fingerprinting">https://en.wikipedia.org/wiki/Canvas_fingerprinting</a><br>
+<a href="https://browserleaks.com/canvas">https://browserleaks.com/canvas</a><br>
+<a href="http://docs.multilogin.com/l/zh/article/7gNVYHcFKG-canvas">http://docs.multilogin.com/l/zh/article/7gNVYHcFKG-canvas</a><br>
+<a href="https://multilogin.com/everything-you-need-to-know-about-canvas-fingerprinting/">https://multilogin.com/everything-you-need-to-know-about-canvas-fingerprinting/</a></p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://b0rgch3n.github.io/tag/9e13b69d1d2da927102acaaaf7154a37" class="tag">
+                    Javascript
+                  </a>
+                
+                  <a href="https://b0rgch3n.github.io/tag/67f115c1fddc4ce1aeb1c754001585bc" class="tag">
+                    Reverse
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://b0rgch3n.github.io/post/87e7923ba7107872018dee934145be30">
+                  <h3 class="post-title">
+                    YOLOv4：目标检测入门 从 0 到 0.01
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+  <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad()
+  </script>
+
+
+
+
+
+  </body>
+</html>

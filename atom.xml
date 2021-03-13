@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://b0rgch3n.github.io</id>
     <title>b0rgch3n</title>
-    <updated>2021-01-10T13:47:04.957Z</updated>
+    <updated>2021-03-13T07:50:18.018Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://b0rgch3n.github.io"/>
     <link rel="self" href="https://b0rgch3n.github.io/atom.xml"/>
@@ -12,6 +12,21 @@
     <logo>https://b0rgch3n.github.io/images/avatar.png</logo>
     <icon>https://b0rgch3n.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, b0rgch3n</rights>
+    <entry>
+        <title type="html"><![CDATA[Web 指纹追踪对抗：Canvas 指纹对抗]]></title>
+        <id>https://b0rgch3n.github.io/post/c60afdf10158523caaf664243bf23ac3</id>
+        <link href="https://b0rgch3n.github.io/post/c60afdf10158523caaf664243bf23ac3">
+        </link>
+        <updated>2021-03-13T06:33:22.000Z</updated>
+        <summary type="html"><![CDATA[<p>最近在逆向分析某个站点 JS 加密参数，用于跟踪识别浏览器，<br>
+中规中矩的 JS 混淆 + 设备指纹获取，最后通过 RSA 加密传回服务端。<br>
+加密参数取涉及太多 Web 指纹跟踪技术，今天拎其中一个“Canvas 指纹”出来聊聊。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>最近在逆向分析某个站点 JS 加密参数，用于跟踪识别浏览器，<br>
+中规中矩的 JS 混淆 + 设备指纹获取，最后通过 RSA 加密传回服务端。<br>
+加密参数取涉及太多 Web 指纹跟踪技术，今天拎其中一个“Canvas 指纹”出来聊聊。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[YOLOv4：目标检测入门 从 0 到 0.01]]></title>
         <id>https://b0rgch3n.github.io/post/87e7923ba7107872018dee934145be30</id>
