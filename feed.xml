@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CODE: Zerberus</title>
-    <description>b0rgch3n&apos;s blog</description>
+    <description>CODE: Zerberus | b0rgch3n’s blog</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 19 Jun 2024 17:51:42 +0800</pubDate>
-    <lastBuildDate>Wed, 19 Jun 2024 17:51:42 +0800</lastBuildDate>
+    <pubDate>Tue, 02 Jul 2024 18:32:54 +0800</pubDate>
+    <lastBuildDate>Tue, 02 Jul 2024 18:32:54 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
@@ -262,7 +262,7 @@ Then, listen using &lt;b&gt;nc&lt;/b&gt;, and execute the &lt;b&gt;NOPASSWD sudo
 
 &lt;p&gt;&lt;img src=&quot;/images/2024-06-13-writeup-hackthebox-blurry/image-13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Gain administrator privileges。&lt;/p&gt;
+&lt;p&gt;Gain administrator privileges.&lt;/p&gt;
 
 &lt;!--
 获得管理员权限。
