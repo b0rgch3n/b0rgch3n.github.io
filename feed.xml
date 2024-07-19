@@ -5,13 +5,13 @@
     <description>CODE: Zerberus | b0rgch3n’s blog</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 19 Jul 2024 14:35:17 +0800</pubDate>
-    <lastBuildDate>Fri, 19 Jul 2024 14:35:17 +0800</lastBuildDate>
+    <pubDate>Fri, 19 Jul 2024 17:11:57 +0800</pubDate>
+    <lastBuildDate>Fri, 19 Jul 2024 17:11:57 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
-        <title>「WriteUp」HackTheBox - PermX</title>
-        <description>&lt;p&gt;PermX is a simple-difficulty box from HackTheBox’s 2024 Season 5.&lt;/p&gt;
+        <title>[WriteUp] HackTheBox - PermX</title>
+        <description>&lt;p&gt;PermX is a simple-difficulty box from HackTheBox 2024 Season 5.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -206,7 +206,7 @@ As usual, checking the SUDO information frist.&lt;/p&gt;
       </item>
     
       <item>
-        <title>「WriteUp」HackTheBox - Blurry</title>
+        <title>[WriteUp] HackTheBox - Blurry</title>
         <description>&lt;p&gt;Blurry is a medium-difficulty box in the fifth season of HackTheBox in 2024.&lt;/p&gt;
 
 &lt;!--
