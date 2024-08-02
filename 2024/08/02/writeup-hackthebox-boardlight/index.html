@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>CODE: Zerberus</title>
-  <meta name='description' content='CODE: Zerberus | b0rgch3n’s blog'>
+  <title>[WriteUp] HackTheBox - BoardLight</title>
+  <meta name='description' content='BoardLight is a simple difficulty box on HackTheBox.  '>
 
-  <link rel="canonical" href="https://b0rgch3n.github.io/tag/hackthebox/">
+  <link rel="canonical" href="https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/">
   <link rel="alternate" type="application/rss+xml" title="CODE: Zerberus" href="/feed.xml">
 
   <!-- Fonts -->
@@ -208,199 +208,401 @@
 
   <!-- begin content -->
   <main class="content" aria-label="Content">
-    <div class="container">
-  <div class="row">
-    <div class="col col-8 col-d-10 col-m-12 push-m-0 push-d-1 push-2">
-      <div class="archive-box">
-        <span class="archive-meta">3 posts tagged</span>
-        <h1 class="archive-title">hackthebox</h1>
+    <div class="post-head">
+  <div class="container">
+    <div class="row">
+      
+      <div class="col col-6 col-t-12">
+        <div class="image-box">
+          <img class="post-image lazy" data-src="/images/cover/09.jpg" alt="[WriteUp] HackTheBox - BoardLight">
+        </div>
+      </div>
+      
+  
+      <div class="col col-6 col-t-12">
+        <div class="post-head__box">
+        
+          <div class="post__meta">
+            <span class="post__minutes">
+              
+              
+                2 min read
+              
+              <time class="post__date"
+                datetime="2024-08-02T14:19:00+08:00">Aug 2, 2024</time>
+            </span>
+          </div>
+        
+          <h2 class="post__title">[WriteUp] HackTheBox - BoardLight</h2>
+        
+          <div class="post__bottom">
+        
+            <div class="post__author">
+              <a href="/about/" aria-label="b0rgch3n"><img class="post__author-image"
+                  src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+            </div>
+        
+            <div class="post__bottom-meta">
+              <a href="/about/" class="post__author-link">b0rgch3n</a>
+              
+              <span>in</span>
+              <span class="post-tags">
+                
+                <a href="/tag/writeup" class="post__tag">writeup</a>
+                
+                <a href="/tag/hackthebox" class="post__tag">hackthebox</a>
+                
+              </span>
+              
+            </div>
+          </div>
+        
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- begin post -->
+<div class="container">
+  <article class="post animate">
+
+    <div class="post__content">
+      <p>BoardLight is a simple difficulty box on HackTheBox.</p>
+
+<hr />
+
+<h2 id="enumeration"><strong>Enumeration</strong></h2>
+
+<p>As always, let’s start with enumeration.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-1.png" alt="" />
+  <em>Nmap scan</em></p>
+
+<p>The familiar <strong>Nmap</strong> scan report shows open ports 22 and 80.</p>
+
+<p>Port 80 is for the web service, which redirects to the domain “<strong>board.htb</strong>”,<br />
+so we need to configure the hosts file first.</p>
+
+<p>Checked every page, but found no special information.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-2.png" alt="" />
+  <em>web page</em></p>
+
+<p>Attempted to enumerate subdomains using <strong>ffuf</strong>.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">ffuf <span class="nt">-w</span> /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt <span class="nt">-u</span> http://board.htb/ <span class="nt">-H</span> <span class="s2">"Host: FUZZ.board.htb"</span></code></pre></figure>
+
+<p>Discovered the subdomain “<strong>crm.board.htb</strong>”.<br />
+Added this domain to the hosts file as well.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-3.png" alt="" />
+  <em>ffuf scan</em></p>
+
+<p>Accessed the web service through a browser, and it’s a CMS login panel.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-4.png" alt="" />
+  <em>web page</em></p>
+
+<p>The page information revealed that the current web application is <strong>Dolibarr</strong>,<br />
+with the detailed version number <strong>17.0.0</strong>.</p>
+
+<hr />
+
+<h2 id="foothold"><strong>Foothold</strong></h2>
+
+<p>Yes, Google!</p>
+
+<p>By searching for Dolibarr-related vulnerabilities on Google,<br />
+found the vulnerability for the corresponding version: <strong>CVE-2023-30253</strong>.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-5.png" alt="" />
+  <em>google search result</em></p>
+
+<p>But the information about this vulnerability tells us it requires authentication,<br />
+we need an account and password.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-6.png" alt="" />
+  <em>CVE information</em></p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-7.png" alt="" />
+  <em>exploit code</em></p>
+
+<p>Continued to Google, looking for Dolibarr’s default account and password.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-8.png" alt="" />
+  <em>google search result</em></p>
+
+<p>Dolibarr’s default account and password are the same, both “<strong>admin</strong>”.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-9.png" alt="" />
+  <em>login</em></p>
+
+<p>Logged in successfully.<br />
+Downloaded the exploit script and ran it.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-10.png" alt="" />
+  <em>get the shell</em></p>
+
+<p>OK, we have a <strong>www-data</strong> shell!</p>
+
+<hr />
+
+<h2 id="privilege-escalation"><strong>Privilege Escalation</strong></h2>
+
+<p>As usual, uploaded <strong>linpeas.sh</strong> and used it to gather information.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-11.png" alt="" />
+  <em>active  ports</em></p>
+
+<p>Port 3306 is open, which is the default port for MySQL,<br />
+meaning the backend should be using MySQL as the database.</p>
+
+<p>Continued to Google to find out where Dolibarr’s database configuration is set.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-12.png" alt="" />
+  <em>google search result</em></p>
+
+<p>Located it through the variable <strong>dolibarr_main_db_host</strong>.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-13.png" alt="" />
+  <em>dolibarr srouce code</em></p>
+
+<p>The configuration is in the file “<strong>htdocs/conf/conf.php</strong>”.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-14.png" alt="" />
+  <em>conf.php</em></p>
+
+<p>Obtained the MySQL account password and database name.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">dolibarrowner  
+serverfun2$2023!!  </code></pre></figure>
+
+<p>After looking at MySQL for a while, I realized I was going down a rabbit hole…</p>
+
+<p>Fuxk! It’s password reuse!</p>
+
+<p>Using the password “<strong>serverfun2$2023!!</strong>”,<br />
+I logged into the low-privilege account <strong>larissa</strong>.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-15.png" alt="" />
+  <em>user shell</em></p>
+
+<p>Used <strong>linpeas.sh</strong> again to gather information.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-16.png" alt="" />
+  <em>SUID File</em></p>
+
+<p>Found many unknown <strong>SUID</strong> programs.</p>
+
+<p>Googled each one.<br />
+<strong>enlightenment</strong> have a CVE number: <a href="https://github.com/MaherAzzouzi/CVE-2022-37706-LPE-exploit"><strong>CVE-2022-37706</strong></a>.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-17.png" alt="" />
+  <em>google search result</em></p>
+
+<p>Downloaded the exploit script and executed the exploit.</p>
+
+<p><img src="/images/2024-08-02-writeup-hackthebox-boardlight/image-18.png" alt="" />
+  <em>root shell</em></p>
+
+<p>Got a root shell!</p>
+
+<p>Well done!</p>
+
+    </div>
+
+    <div class="post__share">
+      <div class="share__list">
+        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
+
+        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20BoardLight&url=https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
+
+        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/&amp;media=https://b0rgch3n.github.io/images/cover/09.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20BoardLight" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
+      </div>
+    </div>
+
+    <div class="post__navigation">
+      
+      <a class="prev" href="/2024/07/18/writeup-hackthebox-permx/">
+        <img class="post__nav-image lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
+        <div class="post__nav-box">
+          <div class="post__nav post__nav__prev"><i class="ion ion-md-arrow-round-back"></i> Previous Post</div>
+          <h4 class="post__nav__title">[WriteUp] HackTheBox - PermX</h4>
+        </div>
+      </a>
+      
+      
+    </div>
+
+  </article>
+</div>
+<!-- end post -->
+
+
+
+
+
+
 
 <div class="container">
-  <div class="row">
-    <div class="col col-12 col-d-10 col-m-12 push-m-0 push-d-1">
-      <div class="container__inner">
-        <div class="row grid">
-          
-            <div class="article col col-4 col-d-6 col-t-12 grid__post animate">
-  <div class="article__inner">
+  <div class="related-posts is-related">
+    <div class="row">
+      <div class="col col-12">
+        <div class="container__inner">
+          <h3 class="related-title">You may also like</h3>
+          <div class="row grid">
 
-    
-    <a class="article__image" href="/2024/08/02/writeup-hackthebox-boardlight/">
-      <img class="lazy" data-src="/images/cover/09.jpg" alt="[WriteUp] HackTheBox - BoardLight">
-    </a>
-    
-
-    <div class="article__content">
-
-      <div class="article__meta">
-        <span class="article__minutes">
           
             
-              2 min read
-          
-          <time class="article__date" datetime="2024-08-02T14:19:00+08:00">Aug 2, 2024</time>
-        </span>
-      </div>
-
-      <h2 class="article__title">[WriteUp] HackTheBox - BoardLight</h2>
-
-      <p class="article__excerpt">BoardLight is a simple difficulty box on HackTheBox.  </p>
-
-      <div class="article__bottom">
-
-        
-        <div class="article__author">
-          <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-        </div>
-        
-
-        <div class="article__bottom-meta">
-          
-            <a href="/about/" class="article__author-link">b0rgch3n</a>
-          
-          
-            <span>in</span>
-            <span class="article-tags">
-              
-                <a href="/tag/writeup" class="article__tag">writeup</a>
-              
-                <a href="/tag/hackthebox" class="article__tag">hackthebox</a>
-              
-            </span>
-          
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
-          
-            <div class="article col col-4 col-d-6 col-t-12 grid__post animate">
-  <div class="article__inner">
-
-    
-    <a class="article__image" href="/2024/07/18/writeup-hackthebox-permx/">
-      <img class="lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
-    </a>
-    
-
-    <div class="article__content">
-
-      <div class="article__meta">
-        <span class="article__minutes">
-          
             
-              3 min read
-          
-          <time class="article__date" datetime="2024-07-18T03:34:00+08:00">Jul 18, 2024</time>
-        </span>
-      </div>
 
-      <h2 class="article__title">[WriteUp] HackTheBox - PermX</h2>
-
-      <p class="article__excerpt">PermX is a simple-difficulty box from HackTheBox 2024 Season 5.</p>
-
-      <div class="article__bottom">
-
-        
-        <div class="article__author">
-          <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-        </div>
-        
-
-        <div class="article__bottom-meta">
-          
-            <a href="/about/" class="article__author-link">b0rgch3n</a>
-          
-          
-            <span>in</span>
-            <span class="article-tags">
-              
-                <a href="/tag/writeup" class="article__tag">writeup</a>
-              
-                <a href="/tag/hackthebox" class="article__tag">hackthebox</a>
-              
-            </span>
-          
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
-          
-            <div class="article col col-4 col-d-6 col-t-12 grid__post animate">
-  <div class="article__inner">
-
-    
-    <a class="article__image" href="/2024/06/13/writeup-hackthebox-blurry/">
-      <img class="lazy" data-src="/images/cover/11.jpg" alt="[WriteUp] HackTheBox - Blurry">
-    </a>
-    
-
-    <div class="article__content">
-
-      <div class="article__meta">
-        <span class="article__minutes">
-          
             
-              6 min read
-          
-          <time class="article__date" datetime="2024-06-13T16:01:35+08:00">Jun 13, 2024</time>
-        </span>
-      </div>
 
-      <h2 class="article__title">[WriteUp] HackTheBox - Blurry</h2>
+            
+            
+            
+            
 
-      <p class="article__excerpt">Blurry is a medium-difficulty box from HackTheBox 2024 Season 5.</p>
+            
 
-      <div class="article__bottom">
+            
 
-        
-        <div class="article__author">
-          <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
+              <div class="article__inner">
+
+                
+                <a class="article__image" href="/2024/07/18/writeup-hackthebox-permx/">
+                  <img class="lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
+                </a>
+                
+
+                <div class="article__content">
+
+                  <div class="article__meta">
+                    <span class="article__minutes">
+                      
+                      
+                        3 min read
+                      
+                      <time class="article__date"
+                        datetime="2024-07-18T03:34:00+08:00">Jul 18, 2024</time>
+                    </span>
+                  </div>
+
+                  <h2 class="article__title">[WriteUp] HackTheBox - PermX</h2>
+
+                  <p class="article__excerpt">PermX is a simple-difficulty box from HackTheBox 2024 Season 5.</p>
+
+                  <div class="article__bottom">
+
+                    
+                    <div class="article__author">
+                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+                    </div>
+                    
+
+                    <div class="article__bottom-meta">
+                      
+                        <a href="/about/" class="article__author-link">b0rgch3n</a>
+                      
+                      
+                      <span>in</span>
+                      <span class="article-tags">
+                        
+                          <a href="/tag/writeup" class="article__tag">writeup</a>
+                        
+                          <a href="/tag/hackthebox" class="article__tag">hackthebox</a>
+                        
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            
+                
+              
+            
+            
+            
+
+            
+
+            
+
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
+              <div class="article__inner">
+
+                
+                <a class="article__image" href="/2024/06/13/writeup-hackthebox-blurry/">
+                  <img class="lazy" data-src="/images/cover/11.jpg" alt="[WriteUp] HackTheBox - Blurry">
+                </a>
+                
+
+                <div class="article__content">
+
+                  <div class="article__meta">
+                    <span class="article__minutes">
+                      
+                      
+                        6 min read
+                      
+                      <time class="article__date"
+                        datetime="2024-06-13T16:01:35+08:00">Jun 13, 2024</time>
+                    </span>
+                  </div>
+
+                  <h2 class="article__title">[WriteUp] HackTheBox - Blurry</h2>
+
+                  <p class="article__excerpt">Blurry is a medium-difficulty box from HackTheBox 2024 Season 5.</p>
+
+                  <div class="article__bottom">
+
+                    
+                    <div class="article__author">
+                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+                    </div>
+                    
+
+                    <div class="article__bottom-meta">
+                      
+                        <a href="/about/" class="article__author-link">b0rgch3n</a>
+                      
+                      
+                      <span>in</span>
+                      <span class="article-tags">
+                        
+                          <a href="/tag/writeup" class="article__tag">writeup</a>
+                        
+                          <a href="/tag/hackthebox" class="article__tag">hackthebox</a>
+                        
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            
+                
+              
+            
+          </div>
         </div>
-        
-
-        <div class="article__bottom-meta">
-          
-            <a href="/about/" class="article__author-link">b0rgch3n</a>
-          
-          
-            <span>in</span>
-            <span class="article-tags">
-              
-                <a href="/tag/writeup" class="article__tag">writeup</a>
-              
-                <a href="/tag/hackthebox" class="article__tag">hackthebox</a>
-              
-            </span>
-          
-        </div>
-
       </div>
-
     </div>
-
   </div>
 </div>
 
-          
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
   </main> 
   <!-- end content -->
   

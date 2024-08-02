@@ -5,9 +5,164 @@
     <description>CODE: Zerberus | b0rgch3n’s blog</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 19 Jul 2024 17:11:57 +0800</pubDate>
-    <lastBuildDate>Fri, 19 Jul 2024 17:11:57 +0800</lastBuildDate>
+    <pubDate>Fri, 02 Aug 2024 22:31:58 +0800</pubDate>
+    <lastBuildDate>Fri, 02 Aug 2024 22:31:58 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>[WriteUp] HackTheBox - BoardLight</title>
+        <description>&lt;p&gt;BoardLight is a simple difficulty box on HackTheBox.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As always, let’s start with enumeration.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;Nmap scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The familiar &lt;strong&gt;Nmap&lt;/strong&gt; scan report shows open ports 22 and 80.&lt;/p&gt;
+
+&lt;p&gt;Port 80 is for the web service, which redirects to the domain “&lt;strong&gt;board.htb&lt;/strong&gt;”,&lt;br /&gt;
+so we need to configure the hosts file first.&lt;/p&gt;
+
+&lt;p&gt;Checked every page, but found no special information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Attempted to enumerate subdomains using &lt;strong&gt;ffuf&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;ffuf &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://board.htb/ &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Host: FUZZ.board.htb&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Discovered the subdomain “&lt;strong&gt;crm.board.htb&lt;/strong&gt;”.&lt;br /&gt;
+Added this domain to the hosts file as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;ffuf scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Accessed the web service through a browser, and it’s a CMS login panel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The page information revealed that the current web application is &lt;strong&gt;Dolibarr&lt;/strong&gt;,&lt;br /&gt;
+with the detailed version number &lt;strong&gt;17.0.0&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;&lt;strong&gt;Foothold&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Yes, Google!&lt;/p&gt;
+
+&lt;p&gt;By searching for Dolibarr-related vulnerabilities on Google,&lt;br /&gt;
+found the vulnerability for the corresponding version: &lt;strong&gt;CVE-2023-30253&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;google search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;But the information about this vulnerability tells us it requires authentication,&lt;br /&gt;
+we need an account and password.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;CVE information&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;exploit code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Continued to Google, looking for Dolibarr’s default account and password.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;google search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Dolibarr’s default account and password are the same, both “&lt;strong&gt;admin&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;login&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Logged in successfully.&lt;br /&gt;
+Downloaded the exploit script and ran it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-10.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;get the shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;OK, we have a &lt;strong&gt;www-data&lt;/strong&gt; shell!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;&lt;strong&gt;Privilege Escalation&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As usual, uploaded &lt;strong&gt;linpeas.sh&lt;/strong&gt; and used it to gather information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;active  ports&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Port 3306 is open, which is the default port for MySQL,&lt;br /&gt;
+meaning the backend should be using MySQL as the database.&lt;/p&gt;
+
+&lt;p&gt;Continued to Google to find out where Dolibarr’s database configuration is set.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-12.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;google search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Located it through the variable &lt;strong&gt;dolibarr_main_db_host&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-13.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dolibarr srouce code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The configuration is in the file “&lt;strong&gt;htdocs/conf/conf.php&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-14.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;conf.php&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Obtained the MySQL account password and database name.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;dolibarrowner  
+serverfun2$2023!!  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;After looking at MySQL for a while, I realized I was going down a rabbit hole…&lt;/p&gt;
+
+&lt;p&gt;Fuxk! It’s password reuse!&lt;/p&gt;
+
+&lt;p&gt;Using the password “&lt;strong&gt;serverfun2$2023!!&lt;/strong&gt;”,&lt;br /&gt;
+I logged into the low-privilege account &lt;strong&gt;larissa&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-15.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;user shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Used &lt;strong&gt;linpeas.sh&lt;/strong&gt; again to gather information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-16.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;SUID File&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Found many unknown &lt;strong&gt;SUID&lt;/strong&gt; programs.&lt;/p&gt;
+
+&lt;p&gt;Googled each one.&lt;br /&gt;
+&lt;strong&gt;enlightenment&lt;/strong&gt; have a CVE number: &lt;a href=&quot;https://github.com/MaherAzzouzi/CVE-2022-37706-LPE-exploit&quot;&gt;&lt;strong&gt;CVE-2022-37706&lt;/strong&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-17.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;google search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Downloaded the exploit script and executed the exploit.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-02-writeup-hackthebox-boardlight/image-18.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;root shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Got a root shell!&lt;/p&gt;
+
+&lt;p&gt;Well done!&lt;/p&gt;
+</description>
+        <pubDate>Fri, 02 Aug 2024 14:19:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/</guid>
+        
+        <category>writeup</category>
+        
+        <category>hackthebox</category>
+        
+        
+      </item>
     
       <item>
         <title>[WriteUp] HackTheBox - PermX</title>
