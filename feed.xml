@@ -5,8 +5,8 @@
     <description>CODE: Zerberus | b0rgch3n’s blog</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 05 Aug 2024 10:09:27 +0800</pubDate>
-    <lastBuildDate>Mon, 05 Aug 2024 10:09:27 +0800</lastBuildDate>
+    <pubDate>Mon, 05 Aug 2024 22:12:54 +0800</pubDate>
+    <lastBuildDate>Mon, 05 Aug 2024 22:12:54 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
@@ -157,9 +157,9 @@ I logged into the low-privilege account &lt;strong&gt;larissa&lt;/strong&gt;.&lt
         <link>https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/</link>
         <guid isPermaLink="true">https://b0rgch3n.github.io/2024/08/02/writeup-hackthebox-boardlight/</guid>
         
-        <category>writeup</category>
+        <category>WriteUp</category>
         
-        <category>hackthebox</category>
+        <category>Hack The Box</category>
         
         
       </item>
@@ -353,9 +353,9 @@ As usual, checking the SUDO information frist.&lt;/p&gt;
         <link>https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/</link>
         <guid isPermaLink="true">https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/</guid>
         
-        <category>writeup</category>
+        <category>WriteUp</category>
         
-        <category>hackthebox</category>
+        <category>Hack The Box</category>
         
         
       </item>
@@ -627,9 +627,320 @@ Then, listen using &lt;b&gt;nc&lt;/b&gt;, and execute the &lt;b&gt;NOPASSWD sudo
         <link>https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/</link>
         <guid isPermaLink="true">https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/</guid>
         
-        <category>writeup</category>
+        <category>WriteUp</category>
         
-        <category>hackthebox</category>
+        <category>Hack The Box</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>[Solutions] Object Detection 0 to 0.01: YOLOv4</title>
+        <description>&lt;p&gt;The object recognition solution: YOLOv4.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;introduction&quot;&gt;&lt;strong&gt;Introduction&lt;/strong&gt;&lt;/h1&gt;
+
+&lt;p&gt;Since achieving image text recognition through CNN in 2019, &lt;br /&gt;
+my study and practice of neural networks have stagnated for a long time.&lt;/p&gt;
+
+&lt;p&gt;So this time, I aim for a slightly more challenging target with object recognition: &lt;br /&gt;
+letting the neural network find something in the images.&lt;/p&gt;
+
+&lt;p&gt;The object recognition solution is actually quite simple: &lt;strong&gt;YOLOv4&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;requirement&quot;&gt;&lt;strong&gt;Requirement&lt;/strong&gt;&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Open source project: &lt;a href=&quot;https://github.com/AlexeyAB/darknet&quot;&gt;darknet - YOLOv4&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Annotation tool: &lt;a href=&quot;https://github.com/tzutalin/labelImg&quot;&gt;labelImg&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Reference: &lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects&quot;&gt;How to train (to detect your custom objects)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&quot;sample-preparation&quot;&gt;&lt;strong&gt;Sample Preparation&lt;/strong&gt;&lt;/h1&gt;
+
+&lt;p&gt;For the experiment, I chose to use a slider captcha developed by a well-known Chinese internet company for demonstration, because sliders are easy to recognize as targets.&lt;/p&gt;
+
+&lt;p&gt;Traditional image processing (like &lt;strong&gt;Pillow&lt;/strong&gt;) does not work well for slider captcha recognition.&lt;/p&gt;
+
+&lt;p&gt;Randomly select a type of slider captcha and download its background images in bulk.&lt;/p&gt;
+
+&lt;p&gt;The selected samples for the current experiment have various situations, but the ultimate goal is to find all slider positions in the images.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;slide captcha background images&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The annotation of the images is roughly as follows.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;annotate object by labelImg&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The annotated information will be stored in &lt;strong&gt;.txt&lt;/strong&gt; files in &lt;strong&gt;YOLO format&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;annotation object data&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;data-preprocessing&quot;&gt;&lt;strong&gt;Data Preprocessing&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;First, understand the data-related files,&lt;br /&gt;
+which can be divided into 6 categories, all stored in the “&lt;strong&gt;darknet\data&lt;/strong&gt;” directory.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Image samples containing objects (&lt;strong&gt;.\obj\xxx.jpg&lt;/strong&gt;)&lt;/li&gt;
+  &lt;li&gt;Object annotation data corresponding to image samples (&lt;strong&gt;.\obj\xxx.txt&lt;/strong&gt;)
+    &lt;ul&gt;
+      &lt;li&gt;Text files with the same name as the image samples in the same folder&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Collection of training data paths (&lt;strong&gt;train.txt&lt;/strong&gt;)&lt;/li&gt;
+  &lt;li&gt;Collection of prediction data paths (&lt;strong&gt;test.txt&lt;/strong&gt;)&lt;/li&gt;
+  &lt;li&gt;Object classification (&lt;strong&gt;obj.names&lt;/strong&gt;)&lt;/li&gt;
+  &lt;li&gt;Input data configuration (&lt;strong&gt;obj.data&lt;/strong&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;object-classification-objnames&quot;&gt;&lt;strong&gt;Object classification (obj.names)&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;Object classification is a text file,&lt;br /&gt;
+with each line corresponding to a category name, and the line number being the index.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;target&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h4 id=&quot;image-samples--annotation-data-objxxxjpgtxt&quot;&gt;&lt;strong&gt;Image Samples &amp;amp; Annotation Data (.\obj\xxx.&amp;lt;jpg|txt&amp;gt;)&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;Each &lt;strong&gt;.jpg&lt;/strong&gt; image sample can contain multiple inspection objects, and the corresponding annotation data file &lt;strong&gt;.txt&lt;/strong&gt; will also contain the same number of inspection objects.&lt;/p&gt;
+
+&lt;p&gt;Each &lt;strong&gt;.jpg&lt;/strong&gt; image sample corresponds to an annotation data &lt;strong&gt;.txt&lt;/strong&gt; file stored in the same directory.&lt;/p&gt;
+
+&lt;p&gt;The annotation data format is one detection object per line:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The &lt;strong&gt;class index&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;The midpoint of the bounding box on the &lt;strong&gt;x&lt;/strong&gt; and &lt;strong&gt;y&lt;/strong&gt; axes&lt;/li&gt;
+  &lt;li&gt;The &lt;strong&gt;width&lt;/strong&gt; and &lt;strong&gt;height&lt;/strong&gt; of the bounding box&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;annotation object format&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;1 0.716797 0.395833 0.216406 0.147222
+1 0.420312 0.395833 0.140625 0.166667&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The &lt;strong&gt;YOLO format&lt;/strong&gt; sample data generated by labelImg needs to be converted to the above format.&lt;/p&gt;
+
+&lt;p&gt;For specific preprocessing, refer to “&lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects&quot;&gt;How to train (to detect your custom objects)&lt;/a&gt;” point 5.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;yolov4 document&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Batch conversion can be achieved by modifying the official example script “&lt;a href=&quot;https://github.com/AlexeyAB/darknet/blob/master/scripts/voc_label.py&quot;&gt;/scripts/voc_label.py&lt;/a&gt;”.&lt;/p&gt;
+
+&lt;p&gt;The final files in the &lt;strong&gt;obj&lt;/strong&gt; directory should look roughly like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;obj directory&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;train--test-set-path-collection-traintxt--testtxt&quot;&gt;Train &amp;amp; Test Set Path Collection (train.txt &amp;amp; test.txt)&lt;/h4&gt;
+
+&lt;p&gt;According to the official guide,&lt;br /&gt;
+the dataset is divided into training and testing sets in a certain proportion,&lt;br /&gt;
+and the relative paths of the images are stored in the &lt;strong&gt;train.txt&lt;/strong&gt; and &lt;strong&gt;test.txt&lt;/strong&gt; files.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;train.txt&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;test.txt&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;input-data-configuration-objdata&quot;&gt;Input Data Configuration (obj.data)&lt;/h4&gt;
+
+&lt;p&gt;Indicates model data set related information:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;classes&lt;/strong&gt;: The number of object categories&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;train&lt;/strong&gt;: The location of the train set path files&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;test&lt;/strong&gt;: The location of the test set path files&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;names&lt;/strong&gt;: The location of the object classification file&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;backup&lt;/strong&gt;: The output path location&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;obj.data&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;modify-configuration&quot;&gt;&lt;strong&gt;Modify Configuration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;The related configuration files are all stored in the “&lt;strong&gt;darknet\cfg&lt;/strong&gt;” directory.&lt;br /&gt;
+Network structure definition file “&lt;strong&gt;yolov4-obj.cfg&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;For details on modifying the hyperparameters,&lt;br /&gt;
+refer to “&lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects&quot;&gt;How to train (to detect your custom objects)&lt;/a&gt;” point 1.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-10.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;yolov4 document&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;In the configuration directory,&lt;br /&gt;
+copy “&lt;strong&gt;&lt;a href=&quot;https://github.com/AlexeyAB/darknet/blob/master/cfg/yolov4-custom.cfg&quot;&gt;yolov4-custom.cfg&lt;/a&gt;&lt;/strong&gt;” to “&lt;strong&gt;yolov4-obj.cfg&lt;/strong&gt;” and modify the configuration part:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;batch&lt;/strong&gt;: the number of small batches (can be adjusted according to GPU memory)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;subdivisions&lt;/strong&gt;: further subdivision of each small batch&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;max_batches&lt;/strong&gt;: the maximum number of small batches for training
+    &lt;ul&gt;
+      &lt;li&gt;the training stops once this number is exceeded&lt;/li&gt;
+      &lt;li&gt;Usually set to classes * 2000 and cannot be less than the number of image samples&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;steps and scales&lt;/strong&gt;: related to learning rate adjustment
+    &lt;ul&gt;
+      &lt;li&gt;Steps: Usually set to &lt;strong&gt;80%~90% of max_batches&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;Scales: Usually, no need to adjust&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;width and height&lt;/strong&gt;: set the size of the network input
+    &lt;ul&gt;
+      &lt;li&gt;Generally set to be consistent with the image samples, or any multiple of 32&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;classes&lt;/strong&gt;: set the number of categories
+    &lt;ul&gt;
+      &lt;li&gt;Must be consistently modified for all &lt;strong&gt;[yolo]&lt;/strong&gt; layers&lt;/li&gt;
+      &lt;li&gt;Must be consistent with the sample target detection count&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;filters&lt;/strong&gt;: set the number of convolutional kernels in specific locations
+    &lt;ul&gt;
+      &lt;li&gt;Must be set for the &lt;strong&gt;[convolutional]&lt;/strong&gt; layer connected to the &lt;strong&gt;[yolo]&lt;/strong&gt; layer&lt;/li&gt;
+      &lt;li&gt;Must be set to &lt;strong&gt;(classes + 5) * 3&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;batch=64
+subdivisions=16
+max_batches=2000
+steps=1600, 1800
+scales=.1,.1
+
+... ...&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;pre-trained-weight-files&quot;&gt;Pre-trained Weight Files&lt;/h2&gt;
+&lt;p&gt;The related files for pre-training are stored in the “&lt;strong&gt;darknet\weight&lt;/strong&gt;” directory, &lt;br /&gt;
+Pre-trained weight file (&lt;strong&gt;yolov4.conv.137&lt;/strong&gt;).&lt;/p&gt;
+
+&lt;p&gt;Each network has a corresponding pre-trained convolutional layer weight file.&lt;br /&gt;
+Refer to “&lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects&quot;&gt;How to train (to detect your custom objects)&lt;/a&gt;” point 7 for which file to download.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;yolov4 document&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;For this experiment, using the YOLOv4 network, download the corresponding pre-trained weight file “&lt;a href=&quot;https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137&quot;&gt;yolov4.conv.137&lt;/a&gt;”.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;training-the-model&quot;&gt;Training the Model&lt;/h2&gt;
+&lt;p&gt;Refer to ““&lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects&quot;&gt;How to train (to detect your custom objects)&lt;/a&gt;” points 8 and 9 for model training.&lt;br /&gt;
+For multi-GPU training, refer to “&lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-train-with-multi-gpu&quot;&gt;How to train with multi-GPU&lt;/a&gt;”.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector train data/obj.data yolo-obj.cfg yolov4.conv.137&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;training-results&quot;&gt;Training Results&lt;/h2&gt;
+&lt;p&gt;All &lt;strong&gt;.weights&lt;/strong&gt; weight files output after training are stored in the &lt;strong&gt;backup&lt;/strong&gt; directory.&lt;/p&gt;
+
+&lt;p&gt;Because the training process archives the weight file at each stage, the directory contains multiple weight files, generally archived once every &lt;strong&gt;1k&lt;/strong&gt; iterations.&lt;/p&gt;
+
+&lt;h4 id=&quot;a-very-important-point-to-note-here&quot;&gt;&lt;strong&gt;A very important point to note here:&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;When using the model in a production environment, only the best weight file is needed.&lt;/p&gt;
+
+&lt;p&gt;The selection of the weight file is not based on the highest iteration count but on the highest &lt;strong&gt;mAP (mean average precision)&lt;/strong&gt; or &lt;strong&gt;IoU (intersect over union)&lt;/strong&gt; values.&lt;/p&gt;
+
+&lt;p&gt;For the specific reason, see “&lt;a href=&quot;https://github.com/AlexeyAB/darknet#when-should-i-stop-training&quot;&gt;When should I stop training&lt;/a&gt;” point 2.2.&lt;/p&gt;
+
+&lt;p&gt;For example,&lt;br /&gt;
+compare the weight files archived at each stage between 1k and 5k iterations:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_1000.weights&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-12.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;1k iterations&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_2000.weights&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-13.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;2k iterations&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_3000.weights&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-14.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;3k iterations&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_4000.weights&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-15.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;4k iterations&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector map data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_5000.weights&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-16.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;5k iterations&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It can be seen that the highest &lt;strong&gt;mAP&lt;/strong&gt; and &lt;strong&gt;IoU&lt;/strong&gt; values are at 4k iterations, not at 5k iterations.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;testing-the-model&quot;&gt;Testing the Model&lt;/h2&gt;
+&lt;p&gt;Refer to “&lt;a href=&quot;https://github.com/AlexeyAB/darknet#how-to-use-on-the-command-line&quot;&gt;How to use on the command line&lt;/a&gt;” for model testing.&lt;/p&gt;
+
+&lt;h4 id=&quot;the-command-format-is-roughly-as-follows&quot;&gt;the command format is roughly as follows:&lt;/h4&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector &amp;lt;train/test/valid/demo/map&amp;gt; &amp;lt;data&amp;gt; &amp;lt;cfg&amp;gt; &amp;lt;weights (optional)&amp;gt; [-ext_output &amp;lt;ext&amp;gt;]&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Verify the results on the test set.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector valid data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_last.weights&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Demonstrate the object detection effect of the model on images.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector test data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_last.weights -ext_output data\0967f9db79f4462197bed6565a17ed63.jpg&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-17.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;detect result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Demonstrate the object detection effect of the model on videos.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-plain&quot; data-lang=&quot;plain&quot;&gt;darknet.exe detector demo data\obj.data cfg\yolov4-custom.cfg backup\yolov4-custom_last.weights -ext_output data\test.mp4&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2020-03-18-solutions-object-detection-0-to-001-yolov4/image-18.gif&quot; alt=&quot;&quot; /&gt;
+ &lt;em&gt;detect result (videos)&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It’s cool :)&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;statement&quot;&gt;Statement&lt;/h2&gt;
+
+&lt;p&gt;The purpose of this experiment is solely to reproduce custom single-class object detection using YOLOv4.&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 19 Mar 2021 03:07:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2021/03/19/solutions-object-detection-0-to-001-yolov4/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2021/03/19/solutions-object-detection-0-to-001-yolov4/</guid>
+        
+        <category>Solutions</category>
+        
+        <category>Object Detection</category>
+        
+        <category>YOLO</category>
+        
+        <category>DNN</category>
         
         
       </item>

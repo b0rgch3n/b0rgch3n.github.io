@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://b0rgch3n.github.io/2021/03/19/solutions-object-detection-0-to-001-yolov4/</loc>
+<lastmod>2021-03-19T03:07:00+08:00</lastmod>
+</url>
+<url>
 <loc>https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/</loc>
 <lastmod>2024-06-13T16:01:35+08:00</lastmod>
 </url>
@@ -19,9 +23,21 @@
 <loc>https://b0rgch3n.github.io/</loc>
 </url>
 <url>
+<loc>https://b0rgch3n.github.io/tag/solutions/</loc>
+</url>
+<url>
+<loc>https://b0rgch3n.github.io/tag/object-detection/</loc>
+</url>
+<url>
+<loc>https://b0rgch3n.github.io/tag/yolo/</loc>
+</url>
+<url>
+<loc>https://b0rgch3n.github.io/tag/dnn/</loc>
+</url>
+<url>
 <loc>https://b0rgch3n.github.io/tag/writeup/</loc>
 </url>
 <url>
-<loc>https://b0rgch3n.github.io/tag/hackthebox/</loc>
+<loc>https://b0rgch3n.github.io/tag/hack-the-box/</loc>
 </url>
 </urlset>
