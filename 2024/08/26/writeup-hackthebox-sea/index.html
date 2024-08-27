@@ -306,7 +306,7 @@
 
 <h2 id="enumeration"><strong>Enumeration</strong></h2>
 
-<p>As usual, the <strong>Nmap</strong> scan shows open ports 22 and 80.</p>
+<p>As usual, the <strong>Nmap</strong> scan shows open ports <strong>22</strong> and <strong>80</strong>.</p>
 
 <p>We always know that SSH won’t be the first choice,<br />
 so let’s check out the web service first.</p>
@@ -317,7 +317,7 @@ so let’s check out the web service first.</p>
   <em>web page</em></p>
 
 <p>The only page that stands out is “<strong>contact.php</strong>”, which has a form.<br />
-Our instinct tells us that the Website field might be vulnerable to XSS or CSRF attacks.</p>
+Our instinct tells us that the “<strong>Website</strong>” field might be vulnerable to <strong>XSS</strong> or <strong>CSRF</strong> attacks.</p>
 
 <p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-2.png" alt="" />
   <em>web page: /contact.php</em></p>
@@ -348,18 +348,18 @@ Our instinct tells us that the Website field might be vulnerable to XSS or CSRF 
 
 <p>Some interesting information appears under the “<strong>/themes/bike</strong>” directory.</p>
 
-<p>“<strong>/themes/bike/summary</strong>” exposes the theme used by this CMS.</p>
+<p>“<strong>/themes/bike/summary</strong>” exposes the <strong>theme</strong> used by this CMS.</p>
 
 <p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-7.png" alt="" />
   <em>web page: /themes/bike/summary</em></p>
 
-<p>“<strong>/themes/bike/version</strong>” reveals the theme version used by the CMS.</p>
+<p>“<strong>/themes/bike/version</strong>” reveals the theme <strong>version</strong> used by the CMS.</p>
 
 <p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-8.png" alt="" />
   <em>web page: /themes/bike/version</em></p>
 
 <p>“<strong>/themes/bike/LICENSE</strong>” exposes the CMS’s copyright information,<br />
-including the author’s name.</p>
+including the <strong>author’s name</strong>.</p>
 
 <p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-9.png" alt="" />
   <em>web page: /themes/bike/LICENSE</em></p>
@@ -379,8 +379,8 @@ Let’s see if there’s an exploit script available for it.</p>
 <p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-11.png" alt="" />
   <em>github search result</em></p>
 
-<p>Luckily, we find a CVE that matches the version number: <a href="https://github.com/insomnia-jacob/CVE-2023-41425">CVE-2023-41425</a><br />
-This is an exploit script that use an XSS vulnerability to achieve RCE.</p>
+<p>Luckily, we find a CVE that matches the version number: <a href="https://github.com/insomnia-jacob/CVE-2023-41425"><strong>CVE-2023-41425</strong></a><br />
+This is an exploit script that use an <strong>XSS</strong> vulnerability to achieve <strong>RCE</strong>.</p>
 
 <p>By examining the source code,<br />
 we infer that there might be a link like “<strong>/index.php?page=loginURL</strong>”.</p>
@@ -390,7 +390,7 @@ we infer that there might be a link like “<strong>/index.php?page=loginURL</st
 
 <p>Let’s visit this link.</p>
 
-<p>Yes, it exists, confirming our suspicion that the web service indeed uses “<strong>Wonder CMS</strong>”.</p>
+<p>Yes! It exists, confirming our suspicion that the web service indeed uses “<strong>Wonder CMS</strong>”.</p>
 
 <p><img src="/images/2024-08-26-writeup-hackthebox-sea/image-13.png" alt="" />
   <em>web page: /index.php?page=loginURL</em></p>

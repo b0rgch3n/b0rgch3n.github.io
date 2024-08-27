@@ -5,8 +5,8 @@
     <description>The Personal Blog of b0rgch3n | CODE: Zerberus</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 27 Aug 2024 17:07:51 +0800</pubDate>
-    <lastBuildDate>Tue, 27 Aug 2024 17:07:51 +0800</lastBuildDate>
+    <pubDate>Tue, 27 Aug 2024 17:19:14 +0800</pubDate>
+    <lastBuildDate>Tue, 27 Aug 2024 17:19:14 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
@@ -17,7 +17,7 @@
 
 &lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
 
-&lt;p&gt;As usual, the &lt;strong&gt;Nmap&lt;/strong&gt; scan shows open ports 22 and 80.&lt;/p&gt;
+&lt;p&gt;As usual, the &lt;strong&gt;Nmap&lt;/strong&gt; scan shows open ports &lt;strong&gt;22&lt;/strong&gt; and &lt;strong&gt;80&lt;/strong&gt;.&lt;/p&gt;
 
 &lt;p&gt;We always know that SSH won’t be the first choice,&lt;br /&gt;
 so let’s check out the web service first.&lt;/p&gt;
@@ -28,7 +28,7 @@ so let’s check out the web service first.&lt;/p&gt;
   &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;The only page that stands out is “&lt;strong&gt;contact.php&lt;/strong&gt;”, which has a form.&lt;br /&gt;
-Our instinct tells us that the Website field might be vulnerable to XSS or CSRF attacks.&lt;/p&gt;
+Our instinct tells us that the “&lt;strong&gt;Website&lt;/strong&gt;” field might be vulnerable to &lt;strong&gt;XSS&lt;/strong&gt; or &lt;strong&gt;CSRF&lt;/strong&gt; attacks.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-2.png&quot; alt=&quot;&quot; /&gt;
   &lt;em&gt;web page: /contact.php&lt;/em&gt;&lt;/p&gt;
@@ -59,18 +59,18 @@ Our instinct tells us that the Website field might be vulnerable to XSS or CSRF 
 
 &lt;p&gt;Some interesting information appears under the “&lt;strong&gt;/themes/bike&lt;/strong&gt;” directory.&lt;/p&gt;
 
-&lt;p&gt;“&lt;strong&gt;/themes/bike/summary&lt;/strong&gt;” exposes the theme used by this CMS.&lt;/p&gt;
+&lt;p&gt;“&lt;strong&gt;/themes/bike/summary&lt;/strong&gt;” exposes the &lt;strong&gt;theme&lt;/strong&gt; used by this CMS.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-7.png&quot; alt=&quot;&quot; /&gt;
   &lt;em&gt;web page: /themes/bike/summary&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;“&lt;strong&gt;/themes/bike/version&lt;/strong&gt;” reveals the theme version used by the CMS.&lt;/p&gt;
+&lt;p&gt;“&lt;strong&gt;/themes/bike/version&lt;/strong&gt;” reveals the theme &lt;strong&gt;version&lt;/strong&gt; used by the CMS.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-8.png&quot; alt=&quot;&quot; /&gt;
   &lt;em&gt;web page: /themes/bike/version&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;“&lt;strong&gt;/themes/bike/LICENSE&lt;/strong&gt;” exposes the CMS’s copyright information,&lt;br /&gt;
-including the author’s name.&lt;/p&gt;
+including the &lt;strong&gt;author’s name&lt;/strong&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-9.png&quot; alt=&quot;&quot; /&gt;
   &lt;em&gt;web page: /themes/bike/LICENSE&lt;/em&gt;&lt;/p&gt;
@@ -90,8 +90,8 @@ Let’s see if there’s an exploit script available for it.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-11.png&quot; alt=&quot;&quot; /&gt;
   &lt;em&gt;github search result&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;Luckily, we find a CVE that matches the version number: &lt;a href=&quot;https://github.com/insomnia-jacob/CVE-2023-41425&quot;&gt;CVE-2023-41425&lt;/a&gt;&lt;br /&gt;
-This is an exploit script that use an XSS vulnerability to achieve RCE.&lt;/p&gt;
+&lt;p&gt;Luckily, we find a CVE that matches the version number: &lt;a href=&quot;https://github.com/insomnia-jacob/CVE-2023-41425&quot;&gt;&lt;strong&gt;CVE-2023-41425&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+This is an exploit script that use an &lt;strong&gt;XSS&lt;/strong&gt; vulnerability to achieve &lt;strong&gt;RCE&lt;/strong&gt;.&lt;/p&gt;
 
 &lt;p&gt;By examining the source code,&lt;br /&gt;
 we infer that there might be a link like “&lt;strong&gt;/index.php?page=loginURL&lt;/strong&gt;”.&lt;/p&gt;
@@ -101,7 +101,7 @@ we infer that there might be a link like “&lt;strong&gt;/index.php?page=loginU
 
 &lt;p&gt;Let’s visit this link.&lt;/p&gt;
 
-&lt;p&gt;Yes, it exists, confirming our suspicion that the web service indeed uses “&lt;strong&gt;Wonder CMS&lt;/strong&gt;”.&lt;/p&gt;
+&lt;p&gt;Yes! It exists, confirming our suspicion that the web service indeed uses “&lt;strong&gt;Wonder CMS&lt;/strong&gt;”.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/2024-08-26-writeup-hackthebox-sea/image-13.png&quot; alt=&quot;&quot; /&gt;
   &lt;em&gt;web page: /index.php?page=loginURL&lt;/em&gt;&lt;/p&gt;
