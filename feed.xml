@@ -5,9 +5,257 @@
     <description>The Personal Blog of b0rgch3n | CODE: Zerberus</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 27 Aug 2024 17:19:14 +0800</pubDate>
-    <lastBuildDate>Tue, 27 Aug 2024 17:19:14 +0800</lastBuildDate>
+    <pubDate>Tue, 03 Sep 2024 16:39:09 +0800</pubDate>
+    <lastBuildDate>Tue, 03 Sep 2024 16:39:09 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>[WriteUp] HackTheBox - Editorial</title>
+        <description>&lt;p&gt;&lt;strong&gt;Editorial&lt;/strong&gt; is a simple difficulty box on HackTheBox.&lt;br /&gt;
+It is also the &lt;strong&gt;OSCP like&lt;/strong&gt; box in the &lt;a href=&quot;https://docs.google.com/spreadsheets/d/1dwSMIAPIam0PuRBkCiDI88pU3yzrqqHkDtBngUHNCw8/htmlview#&quot;&gt;NetSecFocus Trophy Room list by TJ Null&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As usual, we start by enumerating with &lt;strong&gt;Nmap&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;Nmap scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;Nmap&lt;/strong&gt; scan report shows open ports &lt;strong&gt;22&lt;/strong&gt; and &lt;strong&gt;80&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;As you know, the SSH service on port 22 is never the first choice.&lt;br /&gt;
+Let’s check the Web service on port &lt;strong&gt;80&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Simultaneously,&lt;br /&gt;
+we use &lt;strong&gt;dirsearch&lt;/strong&gt; for web directory enumeration and &lt;strong&gt;ffuf&lt;/strong&gt; for subdomain enumeration.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;ffuf scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Web directory enumeration revealed something interesting: “&lt;strong&gt;/upload&lt;/strong&gt;”,&lt;br /&gt;
+while subdomain enumeration returned nothing.&lt;/p&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;&lt;strong&gt;Foothold&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Let’s closely inspect the “&lt;strong&gt;/upload&lt;/strong&gt;” page.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It appears to be a page for uploading book files.&lt;/p&gt;
+
+&lt;p&gt;The input box on the top left is for providing a link to the book cover,&lt;br /&gt;
+and the one on the top right is for selecting the file to upload.&lt;/p&gt;
+
+&lt;p&gt;Notice the “&lt;strong&gt;Preview&lt;/strong&gt;” button on the far right!&lt;/p&gt;
+
+&lt;p&gt;This preview feature seems to request the link provided in the top left input box.&lt;br /&gt;
+Let’s test by modifying the “&lt;strong&gt;bookurl&lt;/strong&gt;” parameter to a text file using &lt;strong&gt;Burpsuite&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: testing ssrf&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;By accessing the returned preview link,&lt;br /&gt;
+we can confirm that the preview feature has an &lt;strong&gt;SSRF&lt;/strong&gt; vulnerability.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: testing ssrf&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;A major use of &lt;strong&gt;SSRF&lt;/strong&gt; vulnerabilities is internal network scanning.&lt;/p&gt;
+
+&lt;p&gt;Next, we use &lt;strong&gt;Nmap Top1k List&lt;/strong&gt; as the port list to enumerate internal ports.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: brute-force&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: brute-force&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;By filtering the results, we found a local service on port &lt;strong&gt;5000&lt;/strong&gt;,&lt;br /&gt;
+and it is an API service.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-10.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: testing ssrf&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: testing ssrf&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s format and inspect the API information.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;messages&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;promotions&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Retrieve a list of all the promotions in our library.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;endpoint&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/api/latest/metadata/messages/promos&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;coupons&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Retrieve the list of coupons to use in our library.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;endpoint&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/api/latest/metadata/messages/coupons&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;new_authors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Retrieve the welcome message sended to our new authors.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;endpoint&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/api/latest/metadata/messages/authors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;platform_use&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Retrieve examples of how to use the platform.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;endpoint&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/api/latest/metadata/messages/how_to_use_platform&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;changelog&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Retrieve a list of all the versions and updates of the api.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;endpoint&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/api/latest/metadata/changelog&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;latest&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Retrieve the last version of api.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;endpoint&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/api/latest/metadata&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+     &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;GET&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+   &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Access each of the above API paths,&lt;br /&gt;
+only “&lt;strong&gt;/api/latest/metadata/messages/authors&lt;/strong&gt;” is accessible.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-12.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: testing ssrf&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-13.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;burpsuite: testing ssrf&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;template_mail_message&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Welcome to the team! We are thrilled to have you on board and can&apos;t wait to see the incredible content you&apos;ll bring to the table.&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Your login credentials for our internal forum and authors site are:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Username: dev&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Password: dev080217_devAPI!@&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Please be sure to change your password as soon as possible for security purposes.&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Don&apos;t hesitate to reach out if you have any questions or ideas - we&apos;re always here to support you.&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Best regards, Editorial Tiempo Arriba Team.&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This API leaks credentials: user “&lt;strong&gt;dev&lt;/strong&gt;” and password “&lt;strong&gt;dev080217_devAPI!@&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;Use these credentials to log in to the SSH service.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-14.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;get shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Successfully logged in and gained a shell as the &lt;strong&gt;dev&lt;/strong&gt; user.&lt;/p&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;Privilege Escalation&lt;/h2&gt;
+
+&lt;p&gt;Next, let’s escalate privileges.&lt;/p&gt;
+
+&lt;p&gt;In the “&lt;strong&gt;/home/dev/app&lt;/strong&gt;” directory, there’s a local &lt;strong&gt;git&lt;/strong&gt; repository. Let’s check the &lt;strong&gt;git&lt;/strong&gt; logs.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-15.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;git logs&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We found that commit “&lt;strong&gt;b73481bb823d2dfb49c44f4c1e6a7e11912ed8ae&lt;/strong&gt;” downgraded &lt;strong&gt;prod&lt;/strong&gt; to &lt;strong&gt;dev&lt;/strong&gt;, suggesting that &lt;strong&gt;prod&lt;/strong&gt; information is likely in the previous commit “&lt;strong&gt;1e84a036b2f33c59e2390730699a488c65643d28&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;Revert to commit “&lt;strong&gt;1e84a036b2f33c59e2390730699a488c65643d28&lt;/strong&gt;” and search for sensitive information.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;git reset &lt;span class=&quot;nt&quot;&gt;--hard&lt;/span&gt; 1e84a036b2f33c59e2390730699a488c65643d28
+find &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f &lt;span class=&quot;nt&quot;&gt;-exec&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-P&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;password|passwd|pwd&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Similar to before, the file leaks credentials.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-16.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;find result&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We now have the user “&lt;strong&gt;prod&lt;/strong&gt;” and their password “&lt;strong&gt;080217_Producti0n_2023!@&lt;/strong&gt;”.&lt;/p&gt;
+
+&lt;p&gt;Use these credentials to log in to the SSH service.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-17.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;get shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Login successful, we have a &lt;strong&gt;prod&lt;/strong&gt; user shell.&lt;/p&gt;
+
+&lt;p&gt;Check &lt;strong&gt;sudo -l&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-18.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;sudo -l&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The current account is allowed to execute the script “&lt;strong&gt;/opt/internal_apps/clone_changes/clone_prod_changes.py&lt;/strong&gt;” via &lt;strong&gt;sudo&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-19.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;source code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Here’s the source code for the &lt;strong&gt;clone_prod_changes.py&lt;/strong&gt; script.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/python3
+&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Repo&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;chdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/opt/internal_apps/clone_changes&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;url_to_clone&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bare&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;clone_from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;url_to_clone&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;new_changes&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;multi_options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;-c protocol.ext.allow=always&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Let’s perform a Google search based on some features in the source code.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-20.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;google search&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Google reveals an &lt;strong&gt;RCE&lt;/strong&gt; vulnerability in &lt;strong&gt;gitpython&lt;/strong&gt;:  &lt;a href=&quot;https://security.snyk.io/vuln/SNYK-PYTHON-GITPYTHON-3113858&quot;&gt;CVE-2022-24439&lt;/a&gt;.&lt;br /&gt;
+But be careful not to confuse this with another vulnerability.   &lt;a href=&quot;https://security.snyk.io/vuln/SNYK-JS-SIMPLEGIT-3112221&quot;&gt;CVE-2022-25912&lt;/a&gt; .&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-21.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;vulnerablitiy infomation&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We modify the PoC accordingly,&lt;br /&gt;
+making the &lt;strong&gt;clone_prod_changes.py&lt;/strong&gt; script’s input point to our reverse shell script.&lt;/p&gt;
+
+&lt;p&gt;Note that the “&lt;strong&gt;%&lt;/strong&gt;” in the payload is to escape the space that follows.&lt;/p&gt;
+
+&lt;p&gt;Then, we execute the &lt;strong&gt;clone_prod_changes.py&lt;/strong&gt; script via sudo.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-22.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;exploit&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The reverse shell gets &lt;strong&gt;root&lt;/strong&gt; privileges.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-03-writeup-hackthebox-editorial/image-23.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;get shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;OK! Work done :)&lt;/p&gt;
+</description>
+        <pubDate>Tue, 03 Sep 2024 13:57:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/09/03/writeup-hackthebox-editorial/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/09/03/writeup-hackthebox-editorial/</guid>
+        
+        <category>WriteUp</category>
+        
+        <category>Hack The Box</category>
+        
+        <category>OSCP like</category>
+        
+        
+      </item>
     
       <item>
         <title>[WriteUp] HackTheBox - Sea</title>
@@ -293,7 +541,8 @@ I have a new idea: “&lt;strong&gt;Give amay sudo privileges&lt;/strong&gt;”.
     
       <item>
         <title>[WriteUp] HackTheBox - BoardLight</title>
-        <description>&lt;p&gt;BoardLight is a simple difficulty box on HackTheBox.&lt;/p&gt;
+        <description>&lt;p&gt;BoardLight is a simple difficulty box on HackTheBox.&lt;br /&gt;
+It is also the &lt;strong&gt;OSCP like&lt;/strong&gt; box in the &lt;a href=&quot;https://docs.google.com/spreadsheets/d/1dwSMIAPIam0PuRBkCiDI88pU3yzrqqHkDtBngUHNCw8/htmlview#&quot;&gt;NetSecFocus Trophy Room list by TJ Null&lt;/a&gt;.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -442,6 +691,8 @@ I logged into the low-privilege account &lt;strong&gt;larissa&lt;/strong&gt;.&lt
         <category>WriteUp</category>
         
         <category>Hack The Box</category>
+        
+        <category>OSCP like</category>
         
         
       </item>
