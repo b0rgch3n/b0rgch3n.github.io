@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>[WriteUp] HackTheBox - Editorial | b0rgch3n's blog</title>
-  <meta name='description' content='Editorial is a simple difficulty box on HackTheBox, It is also the OSCP like box.'>
+  <title>About | b0rgch3n's blog</title>
+  <meta name='description' content='The Personal Blog of b0rgch3n | CODE: Zerberus'>
 
-  <link rel="canonical" href="https://b0rgch3n.github.io/2024/09/03/writeup-hackthebox-editorial/">
+  <link rel="canonical" href="https://b0rgch3n.github.io/about/">
   <link rel="alternate" type="application/rss+xml" title="b0rgch3n&#39;s blog" href="/feed.xml">
 
   <!-- Fonts -->
@@ -44,7 +44,7 @@
   
 
 <!-- begin header -->
-<header class="header ">
+<header class="header header--top">
   <div class="container">
     <div class="row">
       <div class="header__inner col col-12">
@@ -264,563 +264,63 @@
 
   <!-- begin content -->
   <main class="content" aria-label="Content">
-    <div class="post-head">
-  <div class="container">
-    <div class="row">
-      
-      <div class="col col-6 col-t-12">
-        <div class="image-box">
-          <img class="post-image lazy" data-src="/images/cover/13.jpg" alt="[WriteUp] HackTheBox - Editorial">
-        </div>
-      </div>
-      
-  
-      <div class="col col-6 col-t-12">
-        <div class="post-head__box">
-        
-          <div class="post__meta">
-            <span class="post__minutes">
-              
-              
-                6 min read
-              
-              <time class="post__date"
-                datetime="2024-09-03T13:57:00+08:00">Sep 3, 2024</time>
-            </span>
-          </div>
-        
-          <h2 class="post__title">[WriteUp] HackTheBox - Editorial</h2>
-        
-          <div class="post__bottom">
-        
-            <div class="post__author">
-              <a href="/about/" aria-label="b0rgch3n"><img class="post__author-image"
-                  src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-            </div>
-        
-            <div class="post__bottom-meta">
-              <a href="/about/" class="post__author-link">b0rgch3n</a>
-              
-              <span>in</span>
-              <span class="post-tags">
-                
-                <a href="/tag/writeup" class="post__tag">WriteUp</a>
-                
-                <a href="/tag/hack-the-box" class="post__tag">Hack The Box</a>
-                
-                <a href="/tag/oscp-like" class="post__tag">OSCP like</a>
-                
-              </span>
-              
-            </div>
-          </div>
-        
-        </div>
-      </div>
+    <!-- begin hero -->
+
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__image">
+      <img class="lazy" data-src="/images/cover/33.jpg" alt="About">
+    </div>
+    <div class="hero__content">
+      <h1 class="hero__title">About</h1>
     </div>
   </div>
-</div>
+</section>
 
-<!-- begin post -->
+<!-- begin hero -->
+
+<!-- begin page -->
 <div class="container">
-  <article class="post animate">
+  <article class="page animate">
+    <div class="page__content">
+      <hr />
 
-    <div class="post__content">
-      <p><strong>Editorial</strong> is a simple difficulty box on HackTheBox.<br />
-It is also the <strong>OSCP like</strong> box in the <a href="https://docs.google.com/spreadsheets/d/1dwSMIAPIam0PuRBkCiDI88pU3yzrqqHkDtBngUHNCw8/htmlview#">NetSecFocus Trophy Room list by TJ Null</a>.</p>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">╭─ 👻 b0rgch3n@localhost ~ ‹›
+╰─<span class="nv">$ </span><span class="nb">whoami
+</span>b0rgch3n  
+<span class="o">&gt;</span> Web Security Engineer  
+<span class="o">&gt;</span> Penetration Tester  
+<span class="o">&gt;</span> Bug Hunter</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">╭─ 👻 b0rgch3n@localhost ~ ‹›
+╰─<span class="nv">$ </span><span class="nb">cat</span> ~/my_cves.txt
+<span class="k">*</span> CVE-2024-7898
+<span class="k">*</span> CVE-2024-7897
+<span class="k">*</span> CVE-2024-7896
+<span class="k">*</span> CVE-2024-43022</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">╭─ 👻 b0rgch3n@localhost ~ ‹›
+╰─<span class="nv">$ </span><span class="nb">cat</span> ~/contact_me.sh
+<span class="c">#!/bin/bash</span>
+<span class="nv">original</span><span class="o">=</span><span class="s2">"cr4ck_m3"</span>
+<span class="nv">offsets</span><span class="o">=(</span><span class="nt">-1</span> <span class="nt">-66</span> 62 4 <span class="nt">-8</span> 9 <span class="nt">-58</span> 59<span class="o">)</span>
+<span class="nv">generated</span><span class="o">=</span><span class="s2">""</span>
+<span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="k">${#</span><span class="nv">original</span><span class="k">}</span><span class="p">;</span> i++<span class="o">))</span><span class="p">;</span> <span class="k">do
+    </span><span class="nv">orig_char</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">original</span>:i:1<span class="k">}</span><span class="s2">"</span>
+    <span class="nv">orig_ascii</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%d"</span> <span class="s2">"'</span><span class="nv">$orig_char</span><span class="s2">"</span><span class="si">)</span>
+    <span class="nv">target_ascii</span><span class="o">=</span><span class="k">$((</span>orig_ascii <span class="o">+</span> offsets[i]<span class="k">))</span>
+    <span class="nv">target_char</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"</span><span class="se">\\</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%o"</span> <span class="s2">"</span><span class="nv">$target_ascii</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span><span class="si">)</span>
+    <span class="nv">generated</span><span class="o">=</span><span class="s2">"</span><span class="nv">$generated$target_char</span><span class="s2">"</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Contact me: </span><span class="nv">$generated</span><span class="s2">@wearehackerone.com"</span></code></pre></figure>
 
 <hr />
 
-<h2 id="enumeration"><strong>Enumeration</strong></h2>
-
-<p>As usual, we start by enumerating with <strong>Nmap</strong>.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-1.png" alt="" />
-  <em>Nmap scan</em></p>
-
-<p>The <strong>Nmap</strong> scan report shows open ports <strong>22</strong> and <strong>80</strong>.</p>
-
-<p>As you know, the SSH service on port 22 is never the first choice.<br />
-Let’s check the Web service on port <strong>80</strong>.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-2.png" alt="" />
-  <em>web page</em></p>
-
-<p>Simultaneously,<br />
-we use <strong>dirsearch</strong> for web directory enumeration and <strong>ffuf</strong> for subdomain enumeration.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-3.png" alt="" />
-  <em>dirsearch scan</em></p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-4.png" alt="" />
-  <em>ffuf scan</em></p>
-
-<p>Web directory enumeration revealed something interesting: “<strong>/upload</strong>”,<br />
-while subdomain enumeration returned nothing.</p>
-
-<h2 id="foothold"><strong>Foothold</strong></h2>
-
-<p>Let’s closely inspect the “<strong>/upload</strong>” page.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-5.png" alt="" />
-  <em>web page</em></p>
-
-<p>It appears to be a page for uploading book files.</p>
-
-<p>The input box on the top left is for providing a link to the book cover,<br />
-and the one on the top right is for selecting the file to upload.</p>
-
-<p>Notice the “<strong>Preview</strong>” button on the far right!</p>
-
-<p>This preview feature seems to request the link provided in the top left input box.<br />
-Let’s test by modifying the “<strong>bookurl</strong>” parameter to a text file using <strong>Burpsuite</strong>.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-6.png" alt="" />
-  <em>burpsuite: testing ssrf</em></p>
-
-<p>By accessing the returned preview link,<br />
-we can confirm that the preview feature has an <strong>SSRF</strong> vulnerability.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-7.png" alt="" />
-  <em>burpsuite: testing ssrf</em></p>
-
-<p>A major use of <strong>SSRF</strong> vulnerabilities is internal network scanning.</p>
-
-<p>Next, we use <strong>Nmap Top1k List</strong> as the port list to enumerate internal ports.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-8.png" alt="" />
-  <em>burpsuite: brute-force</em></p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-9.png" alt="" />
-  <em>burpsuite: brute-force</em></p>
-
-<p>By filtering the results, we found a local service on port <strong>5000</strong>,<br />
-and it is an API service.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-10.png" alt="" />
-  <em>burpsuite: testing ssrf</em></p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-11.png" alt="" />
-  <em>burpsuite: testing ssrf</em></p>
-
-<p>Let’s format and inspect the API information.</p>
-
-<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nl">"messages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-   </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"promotions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-     </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve a list of all the promotions in our library."</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"endpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/latest/metadata/messages/promos"</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"methods"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-   </span><span class="p">},</span><span class="w">
-   </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"coupons"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-     </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve the list of coupons to use in our library."</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"endpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/latest/metadata/messages/coupons"</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"methods"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-   </span><span class="p">},</span><span class="w">
-   </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"new_authors"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-     </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve the welcome message sended to our new authors."</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"endpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/latest/metadata/messages/authors"</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"methods"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-   </span><span class="p">},</span><span class="w">
-   </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"platform_use"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-     </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve examples of how to use the platform."</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"endpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/latest/metadata/messages/how_to_use_platform"</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"methods"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-   </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-   </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"changelog"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-     </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve a list of all the versions and updates of the api."</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"endpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/latest/metadata/changelog"</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"methods"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-   </span><span class="p">},</span><span class="w">
-   </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"latest"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-     </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieve the last version of api."</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"endpoint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/api/latest/metadata"</span><span class="p">,</span><span class="w">
-     </span><span class="nl">"methods"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-   </span><span class="p">}</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span></code></pre></figure>
-
-<p>Access each of the above API paths,<br />
-only “<strong>/api/latest/metadata/messages/authors</strong>” is accessible.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-12.png" alt="" />
-  <em>burpsuite: testing ssrf</em></p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-13.png" alt="" />
-  <em>burpsuite: testing ssrf</em></p>
-
-<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nl">"template_mail_message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Welcome to the team! We are thrilled to have you on board and can't wait to see the incredible content you'll bring to the table.</span><span class="se">\n\n</span><span class="s2">Your login credentials for our internal forum and authors site are:</span><span class="se">\n</span><span class="s2">Username: dev</span><span class="se">\n</span><span class="s2">Password: dev080217_devAPI!@</span><span class="se">\n</span><span class="s2">Please be sure to change your password as soon as possible for security purposes.</span><span class="se">\n\n</span><span class="s2">Don't hesitate to reach out if you have any questions or ideas - we're always here to support you.</span><span class="se">\n\n</span><span class="s2">Best regards, Editorial Tiempo Arriba Team."</span><span class="w">
-</span><span class="p">}</span></code></pre></figure>
-
-<p>This API leaks credentials: user “<strong>dev</strong>” and password “<strong>dev080217_devAPI!@</strong>”.</p>
-
-<p>Use these credentials to log in to the SSH service.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-14.png" alt="" />
-  <em>get shell</em></p>
-
-<p>Successfully logged in and gained a shell as the <strong>dev</strong> user.</p>
-
-<h2 id="privilege-escalation">Privilege Escalation</h2>
-
-<p>Next, let’s escalate privileges.</p>
-
-<p>In the “<strong>/home/dev/app</strong>” directory, there’s a local <strong>git</strong> repository. Let’s check the <strong>git</strong> logs.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-15.png" alt="" />
-  <em>git logs</em></p>
-
-<p>We found that commit “<strong>b73481bb823d2dfb49c44f4c1e6a7e11912ed8ae</strong>” downgraded <strong>prod</strong> to <strong>dev</strong>, suggesting that <strong>prod</strong> information is likely in the previous commit “<strong>1e84a036b2f33c59e2390730699a488c65643d28</strong>”.</p>
-
-<p>Revert to commit “<strong>1e84a036b2f33c59e2390730699a488c65643d28</strong>” and search for sensitive information.</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">git reset <span class="nt">--hard</span> 1e84a036b2f33c59e2390730699a488c65643d28
-find <span class="nb">.</span> <span class="nt">-type</span> f <span class="nt">-exec</span> <span class="nb">grep</span> <span class="nt">-P</span> <span class="s2">"password|passwd|pwd"</span> <span class="nt">-n</span> <span class="o">{}</span> <span class="se">\;</span></code></pre></figure>
-
-<p>Similar to before, the file leaks credentials.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-16.png" alt="" />
-  <em>find result</em></p>
-
-<p>We now have the user “<strong>prod</strong>” and their password “<strong>080217_Producti0n_2023!@</strong>”.</p>
-
-<p>Use these credentials to log in to the SSH service.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-17.png" alt="" />
-  <em>get shell</em></p>
-
-<p>Login successful, we have a <strong>prod</strong> user shell.</p>
-
-<p>Check <strong>sudo -l</strong>.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-18.png" alt="" />
-  <em>sudo -l</em></p>
-
-<p>The current account is allowed to execute the script “<strong>/opt/internal_apps/clone_changes/clone_prod_changes.py</strong>” via <strong>sudo</strong>.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-19.png" alt="" />
-  <em>source code</em></p>
-
-<p>Here’s the source code for the <strong>clone_prod_changes.py</strong> script.</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c1">#!/usr/bin/python3
-</span>
-<span class="kn">import</span> <span class="n">os</span>
-<span class="kn">import</span> <span class="n">sys</span>
-<span class="kn">from</span> <span class="n">git</span> <span class="kn">import</span> <span class="n">Repo</span>
-
-<span class="n">os</span><span class="p">.</span><span class="nf">chdir</span><span class="p">(</span><span class="sh">'</span><span class="s">/opt/internal_apps/clone_changes</span><span class="sh">'</span><span class="p">)</span>
-
-<span class="n">url_to_clone</span> <span class="o">=</span> <span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">Repo</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="sh">''</span><span class="p">,</span> <span class="n">bare</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">r</span><span class="p">.</span><span class="nf">clone_from</span><span class="p">(</span><span class="n">url_to_clone</span><span class="p">,</span> <span class="sh">'</span><span class="s">new_changes</span><span class="sh">'</span><span class="p">,</span> <span class="n">multi_options</span><span class="o">=</span><span class="p">[</span><span class="sh">"</span><span class="s">-c protocol.ext.allow=always</span><span class="sh">"</span><span class="p">])</span></code></pre></figure>
-
-<p>Let’s perform a Google search based on some features in the source code.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-20.png" alt="" />
-  <em>google search</em></p>
-
-<p>Google reveals an <strong>RCE</strong> vulnerability in <strong>gitpython</strong>:  <a href="https://security.snyk.io/vuln/SNYK-PYTHON-GITPYTHON-3113858">CVE-2022-24439</a>.<br />
-But be careful not to confuse this with another vulnerability.   <a href="https://security.snyk.io/vuln/SNYK-JS-SIMPLEGIT-3112221">CVE-2022-25912</a> .</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-21.png" alt="" />
-  <em>vulnerablitiy infomation</em></p>
-
-<p>We modify the PoC accordingly,<br />
-making the <strong>clone_prod_changes.py</strong> script’s input point to our reverse shell script.</p>
-
-<p>Note that the “<strong>%</strong>” in the payload is to escape the space that follows.</p>
-
-<p>Then, we execute the <strong>clone_prod_changes.py</strong> script via sudo.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-22.png" alt="" />
-  <em>exploit</em></p>
-
-<p>The reverse shell gets <strong>root</strong> privileges.</p>
-
-<p><img src="/images/2024-09-03-writeup-hackthebox-editorial/image-23.png" alt="" />
-  <em>get shell</em></p>
-
-<p>OK! Work done :)</p>
 
     </div>
-
-    <div class="post__share">
-      <div class="share__list">
-        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/09/03/writeup-hackthebox-editorial/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
-
-        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20Editorial&url=https://b0rgch3n.github.io/2024/09/03/writeup-hackthebox-editorial/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
-
-        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/09/03/writeup-hackthebox-editorial/&amp;media=https://b0rgch3n.github.io/images/cover/13.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20Editorial" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
-      </div>
-    </div>
-
-    <div class="post__navigation">
-      
-      <a class="prev" href="/2024/08/26/writeup-hackthebox-sea/">
-        <img class="post__nav-image lazy" data-src="/images/cover/02.jpg" alt="[WriteUp] HackTheBox - Sea">
-        <div class="post__nav-box">
-          <div class="post__nav post__nav__prev"><i class="ion ion-md-arrow-round-back"></i> Previous Post</div>
-          <h4 class="post__nav__title">[WriteUp] HackTheBox - Sea</h4>
-        </div>
-      </a>
-      
-      
-    </div>
-
   </article>
 </div>
-<!-- end post -->
-
-
-
-
-
-
-
-<div class="container">
-  <div class="related-posts is-related">
-    <div class="row">
-      <div class="col col-12">
-        <div class="container__inner">
-          <h3 class="related-title">You may also like</h3>
-          <div class="row grid">
-
-          
-            
-            
-
-            
-
-            
-            
-            
-            
-
-            
-
-            
-
-            <div class="article col col-4 col-d-6 col-t-12 grid__post">
-              <div class="article__inner">
-
-                
-                <a class="article__image" href="/2024/08/26/writeup-hackthebox-sea/">
-                  <img class="lazy" data-src="/images/cover/02.jpg" alt="[WriteUp] HackTheBox - Sea">
-                </a>
-                
-
-                <div class="article__content">
-
-                  <div class="article__meta">
-                    <span class="article__minutes">
-                      
-                      
-                        5 min read
-                      
-                      <time class="article__date"
-                        datetime="2024-08-26T15:21:00+08:00">Aug 26, 2024</time>
-                    </span>
-                  </div>
-
-                  <h2 class="article__title">[WriteUp] HackTheBox - Sea</h2>
-
-                  <p class="article__excerpt">Sea is a simple box from HackTheBox, Season 6 of 2024.</p>
-
-                  <div class="article__bottom">
-
-                    
-                    <div class="article__author">
-                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-                    </div>
-                    
-
-                    <div class="article__bottom-meta">
-                      
-                        <a href="/about/" class="article__author-link">b0rgch3n</a>
-                      
-                      
-                      <span>in</span>
-                      <span class="article-tags">
-                        
-                          <a href="/tag/WriteUp" class="article__tag">WriteUp</a>
-                        
-                          <a href="/tag/Hack The Box" class="article__tag">Hack The Box</a>
-                        
-                      </span>
-                      
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            
-                
-              
-            
-            
-            
-
-            
-
-            
-
-            <div class="article col col-4 col-d-6 col-t-12 grid__post">
-              <div class="article__inner">
-
-                
-                <a class="article__image" href="/2024/08/02/writeup-hackthebox-boardlight/">
-                  <img class="lazy" data-src="/images/cover/09.jpg" alt="[WriteUp] HackTheBox - BoardLight">
-                </a>
-                
-
-                <div class="article__content">
-
-                  <div class="article__meta">
-                    <span class="article__minutes">
-                      
-                      
-                        2 min read
-                      
-                      <time class="article__date"
-                        datetime="2024-08-02T14:19:00+08:00">Aug 2, 2024</time>
-                    </span>
-                  </div>
-
-                  <h2 class="article__title">[WriteUp] HackTheBox - BoardLight</h2>
-
-                  <p class="article__excerpt">BoardLight is a simple difficulty box on HackTheBox, It is also the OSCP like box.</p>
-
-                  <div class="article__bottom">
-
-                    
-                    <div class="article__author">
-                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-                    </div>
-                    
-
-                    <div class="article__bottom-meta">
-                      
-                        <a href="/about/" class="article__author-link">b0rgch3n</a>
-                      
-                      
-                      <span>in</span>
-                      <span class="article-tags">
-                        
-                          <a href="/tag/WriteUp" class="article__tag">WriteUp</a>
-                        
-                          <a href="/tag/Hack The Box" class="article__tag">Hack The Box</a>
-                        
-                          <a href="/tag/OSCP like" class="article__tag">OSCP like</a>
-                        
-                      </span>
-                      
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            
-                
-              
-            
-            
-            
-
-            
-
-            
-
-            <div class="article col col-4 col-d-6 col-t-12 grid__post">
-              <div class="article__inner">
-
-                
-                <a class="article__image" href="/2024/07/18/writeup-hackthebox-permx/">
-                  <img class="lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
-                </a>
-                
-
-                <div class="article__content">
-
-                  <div class="article__meta">
-                    <span class="article__minutes">
-                      
-                      
-                        3 min read
-                      
-                      <time class="article__date"
-                        datetime="2024-07-18T03:34:00+08:00">Jul 18, 2024</time>
-                    </span>
-                  </div>
-
-                  <h2 class="article__title">[WriteUp] HackTheBox - PermX</h2>
-
-                  <p class="article__excerpt">PermX is a simple-difficulty box from HackTheBox 2024 Season 5.</p>
-
-                  <div class="article__bottom">
-
-                    
-                    <div class="article__author">
-                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-                    </div>
-                    
-
-                    <div class="article__bottom-meta">
-                      
-                        <a href="/about/" class="article__author-link">b0rgch3n</a>
-                      
-                      
-                      <span>in</span>
-                      <span class="article-tags">
-                        
-                          <a href="/tag/WriteUp" class="article__tag">WriteUp</a>
-                        
-                          <a href="/tag/Hack The Box" class="article__tag">Hack The Box</a>
-                        
-                      </span>
-                      
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            
-                
-                  
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
+<!-- end page -->
   </main> 
   <!-- end content -->
   
