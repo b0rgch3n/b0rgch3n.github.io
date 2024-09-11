@@ -25,6 +25,10 @@
 <lastmod>2024-09-03T13:57:00+08:00</lastmod>
 </url>
 <url>
+<loc>https://b0rgch3n.github.io/2024/09/11/cve-2024-43022_directory_traversal_vulnerability_analysis/</loc>
+<lastmod>2024-09-11T14:01:00+08:00</lastmod>
+</url>
+<url>
 <loc>https://b0rgch3n.github.io/about/</loc>
 </url>
 <url>
@@ -53,5 +57,11 @@
 </url>
 <url>
 <loc>https://b0rgch3n.github.io/tag/oscp-like/</loc>
+</url>
+<url>
+<loc>https://b0rgch3n.github.io/tag/cve/</loc>
+</url>
+<url>
+<loc>https://b0rgch3n.github.io/tag/vulnerability-analysis/</loc>
 </url>
 </urlset>

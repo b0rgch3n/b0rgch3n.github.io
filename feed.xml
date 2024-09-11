@@ -5,9 +5,87 @@
     <description>The Personal Blog of b0rgch3n | CODE: Zerberus</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 06 Sep 2024 11:27:15 +0800</pubDate>
-    <lastBuildDate>Fri, 06 Sep 2024 11:27:15 +0800</lastBuildDate>
+    <pubDate>Wed, 11 Sep 2024 17:41:47 +0800</pubDate>
+    <lastBuildDate>Wed, 11 Sep 2024 17:41:47 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>CVE-2024-43022 Vulnerability Report</title>
+        <description>&lt;p&gt;Analysis of &lt;strong&gt;CVE-2024-43022&lt;/strong&gt; Directory Traversal Vulnerability,&lt;br /&gt;
+impacting versions 4.02, 4.03 and 4.04.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;product-description&quot;&gt;&lt;strong&gt;Product Description&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;“&lt;strong&gt;TOSEIネット店舗管理システム&lt;/strong&gt;” is an online management system for self-service washing machines developed by TOSEI Corporation, offering features like configuration, monitoring, reporting, alerts, and settlement.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;affected-products&quot;&gt;&lt;strong&gt;Affected Products&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Version: 4.02 ~ 4.03&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;risk-information&quot;&gt;&lt;strong&gt;Risk Information&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;CVSS v3&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Base Score: 7.5&lt;/li&gt;
+  &lt;li&gt;Vector: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N&lt;/li&gt;
+  &lt;li&gt;Severity: High&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-11-cve-2024-43022_directory_traversal_vulnerability_analysis/image-1.png&quot; alt=&quot;CVE-2024-43022 tenable report&quot; /&gt;
+  &lt;em&gt;infomations from tenable&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;vulnerability-summary&quot;&gt;&lt;strong&gt;Vulnerability Summary&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Directory traversal vulnerability allows &lt;strong&gt;unauthenticated&lt;/strong&gt; attackers to &lt;strong&gt;read arbitrary files&lt;/strong&gt; on the server through &lt;strong&gt;downloader.php&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;proof-of-concept&quot;&gt;&lt;strong&gt;Proof Of Concept&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;From the &lt;strong&gt;downloader.php&lt;/strong&gt; page, an unauthenticated attacker can manipulate the &lt;strong&gt;GET&lt;/strong&gt; parameter &lt;strong&gt;file&lt;/strong&gt; to a relative path to read any file on the system.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;curl http://xxx/cgi-bin/downloader.php?file&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;../../../etc/passwd&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-11-cve-2024-43022_directory_traversal_vulnerability_analysis/image-2.jpg&quot; alt=&quot;CVE-2024-43022 proof of concept&quot; /&gt;
+  &lt;em&gt;Proof of concept&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;remediation&quot;&gt;&lt;strong&gt;Remediation&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Strengthen validation rules by ensuring input contains only alphanumeric characters and the “.” symbol. Other symbols should not be allowed.&lt;/p&gt;
+
+&lt;p&gt;As a best practice, it is recommended to use a whitelist of allowed values.&lt;/p&gt;
+
+&lt;p&gt;For more details, please refer to the following link: &lt;a href=&quot;https://cwe.mitre.org/data/definitions/22.html&quot;&gt;CWE-22&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;vulnerable-devices-found&quot;&gt;&lt;strong&gt;Vulnerable Devices Found&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As of 11 Sep 2024, there were 870 vulnerable devices exposed to the internet and were affected by the vulnerabilities discovered.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-09-11-cve-2024-43022_directory_traversal_vulnerability_analysis/image-3.png&quot; alt=&quot;CVE-2024-43022 vulnerable devices&quot; /&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 11 Sep 2024 14:01:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/09/11/cve-2024-43022_directory_traversal_vulnerability_analysis/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/09/11/cve-2024-43022_directory_traversal_vulnerability_analysis/</guid>
+        
+        <category>CVE</category>
+        
+        <category>Vulnerability Analysis</category>
+        
+        
+      </item>
     
       <item>
         <title>[WriteUp] HackTheBox - Editorial</title>
