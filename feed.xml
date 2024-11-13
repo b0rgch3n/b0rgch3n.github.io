@@ -5,9 +5,255 @@
     <description>The Personal Blog of b0rgch3n | CODE: Zerberus</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 14 Sep 2024 22:45:16 +0800</pubDate>
-    <lastBuildDate>Sat, 14 Sep 2024 22:45:16 +0800</lastBuildDate>
+    <pubDate>Wed, 13 Nov 2024 11:07:04 +0800</pubDate>
+    <lastBuildDate>Wed, 13 Nov 2024 11:07:04 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>[WriteUp] HackTheBox - Instant</title>
+        <description>&lt;p&gt;&lt;strong&gt;Instant&lt;/strong&gt; is a medium difficulty box on HackTheBox.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Starting as usual with Nmap for initial enumeration and network scanning insights.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;nmap scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;No unexpected results:  &lt;br /&gt;
+Nmap scan reveals open ports &lt;strong&gt;22&lt;/strong&gt; and &lt;strong&gt;80&lt;/strong&gt;, which are standard.&lt;/p&gt;
+
+&lt;p&gt;Setting aside SSH, let’s focus on analyzing the web service on port 80.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The web service appears to be related to an encrypted wallet application.&lt;/p&gt;
+
+&lt;p&gt;Next step: proceed with directory enumeration to uncover further data points.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Directory scan results for the web service showed no valuable information.&lt;/p&gt;
+
+&lt;p&gt;We will proceed to subdomain enumeration to check for additional entry points.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;ffuf scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Interestingly, even subdomain enumeration yielded a clean report this time.&lt;/p&gt;
+
+&lt;p&gt;The only potentially useful data on the page is the download link for an APK file.&lt;br /&gt;
+Download the APK file, then decode it using apktool to explore its contents.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;apktool&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We will scan through the extracted APK contents to identify sensitive information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;apk content&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;An interesting file, “&lt;strong&gt;network_security_config.xml&lt;/strong&gt;” was found in the decoded APK directory.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;config file: network_security_config.xml&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This file lists two subdomains.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;mywalletv1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;htb&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;swagger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ui&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;htb&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Attempting direct access to the mywalletv1 subdomain returns a 404 error, indicating it’s not accessible.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The swagger-ui subdomain hosts API documentation, disclosing several sensitive endpoints.&lt;br /&gt;
+Most API interfaces, however, require authentication for access.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page: apidocs&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;&lt;strong&gt;Foothold&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;To proceed, let’s register a user account.&lt;/p&gt;
+
+&lt;p&gt;Using the register endpoint, we create an account, noting the PIN must be a 5-digit numerical code.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# Like this:
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;email&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;b0rgch3n@wearehackerone.com&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;12345&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;pin&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;12345&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;b0rgch3n&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-10.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /register&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Registration successful.&lt;/p&gt;
+
+&lt;p&gt;We then log in via the login endpoint, which provides an “Access-Token” for authentication.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /login&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Authentication token received, and we’re ready for further validation.&lt;/p&gt;
+
+&lt;p&gt;Let’s validate the token by testing its functionality.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-12.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /view/profile&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The token returns user information, indicating it’s active and functional.&lt;br /&gt;
+An endpoint “&lt;strong&gt;/api/v1/admin/read/log&lt;/strong&gt;” suggests a potential for arbitrary file reads,&lt;br /&gt;
+but admin privileges are required, so we need a strategy to gain admin access.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-13.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /admin/read/log&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It seems we’ve exhausted useful information from this subdomain.&lt;/p&gt;
+
+&lt;p&gt;Revisiting the source code, we’ll search for any hardcoded sensitive data.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-14.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;review code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;A new subdomain was identified, also providing API services.&lt;/p&gt;
+
+&lt;p&gt;After trying terms like “pass,” “pwd,” “user,” and “token” without results,&lt;br /&gt;
+the search term “&lt;strong&gt;admin&lt;/strong&gt;” led to a promising finding.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-15.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;review code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It appears that &lt;strong&gt;com.instantlabs.instant.AdminActivities&lt;/strong&gt; contains admin-related information, including smali code related to admin testing.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-16.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;review code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It looks like we’ve located the admin authentication credentials.&lt;/p&gt;
+
+&lt;p&gt;We’ll test the admin-specific credentials on relevant API endpoints.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-17.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /admin/list/users&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We’ve secured admin credentials.&lt;br /&gt;
+Next, we’ll explore the arbitrary file-read endpoint for potential escalation.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-18.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /admin/read/log&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Yes, directory traversal allows us to read arbitrary files on the server.&lt;br /&gt;
+This can be utilized for privilege escalation by locating sensitive files for login information.&lt;/p&gt;
+
+&lt;p&gt;Two files of particular interest are:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;o&quot;&gt;~/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bash_history&lt;/span&gt; 
+&lt;span class=&quot;o&quot;&gt;~/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ssh&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id_rsa&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;.bash_history is unfortunately empty, but the id_rsa file is intact.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-19.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;api: /admin/read/log&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We now possess the &lt;strong&gt;SSH private key&lt;/strong&gt; for user shirohige.&lt;br /&gt;
+Copy the SSH key to our system, set permissions to 644, and log in as shirohige via SSH.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-20.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;user shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We’ve successfully gained a shell with shirohige’s user privileges.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;&lt;strong&gt;Privilege Escalation&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;Continue privilege escalation efforts by investigating source code further.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-21.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;review code&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Attempting password recovery from SQLite is unlikely to be feasible.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-22.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;SQLite database&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;It’s time to stop guessing.  &lt;br /&gt;
+Running &lt;strong&gt;Linpeas.sh&lt;/strong&gt; will help gather more privilege escalation information.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-23.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;open ports&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Two local-only ports, 8808 and 8888, are detected.&lt;br /&gt;
+Port forwarding reveals they are the same API services identified earlier.&lt;/p&gt;
+
+&lt;p&gt;Let’s move on, SQLite information reappears.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-24.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;sqlite database&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Re-evaluating hash-cracking possibilities for the identified password hashes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-25.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;code about hash&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-26.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;code about hash&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Confirmed password hash format as &lt;strong&gt;PBKDF2-HMAC-SHA256&lt;/strong&gt; with 60,000 iterations.&lt;/p&gt;
+
+&lt;p&gt;After spending significant time without success, I found a key detail.&lt;br /&gt;
+The final “$” segment can be encoded in Base64 or hex.&lt;br /&gt;
+Python’s Werkzeug uses hex,&lt;br /&gt;
+while cracking tools like John and Hashcat require Base64.&lt;/p&gt;
+
+&lt;p&gt;Even so, cracking remains unsuccessful, moving on to assess other clues.&lt;/p&gt;
+
+&lt;p&gt;I found a &lt;strong&gt;sessions-backup.dat&lt;/strong&gt; file under the &lt;strong&gt;/opt&lt;/strong&gt; directory.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-27.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;backup file&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;/opt/backups/Solar-PuTTY/sessions-backup.dat&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This file appears encrypted, referring to available decryption tools: &lt;a href=&quot;https://github.com/ItsWatchMakerr/SolarPuttyCracker&quot;&gt;SolarPuttyCracker&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Due to the tool SolarPuttyCracker is outdated, switching to a more recent decryption utility was necessary: &lt;a href=&quot;https://github.com/VoidSec/SolarPuttyDecrypt&quot;&gt;SolarPuttyDecrypt&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-28.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;SolarPuttyDecrypt&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Decryption successful!  &lt;br /&gt;
+The SolarPutty configuration file password is “&lt;strong&gt;estrella&lt;/strong&gt;”.  &lt;br /&gt;
+The file reveals root account credentials.&lt;/p&gt;
+
+&lt;p&gt;However, direct SSH login as root is restricted. &lt;br /&gt;
+So, We’ll log in as shirohige, and then switch to root.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-11-12-writeup-hackthebox-instant/image-29.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;root shell&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Successfully accessed root shell privileges :)&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 12 Nov 2024 05:29:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/</guid>
+        
+        <category>WriteUp</category>
+        
+        <category>Hack The Box</category>
+        
+        
+      </item>
     
       <item>
         <title>How to make a breakfast money with Pawns.app</title>

