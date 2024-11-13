@@ -5,8 +5,8 @@
     <description>The Personal Blog of b0rgch3n | CODE: Zerberus</description>
     <link>https://b0rgch3n.github.io/</link>
     <atom:link href="https://b0rgch3n.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 13 Nov 2024 11:07:04 +0800</pubDate>
-    <lastBuildDate>Wed, 13 Nov 2024 11:07:04 +0800</lastBuildDate>
+    <pubDate>Wed, 13 Nov 2024 18:46:28 +0800</pubDate>
+    <lastBuildDate>Wed, 13 Nov 2024 18:46:28 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
@@ -247,6 +247,115 @@ So, We’ll log in as shirohige, and then switch to root.&lt;/p&gt;
         <pubDate>Tue, 12 Nov 2024 05:29:00 +0800</pubDate>
         <link>https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/</link>
         <guid isPermaLink="true">https://b0rgch3n.github.io/2024/11/12/writeup-hackthebox-instant/</guid>
+        
+        <category>WriteUp</category>
+        
+        <category>Hack The Box</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>[WriteUp] HackTheBox - Bizness</title>
+        <description>&lt;p&gt;&lt;strong&gt;Bizness&lt;/strong&gt; is a easy difficulty box on HackTheBox.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;enumeration&quot;&gt;&lt;strong&gt;Enumeration&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;To collect port information, we first perform enumeration using &lt;strong&gt;Nmap&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-1.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;nmap scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The open ports are &lt;strong&gt;22&lt;/strong&gt;, &lt;strong&gt;80&lt;/strong&gt;, &lt;strong&gt;443&lt;/strong&gt;, and &lt;strong&gt;34447&lt;/strong&gt;. &lt;br /&gt;
+Focus on checking the web services first.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-2.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The directory enumeration results show nothing, it appears to be a single-page application.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-3.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;dirsearch scan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Upon careful examination of the web page, the footer indicates that the site is built using &lt;strong&gt;OFBiz&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-4.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;A quick Google search reveals that OFBiz has numerous vulnerabilities, most of which are located under the ‘&lt;strong&gt;/webtools/control/xmlrpc&lt;/strong&gt;’ path.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-5.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This path contains a login panel, and the footer displays that the framework version is &lt;strong&gt;18.12&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-6.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;web page&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;foothold&quot;&gt;&lt;strong&gt;Foothold&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;A brief Google search makes it clear that exploitable vulnerabilities.&lt;br /&gt;
+It is discovered that vulnerabilities &lt;strong&gt;CVE-2023-49070&lt;/strong&gt; and &lt;strong&gt;CVE-2023-51467&lt;/strong&gt; can be exploited to execute commands without authentication.   &lt;a href=&quot;https://github.com/UserConnecting/Exploit-CVE-2023-49070-and-CVE-2023-51467-Apache-OFBiz&quot;&gt;Exploit CVE-2023-49070 and CVE-2023-51467 Apache OFBiz &amp;lt; 18.12.10&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Download the exploit script and required jar files, adjust the Java environment to version 11, and execute the exploit.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-7.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;exploit&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Successfully acquired a user-level shell in no time.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;privilege-escalation&quot;&gt;&lt;strong&gt;Privilege Escalation&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;As per standard practice, use &lt;strong&gt;Linpeas.sh&lt;/strong&gt; to gather information for privilege escalation.&lt;br /&gt;
+Highlighted sections are found in the report.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-8.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;linpeas&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;However, upon inspection, these paths are all non-writable.&lt;br /&gt;
+Next, let’s check for any sensitive information leakage.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;find &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f | xargs &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-a&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-P&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;password|passwd|pwd&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Unfortunately, the information found is overwhelming, and much of it is invalid.&lt;/p&gt;
+
+&lt;p&gt;Google search shows that &lt;strong&gt;derby&lt;/strong&gt;, which is included in the project, is also a database under Apache.&lt;br /&gt;
+Relevant data is stored in the .dat files located in the ‘&lt;strong&gt;/opt/ofbiz/runtime/data/derby/ofbiz/seg0/&lt;/strong&gt;’ directory.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-9.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;.dat file&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We seem to have found a password hash.&lt;br /&gt;
+However, the hash storage format used by OFBiz appears to be obscure, making it impossible to crack directly with John.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-10.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;john&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Continuing with the Google search, I find that it needs to be cracked using different tools:  &lt;a href=&quot;https://github.com/duck-sec/Apache-OFBiz-SHA1-Cracker&quot;&gt;Apache-OFBiz-SHA1-Cracker&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Alright, let’s try to crack it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-11.png&quot; alt=&quot;&quot; /&gt;
+  &lt;em&gt;Apache-OFBiz-SHA1-Cracker&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Successfully obtained the admin password.&lt;br /&gt;
+Upon verification, this is actually the root user’s password.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2024-10-28-writeup-hackthebox-bizness/image-12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Gained root shell access, and that concludes the process.&lt;/p&gt;
+
+&lt;p&gt;This was really straightforward, wasn’t it? :)&lt;/p&gt;
+</description>
+        <pubDate>Tue, 29 Oct 2024 03:41:00 +0800</pubDate>
+        <link>https://b0rgch3n.github.io/2024/10/29/writeup-hackthebox-bizness/</link>
+        <guid isPermaLink="true">https://b0rgch3n.github.io/2024/10/29/writeup-hackthebox-bizness/</guid>
         
         <category>WriteUp</category>
         

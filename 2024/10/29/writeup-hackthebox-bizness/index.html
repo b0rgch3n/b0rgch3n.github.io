@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>b0rgch3n's blog</title>
-  <meta name='description' content='The Personal Blog of b0rgch3n | CODE: Zerberus'>
+  <title>[WriteUp] HackTheBox - Bizness | b0rgch3n's blog</title>
+  <meta name='description' content='Bizness is a easy difficulty box on HackTheBox'>
 
-  <link rel="canonical" href="https://b0rgch3n.github.io/page/2/">
+  <link rel="canonical" href="https://b0rgch3n.github.io/2024/10/29/writeup-hackthebox-bizness/">
   <link rel="alternate" type="application/rss+xml" title="b0rgch3n&#39;s blog" href="/feed.xml">
 
   <!-- Fonts -->
@@ -44,7 +44,7 @@
   
 
 <!-- begin header -->
-<header class="header header--top">
+<header class="header ">
   <div class="container">
     <div class="row">
       <div class="header__inner col col-12">
@@ -296,51 +296,227 @@
 
   <!-- begin content -->
   <main class="content" aria-label="Content">
-    <!-- begin hero -->
-
-<section class="hero">
-  <div class="hero__inner">
-    <div class="hero__image">
-      <img class="lazy" data-src="/images/cover/32.jpg" alt="CODE: Zerberus">
-    </div>
-    <div class="hero__content">
-      <h1 class="hero__title">CODE: Zerberus</h1>
-      <p class="hero__desc">A Cyber Security Engineer aiming to become a Red Teamer Pro, documenting the journey of growth and transformation.</p>
+    <div class="post-head">
+  <div class="container">
+    <div class="row">
+      
+      <div class="col col-6 col-t-12">
+        <div class="image-box">
+          <img class="post-image lazy" data-src="/images/cover/23.jpg" alt="[WriteUp] HackTheBox - Bizness">
+        </div>
+      </div>
+      
+  
+      <div class="col col-6 col-t-12">
+        <div class="post-head__box">
+        
+          <div class="post__meta">
+            <span class="post__minutes">
+              
+              
+                2 min read
+              
+              <time class="post__date"
+                datetime="2024-10-29T03:41:00+08:00">Oct 29, 2024</time>
+            </span>
+          </div>
+        
+          <h1 class="post__title">[WriteUp] HackTheBox - Bizness</h2>
+        
+          <div class="post__bottom">
+        
+            <div class="post__author">
+              <a href="/about/" aria-label="b0rgch3n"><img class="post__author-image"
+                  src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+            </div>
+        
+            <div class="post__bottom-meta">
+              <a href="/about/" class="post__author-link">b0rgch3n</a>
+              
+              <span>in</span>
+              <span class="post-tags">
+                
+                <a href="/tag/writeup/" class="post__tag">WriteUp</a>
+                
+                <a href="/tag/hack-the-box/" class="post__tag">Hack The Box</a>
+                
+              </span>
+              
+            </div>
+          </div>
+        
+        </div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- begin hero -->
+<!-- begin post -->
+<div class="container">
+  <article class="post animate">
+
+    <div class="post__content">
+      <p><strong>Bizness</strong> is a easy difficulty box on HackTheBox.</p>
+
+<hr />
+
+<h2 id="enumeration"><strong>Enumeration</strong></h2>
+
+<p>To collect port information, we first perform enumeration using <strong>Nmap</strong>.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-1.png" alt="" />
+  <em>nmap scan</em></p>
+
+<p>The open ports are <strong>22</strong>, <strong>80</strong>, <strong>443</strong>, and <strong>34447</strong>. <br />
+Focus on checking the web services first.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-2.png" alt="" />
+  <em>web page</em></p>
+
+<p>The directory enumeration results show nothing, it appears to be a single-page application.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-3.png" alt="" />
+  <em>dirsearch scan</em></p>
+
+<p>Upon careful examination of the web page, the footer indicates that the site is built using <strong>OFBiz</strong>.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-4.png" alt="" />
+  <em>web page</em></p>
+
+<p>A quick Google search reveals that OFBiz has numerous vulnerabilities, most of which are located under the ‘<strong>/webtools/control/xmlrpc</strong>’ path.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-5.png" alt="" />
+  <em>web page</em></p>
+
+<p>This path contains a login panel, and the footer displays that the framework version is <strong>18.12</strong>.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-6.png" alt="" />
+  <em>web page</em></p>
+
+<hr />
+
+<h2 id="foothold"><strong>Foothold</strong></h2>
+
+<p>A brief Google search makes it clear that exploitable vulnerabilities.<br />
+It is discovered that vulnerabilities <strong>CVE-2023-49070</strong> and <strong>CVE-2023-51467</strong> can be exploited to execute commands without authentication.   <a href="https://github.com/UserConnecting/Exploit-CVE-2023-49070-and-CVE-2023-51467-Apache-OFBiz">Exploit CVE-2023-49070 and CVE-2023-51467 Apache OFBiz &lt; 18.12.10</a></p>
+
+<p>Download the exploit script and required jar files, adjust the Java environment to version 11, and execute the exploit.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-7.png" alt="" />
+  <em>exploit</em></p>
+
+<p>Successfully acquired a user-level shell in no time.</p>
+
+<hr />
+
+<h2 id="privilege-escalation"><strong>Privilege Escalation</strong></h2>
+
+<p>As per standard practice, use <strong>Linpeas.sh</strong> to gather information for privilege escalation.<br />
+Highlighted sections are found in the report.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-8.png" alt="" />
+  <em>linpeas</em></p>
+
+<p>However, upon inspection, these paths are all non-writable.<br />
+Next, let’s check for any sensitive information leakage.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">find <span class="nb">.</span> <span class="nt">-type</span> f | xargs <span class="nb">grep</span> <span class="nt">-a</span> <span class="nt">-P</span> <span class="s2">"password|passwd|pwd"</span> <span class="nt">-n</span></code></pre></figure>
+
+<p>Unfortunately, the information found is overwhelming, and much of it is invalid.</p>
+
+<p>Google search shows that <strong>derby</strong>, which is included in the project, is also a database under Apache.<br />
+Relevant data is stored in the .dat files located in the ‘<strong>/opt/ofbiz/runtime/data/derby/ofbiz/seg0/</strong>’ directory.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-9.png" alt="" />
+  <em>.dat file</em></p>
+
+<p>We seem to have found a password hash.<br />
+However, the hash storage format used by OFBiz appears to be obscure, making it impossible to crack directly with John.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-10.png" alt="" />
+  <em>john</em></p>
+
+<p>Continuing with the Google search, I find that it needs to be cracked using different tools:  <a href="https://github.com/duck-sec/Apache-OFBiz-SHA1-Cracker">Apache-OFBiz-SHA1-Cracker</a></p>
+
+<p>Alright, let’s try to crack it.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-11.png" alt="" />
+  <em>Apache-OFBiz-SHA1-Cracker</em></p>
+
+<p>Successfully obtained the admin password.<br />
+Upon verification, this is actually the root user’s password.</p>
+
+<p><img src="/images/2024-10-28-writeup-hackthebox-bizness/image-12.png" alt="" /></p>
+
+<p>Gained root shell access, and that concludes the process.</p>
+
+<p>This was really straightforward, wasn’t it? :)</p>
+
+    </div>
+
+    <div class="post__share">
+      <div class="share__list">
+        <a class="share__link share__facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://b0rgch3n.github.io/2024/10/29/writeup-hackthebox-bizness/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
+
+        <a class="share__link share__twitter" href="https://twitter.com/intent/tweet?text=[WriteUp]%20HackTheBox%20-%20Bizness&url=https://b0rgch3n.github.io/2024/10/29/writeup-hackthebox-bizness/" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
+
+        <a class="share__link share__pinterest" href="http://pinterest.com/pin/create/button/?url=https://b0rgch3n.github.io/2024/10/29/writeup-hackthebox-bizness/&amp;media=https://b0rgch3n.github.io/images/cover/23.jpg&amp;description=[WriteUp]%20HackTheBox%20-%20Bizness" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
+      </div>
+    </div>
+
+    <div class="post__navigation">
+      
+      <a class="prev" href="/2024/09/14/how-to-make-a-breakfast-money-with-pawns-app/">
+        <img class="post__nav-image lazy" data-src="/images/cover/ish.svg" alt="How to make a breakfast money with Pawns.app">
+        <div class="post__nav-box">
+          <div class="post__nav post__nav__prev"><i class="ion ion-md-arrow-round-back"></i> Previous Post</div>
+          <h4 class="post__nav__title">How to make a breakfast money with Pawns.app</h4>
+        </div>
+      </a>
+      
+      
+      <a class="next" href="/2024/11/12/writeup-hackthebox-instant/">
+        <img class="post__nav-image lazy" data-src="/images/cover/14.jpg" alt="[WriteUp] HackTheBox - Instant">
+        <div class="post__nav-box">
+          <div class="post__nav post__nav__next">Next Post <i class="ion ion-md-arrow-forward"></i></div>
+          <h4 class="post__nav__title">[WriteUp] HackTheBox - Instant</h4>
+        </div>
+      </a>
+      
+    </div>
+
+  </article>
+</div>
+<!-- end post -->
 
 
 
 
-<!-- begin featured post -->
-<section class="featured-post">
-  <div class="container">
+
+
+
+<div class="container">
+  <div class="related-posts is-related">
     <div class="row">
       <div class="col col-12">
         <div class="container__inner">
-          <div class="row">
-            
-            
-            
-            
-            
-            
-            
-            
-            <div class="article col col-4 col-d-6 col-t-12 animate">
+          <h3 class="related-title">You may also like</h3>
+          <div class="row grid">
 
+          
+            
+            
+
+            
+
+            
+
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
               <div class="article__inner">
 
                 
-                <span class="featured-post ion ion-ios-star-outline"></span>
-                
-
-                
-                <a class="article__image" href="/2024/09/11/cve-2024-43022_directory_traversal_vulnerability_analysis/">
-                  <img class="lazy" data-src="/images/cover/40.jpg" alt="CVE-2024-43022 Vulnerability Report">
+                <a class="article__image" href="/2024/11/12/writeup-hackthebox-instant/">
+                  <img class="lazy" data-src="/images/cover/14.jpg" alt="[WriteUp] HackTheBox - Instant">
                 </a>
                 
 
@@ -350,18 +526,16 @@
                     <span class="article__minutes">
                       
                       
-                        1 min read
+                        4 min read
                       
+                      <time class="article__date"
+                        datetime="2024-11-12T05:29:00+08:00">Nov 12, 2024</time>
                     </span>
-                    <time class="article__date"
-                      datetime="2024-09-11T14:01:00+08:00">Sep 11, 2024</time>
                   </div>
 
-                  <h1 class="article__title">
-                    <a href="/2024/09/11/cve-2024-43022_directory_traversal_vulnerability_analysis/">CVE-2024-43022 Vulnerability Report</a>
-                  </h2>
+                  <h1 class="article__title">[WriteUp] HackTheBox - Instant</h2>
 
-                  <p class="article__excerpt">Analysis of CVE-2024-43022 Directory Traversal Vulnerability, impacting versions 4.02, 4.03 and 4.04.</p>
+                  <p class="article__excerpt">Instant is a medium difficulty box on HackTheBox</p>
 
                   <div class="article__bottom">
 
@@ -379,188 +553,190 @@
                       <span>in</span>
                       <span class="article-tags">
                         
-                          <a href="/tag/cve/" class="article__tag">CVE</a>
+                          <a href="/tag/writeup/" class="article__tag">WriteUp</a>
                         
-                          <a href="/tag/vulnerability-analysis/" class="article__tag">Vulnerability Analysis</a>
+                          <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
                         
                       </span>
                       
                     </div>
-
                   </div>
 
                 </div>
+
               </div>
             </div>
+
+            
+                
+              
+            
+            
+            
+
+            
+
             
             
             
             
+
+            
+
             
             
             
             
+
+            
+
             
             
             
             
+
+            
+
+            
+
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
+              <div class="article__inner">
+
+                
+                <a class="article__image" href="/2024/09/03/writeup-hackthebox-editorial/">
+                  <img class="lazy" data-src="/images/cover/13.jpg" alt="[WriteUp] HackTheBox - Editorial">
+                </a>
+                
+
+                <div class="article__content">
+
+                  <div class="article__meta">
+                    <span class="article__minutes">
+                      
+                      
+                        6 min read
+                      
+                      <time class="article__date"
+                        datetime="2024-09-03T13:57:00+08:00">Sep 3, 2024</time>
+                    </span>
+                  </div>
+
+                  <h1 class="article__title">[WriteUp] HackTheBox - Editorial</h2>
+
+                  <p class="article__excerpt">Editorial is a simple difficulty box on HackTheBox, It is also the OSCP like box.</p>
+
+                  <div class="article__bottom">
+
+                    
+                    <div class="article__author">
+                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+                    </div>
+                    
+
+                    <div class="article__bottom-meta">
+                      
+                        <a href="/about/" class="article__author-link">b0rgch3n</a>
+                      
+                      
+                      <span>in</span>
+                      <span class="article-tags">
+                        
+                          <a href="/tag/writeup/" class="article__tag">WriteUp</a>
+                        
+                          <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
+                        
+                          <a href="/tag/oscp-like/" class="article__tag">OSCP like</a>
+                        
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            
+                
+              
             
             
+            
+
+            
+
+            
+
+            <div class="article col col-4 col-d-6 col-t-12 grid__post">
+              <div class="article__inner">
+
+                
+                <a class="article__image" href="/2024/08/26/writeup-hackthebox-sea/">
+                  <img class="lazy" data-src="/images/cover/02.jpg" alt="[WriteUp] HackTheBox - Sea">
+                </a>
+                
+
+                <div class="article__content">
+
+                  <div class="article__meta">
+                    <span class="article__minutes">
+                      
+                      
+                        5 min read
+                      
+                      <time class="article__date"
+                        datetime="2024-08-26T15:21:00+08:00">Aug 26, 2024</time>
+                    </span>
+                  </div>
+
+                  <h1 class="article__title">[WriteUp] HackTheBox - Sea</h2>
+
+                  <p class="article__excerpt">Sea is a simple box from HackTheBox, Season 6 of 2024.</p>
+
+                  <div class="article__bottom">
+
+                    
+                    <div class="article__author">
+                      <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
+                    </div>
+                    
+
+                    <div class="article__bottom-meta">
+                      
+                        <a href="/about/" class="article__author-link">b0rgch3n</a>
+                      
+                      
+                      <span>in</span>
+                      <span class="article-tags">
+                        
+                          <a href="/tag/writeup/" class="article__tag">WriteUp</a>
+                        
+                          <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
+                        
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            
+                
+                  
           </div>
         </div>
       </div>
     </div>
   </div>
-</section>
-<!-- end featured post -->
-
-
-
-<div class="container">
-  <div class="row">
-    <div class="col col-12">
-      <div class="container__inner">
-        <div class="row grid">
-          
-            
-              <div class="article col col-4 col-d-6 col-t-12 grid__post animate">
-  <div class="article__inner">
-
-    
-    <a class="article__image" href="/2024/06/13/writeup-hackthebox-blurry/">
-      <img class="lazy" data-src="/images/cover/11.jpg" alt="[WriteUp] HackTheBox - Blurry">
-    </a>
-    
-
-    <div class="article__content">
-
-      <div class="article__meta">
-        <span class="article__minutes">
-          
-            
-              6 min read
-          
-          <time class="article__date" datetime="2024-06-13T16:01:35+08:00">Jun 13, 2024</time>
-        </span>
-      </div>
-
-      <h1 class="article__title">[WriteUp] HackTheBox - Blurry</h2>
-
-      <p class="article__excerpt">Blurry is a medium-difficulty box from HackTheBox 2024 Season 5.</p>
-
-      <div class="article__bottom">
-
-        
-        <div class="article__author">
-          <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-        </div>
-        
-
-        <div class="article__bottom-meta">
-          
-            <a href="/about/" class="article__author-link">b0rgch3n</a>
-          
-          
-            <span>in</span>
-            <span class="article-tags">
-              
-                <a href="/tag/writeup/" class="article__tag">WriteUp</a>
-              
-                <a href="/tag/hack-the-box/" class="article__tag">Hack The Box</a>
-              
-            </span>
-          
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
 </div>
 
-            
-              <div class="article col col-4 col-d-6 col-t-12 grid__post animate">
-  <div class="article__inner">
 
-    
-    <a class="article__image" href="/2021/03/19/solutions-object-detection-0-to-001-yolov4/">
-      <img class="lazy" data-src="/images/cover/12.jpg" alt="[Solutions] Object Detection 0 to 0.01: YOLOv4">
-    </a>
-    
 
-    <div class="article__content">
 
-      <div class="article__meta">
-        <span class="article__minutes">
-          
-            
-              7 min read
-          
-          <time class="article__date" datetime="2021-03-19T03:07:00+08:00">Mar 19, 2021</time>
-        </span>
-      </div>
-
-      <h1 class="article__title">[Solutions] Object Detection 0 to 0.01: YOLOv4</h2>
-
-      <p class="article__excerpt">Letting the neural network find something in the images.</p>
-
-      <div class="article__bottom">
-
-        
-        <div class="article__author">
-          <a href="/about/" aria-label="b0rgch3n"><img class="article__author-image lazy" data-src="/images/author.jpg" alt="b0rgch3n's Picture"></a>
-        </div>
-        
-
-        <div class="article__bottom-meta">
-          
-            <a href="/about/" class="article__author-link">b0rgch3n</a>
-          
-          
-            <span>in</span>
-            <span class="article-tags">
-              
-                <a href="/tag/solutions/" class="article__tag">Solutions</a>
-              
-                <a href="/tag/object-detection/" class="article__tag">Object Detection</a>
-              
-                <a href="/tag/yolo/" class="article__tag">YOLO</a>
-              
-                <a href="/tag/dnn/" class="article__tag">DNN</a>
-              
-            </span>
-          
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
-            
-          
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="row">
-    <div class="col col-12 load-more">
-      
-      
-      
-      <div class="load-more-section">
-        <button class="load-more-posts button button--middle">Load More</button>
-      </div>
-      
-    </div>
-  </div>
-</div>
   </main> 
   <!-- end content -->
   
@@ -586,7 +762,7 @@
           <span class="article__minutes">
             
             
-              5 min read
+              4 min read
             
           </span>
           <time class="article__date"
@@ -688,7 +864,7 @@
   var base_url = "",
     pagination_next_url = base_url + '/page2',
     pagination_next_page_number = '',
-    pagination_available_pages_number = '2';
+    pagination_available_pages_number = '';
 </script>
 </body>
 
